@@ -1,28 +1,70 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  /* ─── Marca / Acción ─────────────────────────────
-     Botones principales, links, elementos interactivos  */
+  /* ─── Login (no modificar) ───────────────────────*/
+  --color-surface-page: #fef7fe;
+  --color-surface-input: #fef7fe;
+  --color-surface-subtle: #eadef7;
+  --color-border-input: #afa9ec;
+  --color-border-subtle: #e2d9f3;
+  --color-text-base: #564e63;
+  --color-text-muted: #8b7fa0;
+
+  /* ─── Marca ──────────────────────────────────────
+     Igual en ambos modos — el morado es la identidad */
   --color-brand: #5c4a7b;
   --color-brand-hover: #4a3fa0;
   --color-brand-gradient-from: #7c6ab5;
   --color-brand-gradient-to: #4a3fa0;
 
-  /* ─── Superficie / Fondos ────────────────────────
-     Página, cards, inputs — diferentes niveles de profundidad */
-  --color-surface-page: #fef7fe;
-  --color-surface-input: #fef7fe;
-  --color-surface-subtle: #eadef7;
+  /* ─── Fondos por nivel ───────────────────────────*/
+  --color-bg-base: #fef7fe;
+  --color-bg-surface: #ffffff;
+  --color-bg-elevated: #ffffff;
+  --color-bg-subtle: #eadef7;
 
-  /* ─── Bordes ─────────────────────────────────────
-     Inputs, cards, separadores                          */
-  --color-border-input: #afa9ec;
-  --color-border-subtle: #e2d9f3;
+  /* ─── Bordes ─────────────────────────────────────*/
+  --color-border-default: #e2d9f3;
+  --color-border-strong: #afa9ec;
 
-  /* ─── Texto ──────────────────────────────────────
-     Jerarquía tipográfica                               */
-  --color-text-base: #564e63;
-  --color-text-muted: #8b7fa0;
+  /* ─── Texto ──────────────────────────────────────*/
+  --color-text-primary: #564e63;
+  --color-text-secondary: #8b7fa0;
+  --color-text-disabled: #b8adc8;
   --color-text-on-brand: #ffffff;
   --color-text-accent: #7f77dd;
 }
+
+/* ─── Dark mode overrides ────────────────────────────
+   Tailwind aplica estas cuando el html tiene class="dark" */
+.dark {
+  --color-bg-base: #0a0a0a;
+  --color-bg-surface: #111111;
+  --color-bg-elevated: #1a1a1a;
+  --color-bg-subtle: #27272a;
+
+  --color-border-default: #27272a;
+  --color-border-strong: #3f3f46;
+
+  --color-text-primary: #f4f0f8;
+  --color-text-secondary: #a89fbb;
+  --color-text-disabled: #52525b;
+  --color-text-accent: #9f97e8;
+}
+/*
+La lógica de niveles es:
+```
+bg-base        → #fef7fe  (fondo de página, lo más atrás)
+  bg-surface   → #ffffff  (cards, sidebar encima del base)
+    bg-elevated→ #ffffff  (modales, dropdowns encima de surface)
+      bg-subtle→ #eadef7  (badges, hover, lo más al frente)
+```
+
+En dark mode cada nivel se oscurece progresivamente:
+```
+bg-base        → #0a0a0a
+  bg-surface   → #111111
+    bg-elevated→ #1a1a1a
+      bg-subtle→ #27272a
+*/

@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 // Rutas que NO requieren autenticación
 const publicRoutes = ["/login"];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
   const { pathname } = request.nextUrl;
 
@@ -25,6 +25,6 @@ export function middleware(request: NextRequest) {
 
 // Le dice a Next.js en qué rutas ejecutar el middleware
 // Excluimos archivos estáticos y rutas internas de Next.js
-export const config = {
+export const routing = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico|.*\\.png$).*)"],
 };

@@ -16,8 +16,6 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       token: null,
       setAuth: (user, token) => {
-        // Guarda en cookie para que el middleware pueda leerla
-        // expires: 7 días, sameSite strict por seguridad
         Cookies.set("token", token, { expires: 7, sameSite: "strict" });
         set({ user, token });
       },
