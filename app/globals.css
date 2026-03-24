@@ -1,26 +1,28 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  /* ─── Marca / Acción ─────────────────────────────
+     Botones principales, links, elementos interactivos  */
+  --color-brand: #5c4a7b;
+  --color-brand-hover: #4a3fa0;
+  --color-brand-gradient-from: #7c6ab5;
+  --color-brand-gradient-to: #4a3fa0;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  /* ─── Superficie / Fondos ────────────────────────
+     Página, cards, inputs — diferentes niveles de profundidad */
+  --color-surface-page: #fef7fe;
+  --color-surface-input: #fef7fe;
+  --color-surface-subtle: #eadef7;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+  /* ─── Bordes ─────────────────────────────────────
+     Inputs, cards, separadores                          */
+  --color-border-input: #afa9ec;
+  --color-border-subtle: #e2d9f3;
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* ─── Texto ──────────────────────────────────────
+     Jerarquía tipográfica                               */
+  --color-text-base: #564e63;
+  --color-text-muted: #8b7fa0;
+  --color-text-on-brand: #ffffff;
+  --color-text-accent: #7f77dd;
 }
