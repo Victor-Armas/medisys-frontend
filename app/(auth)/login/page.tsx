@@ -4,7 +4,7 @@ import { LoginForm } from "@/components/auth/LoginForm";
 
 export default function LoginPage() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 bg-primary-page">
+    <main className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 bg-[#F3EFFF]">
       <div className="w-full max-w-4xl bg-white rounded-2xl overflow-hidden flex flex-col md:flex-row shadow-sm border border-gray-100 min-h-[560px]">
         {/* Panel izquierdo */}
         <div className="hidden md:flex md:w-1/2 relative flex-col justify-between p-10">

@@ -1,21 +1,29 @@
+// proxy.ts
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-// Rutas que NO requieren autenticación
 const publicRoutes = ["/login"];
 
 export function proxy(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
   const { pathname } = request.nextUrl;
 
+  // EXCEPCIÓN CRÍTICA: Ignorar cualquier archivo con extensión o rutas internas de Next.js
+  // Esto elimina el error "Unexpected token '<'" de raíz.
+  if (
+    pathname.startsWith("/_next") ||
+    pathname.includes("/api/") ||
+    pathname.includes(".") // Esto ignora .js, .css, .png, etc.
+  ) {
+    return NextResponse.next();
+  }
+
   const isPublicRoute = publicRoutes.includes(pathname);
 
-  // Si no tiene token y quiere entrar a una ruta protegida → login
   if (!token && !isPublicRoute) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Si tiene token y quiere entrar al login → dashboard
   if (token && isPublicRoute) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
@@ -23,8 +31,7 @@ export function proxy(request: NextRequest) {
   return NextResponse.next();
 }
 
-// Le dice a Next.js en qué rutas ejecutar el middleware
-// Excluimos archivos estáticos y rutas internas de Next.js
 export const routing = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|.*\\.png$).*)"],
+  // Matcher más agresivo para evitar interceptar estáticos
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|.*\\..*$).*)"],
 };

@@ -3,30 +3,28 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LucideIcon } from "lucide-react";
-import { useUIStore } from "@/store/ui.store";
 
 interface NavItemProps {
   href: string;
   icon: LucideIcon;
   label: string;
   badge?: number;
+  collapsed?: boolean;
 }
 
-export function NavItem({ href, icon: Icon, label, badge }: NavItemProps) {
+export function NavItem({ href, icon: Icon, label, badge, collapsed = false }: NavItemProps) {
   const pathname = usePathname();
   const isActive = pathname === href;
-  const collapsed = useUIStore((s) => s.sidebarCollapsed);
 
   return (
     <Link
       href={href}
-      title={collapsed ? label : undefined}
-      className={`relative flex items-center gap-3 px-4 py-3 rounded-2xl text-[13px] font-medium transition-all duration-200 overflow-hidden ${
+      className={`relative flex items-center gap-3 px-4 py-3 rounded-2xl text-[13px] font-medium transition-all duration-200 ${
         collapsed ? "justify-center px-2" : ""
       } ${
         isActive
-          ? "bg-[#F3EFFF] dark:bg-[#5542F6]/10 text-brand dark:text-[#7A69FF]"
-          : "text-[#6A7185] hover:bg-slate-50 dark:text-zinc-400 dark:hover:bg-zinc-800/50"
+          ? "bg-bg-subtle text-brand" // Usando variables de globals.css
+          : "text-text-secondary hover:bg-bg-subtle/50"
       }`}
     >
       <Icon size={18} className="shrink-0" />
