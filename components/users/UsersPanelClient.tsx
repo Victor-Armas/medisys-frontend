@@ -70,10 +70,10 @@ export function UsersPanelClient({ initialUsers }: Props) {
       {/* Encabezado */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-text-primary tracking-tight">
+          <h2 className="text-3xl font-heading font-bold text-text-primary tracking-tight">
             Usuarios del sistema
           </h2>
-          <p className="text-sm text-text-secondary mt-1">
+          <p className="text-base font-body text-text-secondary mt-1">
             Gestión de médicos, recepcionistas y administradores.
           </p>
         </div>
