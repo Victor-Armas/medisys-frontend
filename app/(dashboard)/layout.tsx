@@ -8,7 +8,7 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const cookieStore = await cookies();
-  
+
   const userCookie = cookieStore.get("user")?.value;
   let user = null;
   try {
@@ -17,7 +17,8 @@ export default async function DashboardLayout({
     // ignorar parse error
   }
 
-  const sidebarCollapsed = cookieStore.get("sidebarCollapsed")?.value === "true";
+  const sidebarCollapsed =
+    cookieStore.get("sidebarCollapsed")?.value === "true";
 
   return (
     <div className="flex h-screen bg-bg-base overflow-hidden relative">

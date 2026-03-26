@@ -6,6 +6,8 @@ import { Bell, Search, LogOut, ChevronDown } from "lucide-react";
 import { useAuthStore } from "@/store/auth.store";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { AuthUser } from "@/types/auth.types";
+import { ROLE_CONFIG } from "@/utils/getRoleLabel";
+import { Role } from "@/types/users.types";
 
 const pageTitles: Record<string, { title: string; subtitle: string }> = {
   "/dashboard": {
@@ -16,7 +18,10 @@ const pageTitles: Record<string, { title: string; subtitle: string }> = {
   "/appointments": { title: "Citas", subtitle: "Agenda médica" },
   "/records": { title: "Expedientes", subtitle: "Historial clínico" },
   "/prescriptions": { title: "Recetas", subtitle: "Recetas médicas" },
-  "/users": { title: "Usuarios", subtitle: "Gestión de usuarios del sistema" },
+  "/users": {
+    title: "Usuarios",
+    subtitle: "Gestión de médicos, recepcionistas y administradores",
+  },
   "/settings": { title: "Configuración", subtitle: "Ajustes del sistema" },
 };
 
@@ -43,17 +48,18 @@ export function Topbar({ initialUser }: { initialUser: AuthUser | null }) {
 
   // Encuentra el título de la página (soporta rutas hijas como /patients/123)
   const page = Object.entries(pageTitles).find(([route]) =>
-    pathname.startsWith(route),
+    pathname.startsWith(route)
   )?.[1] ?? { title: "MediSys", subtitle: "Panel de control" };
 
   // Corrección CRÍTICA: Se añaden signos '?' para evitar crasheos si user o user.name son null/undefined
-  const initials = user?.name
-    ?.trim()
-    ?.split(/\s+/)
-    ?.map((n) => n[0])
-    ?.slice(0, 2)
-    ?.join("")
-    ?.toUpperCase() ?? "??";
+  const initials =
+    `${user?.firstName ?? ""} ${user?.lastNamePaternal ?? ""}`
+      .trim()
+      .split(/\s+/)
+      .map((n) => n[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase() || "??";
 
   const fecha = new Date().toLocaleDateString("es-MX", {
     weekday: "long",
@@ -72,7 +78,7 @@ export function Topbar({ initialUser }: { initialUser: AuthUser | null }) {
       {/* Título */}
       <div>
         <h1 className="text-sm font-semibold text-text-primary capitalize">
-          {page.title}
+          {`Sección: ${page.title}`}
         </h1>
         <p className="text-[11px] text-text-secondary capitalize">{fecha}</p>
       </div>
@@ -110,10 +116,10 @@ export function Topbar({ initialUser }: { initialUser: AuthUser | null }) {
             </div>
             <div className="hidden md:block min-w-[100px]">
               <p className="text-xs font-medium text-text-primary leading-tight">
-                {user?.name || "Usuario"}
+                {`${user?.firstName} ${user?.lastNamePaternal}` || "Usuario"}
               </p>
               <p className="text-[11px] text-text-secondary leading-tight">
-                {user?.role || "Personal médico"}
+                {ROLE_CONFIG[user?.role as Role].label || "Personal médico"}
               </p>
             </div>
             <ChevronDown

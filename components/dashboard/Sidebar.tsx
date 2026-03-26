@@ -16,13 +16,20 @@ import { NavItem } from "./NavItem";
 import Cookies from "js-cookie";
 import { useState } from "react";
 
-export function Sidebar({ initialCollapsed = false }: { initialCollapsed?: boolean }) {
+export function Sidebar({
+  initialCollapsed = false,
+}: {
+  initialCollapsed?: boolean;
+}) {
   const [isCollapsed, setIsCollapsed] = useState(initialCollapsed);
 
   function toggleSidebar() {
     const newVal = !isCollapsed;
     setIsCollapsed(newVal);
-    Cookies.set("sidebarCollapsed", String(newVal), { path: "/", expires: 365 });
+    Cookies.set("sidebarCollapsed", String(newVal), {
+      path: "/",
+      expires: 365,
+    });
   }
 
   return (
@@ -72,13 +79,50 @@ export function Sidebar({ initialCollapsed = false }: { initialCollapsed?: boole
 
       {/* Nav */}
       <div className="flex-1 overflow-y-auto pt-4 pb-4 px-3 space-y-1">
-        <NavItem href="/dashboard" icon={LayoutDashboard} label="Dashboard" collapsed={isCollapsed} />
-        <NavItem href="/patients" icon={Users} label="Pacientes" badge={142} collapsed={isCollapsed} />
-        <NavItem href="/appointments" icon={Calendar} label="Citas" badge={8} collapsed={isCollapsed} />
-        <NavItem href="/records" icon={ClipboardList} label="Expedientes" collapsed={isCollapsed} />
-        <NavItem href="/prescriptions" icon={FileText} label="Recetas" collapsed={isCollapsed} />
-        <NavItem href="/users" icon={UserCog} label="Usuarios" collapsed={isCollapsed} />
-        <NavItem href="/settings" icon={Settings} label="Configuración" collapsed={isCollapsed} />
+        <NavItem
+          href="/dashboard"
+          icon={LayoutDashboard}
+          label="Dashboard"
+          collapsed={isCollapsed}
+        />
+        <NavItem
+          href="/patients"
+          icon={Users}
+          label="Pacientes"
+          badge={142}
+          collapsed={isCollapsed}
+        />
+        <NavItem
+          href="/appointments"
+          icon={Calendar}
+          label="Citas"
+          badge={8}
+          collapsed={isCollapsed}
+        />
+        <NavItem
+          href="/records"
+          icon={ClipboardList}
+          label="Expedientes"
+          collapsed={isCollapsed}
+        />
+        <NavItem
+          href="/prescriptions"
+          icon={FileText}
+          label="Recetas"
+          collapsed={isCollapsed}
+        />
+        <NavItem
+          href="/users"
+          icon={UserCog}
+          label="Usuarios"
+          collapsed={isCollapsed}
+        />
+        <NavItem
+          href="/settings"
+          icon={Settings}
+          label="Configuración"
+          collapsed={isCollapsed}
+        />
       </div>
     </aside>
   );

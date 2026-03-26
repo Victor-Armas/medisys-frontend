@@ -1,9 +1,9 @@
-export interface AuthUser {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-}
+import { User } from "./users.types";
+
+export type AuthUser = Pick<
+  User,
+  "id" | "firstName" | "lastNamePaternal" | "email" | "role"
+>;
 
 export interface LoginResponse {
   access_token: string;
