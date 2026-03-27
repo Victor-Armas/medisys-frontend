@@ -7,10 +7,10 @@ import type { User } from "@/types/users.types";
 import { UsersTable } from "./UsersTable";
 import { UserFormModal } from "./modals/UserFormModal/UserFormModal";
 import { AssignDoctorModal } from "./modals/AssignDoctorModal/AssignDoctorModal";
-import { Button } from "../ui/Button";
 import { KpiCard } from "./shared/KpiCard";
 import { calculateUserStats } from "@/utils/user-stats";
 import { UsersToolbar } from "./shared/UsersToolbar";
+import { Button } from "../ui/button";
 
 type ModalState = "none" | "create-user-unified" | "assign-doctor";
 type TabFilter =
