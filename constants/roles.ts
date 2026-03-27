@@ -1,31 +1,107 @@
 import { Role } from "@/types/users.types";
+import type { LucideIcon } from "lucide-react";
+import {
+  UserRound,
+  Stethoscope,
+  ShieldCheck,
+  Heart,
+  Crown,
+} from "lucide-react";
 
-export const ROLE_LABELS: Record<Role, string> = {
-  ADMIN_SYSTEM: "Administrador del sistema",
-  MAIN_DOCTOR: "Doctor principal",
-  DOCTOR: "Doctor",
-  RECEPTIONIST: "Recepcionista",
-  PATIENT: "paciente",
+type RoleConfig = {
+  label: string;
+  desc: string;
+  icon: LucideIcon;
+  colors: {
+    from: string;
+    to: string;
+    light: string;
+    text: string;
+  };
+  badge: string;
+  gradient: string;
 };
 
-export const ROLE_BADGE: Record<Role, string> = {
-  ADMIN_SYSTEM:
-    "bg-[#eeedfe] text-[#3c3489] border-[#afa9ec] dark:bg-[#26215c] dark:text-[#cecbf6] dark:border-[#534ab7]",
-  MAIN_DOCTOR:
-    "bg-[#eeedfe] text-[#534ab7] border-[#afa9ec] dark:bg-[#26215c] dark:text-[#afa9ec] dark:border-[#534ab7]",
-  DOCTOR:
-    "bg-[#e1f5ee] text-[#085041] border-[#5dcaa5] dark:bg-[#04342c] dark:text-[#9fe1cb] dark:border-[#0f6e56]",
-  RECEPTIONIST:
-    "bg-[#f1efe8] text-[#5f5e5a] border-[#b4b2a9] dark:bg-[#2c2c2a] dark:text-[#d3d1c7] dark:border-[#5f5e5a]",
-  PATIENT:
-    "bg-[#f1efe8] text-[#5f5e5a] border-[#b4b2a9] dark:bg-[#2c2c2a] dark:text-[#d3d1c7] dark:border-[#5f5e5a]",
-};
+export const getRoleConfig = (role: Role): RoleConfig => {
+  switch (role) {
+    case "ADMIN_SYSTEM":
+      return {
+        label: "Administrador del sistema",
+        desc: "Acceso total a la configuración",
+        icon: ShieldCheck,
+        colors: {
+          from: "#6b46c1",
+          to: "#44337a",
+          light: "rgba(107,70,193,0.08)",
+          text: "#6b46c1",
+        },
+        badge:
+          "text-purple-600 bg-linear-to-br from-purple-500/20 to-purple-500/5 border-purple-500/30 shadow-sm shadow-purple-500/10",
+        gradient: "from-purple-600 to-purple-900",
+      };
 
-// Avatar gradient por rol
-export const ROLE_AVATAR_GRADIENT: Record<Role, string> = {
-  ADMIN_SYSTEM: "from-[#534ab7] to-[#26215c]",
-  MAIN_DOCTOR: "from-[#7c6ab5] to-[#4a3fa0]",
-  DOCTOR: "from-[#1d9e75] to-[#085041]",
-  RECEPTIONIST: "from-[#888780] to-[#5f5e5a]",
-  PATIENT: "from-[#888780] to-[#5f5e5a]",
+    case "MAIN_DOCTOR":
+      return {
+        label: "Doctorprincipal",
+        desc: "Gestión principal de pacientes y médicos",
+        icon: Crown,
+        colors: {
+          from: "#9f7aea",
+          to: "#553c9a",
+          light: "rgba(159,122,234,0.08)",
+          text: "#9f7aea",
+        },
+        badge:
+          "text-purple-400 bg-linear-to-br from-purple-400/20 to-purple-400/5 border-purple-400/30 shadow-sm shadow-purple-400/10",
+        gradient: "from-purple-400 to-purple-700",
+      };
+
+    case "DOCTOR":
+      return {
+        label: "Doctor",
+        desc: "Perfil médico completo y recetas",
+        icon: Stethoscope,
+        colors: {
+          from: "#38a169",
+          to: "#22543d",
+          light: "rgba(56,161,105,0.08)",
+          text: "#38a169",
+        },
+        badge:
+          "text-green-600 bg-linear-to-br from-green-500/20 to-green-500/5 border-green-500/30 shadow-sm shadow-green-500/10",
+        gradient: "from-green-500 to-green-700",
+      };
+
+    case "RECEPTIONIST":
+      return {
+        label: "Recepcionista",
+        desc: "Citas y recepción de pacientes",
+        icon: UserRound,
+        colors: {
+          from: "#3182ce",
+          to: "#2b6cb0",
+          light: "rgba(49,130,206,0.08)",
+          text: "#3182ce",
+        },
+        badge:
+          "text-sky-600 bg-linear-to-br from-sky-500/20 to-sky-500/5 border-sky-500/30 shadow-sm shadow-sky-500/10",
+        gradient: "from-sky-500 to-sky-700",
+      };
+
+    case "PATIENT":
+      return {
+        label: "Paciente",
+        desc: "Acceso a su historial y citas",
+        icon: Heart,
+        colors: {
+          from: "#718096",
+          to: "#4a5568",
+          light: "rgba(113,128,150,0.08)",
+          text: "#718096",
+        },
+        badge:
+          "text-gray-600 bg-linear-to-br from-gray-500/20 to-gray-500/5 border-gray-500/30 shadow-sm shadow-gray-500/10",
+        gradient: "from-gray-400 to-gray-600",
+      };
+  }
 };

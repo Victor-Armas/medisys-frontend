@@ -7,7 +7,7 @@ import { useAuthStore } from "@/store/auth.store";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { AuthUser } from "@/types/auth.types";
 import { Role } from "@/types/users.types";
-import { ROLE_LABELS } from "@/constants/roles";
+import { getRoleConfig } from "@/constants/roles";
 
 const pageTitles: Record<string, { title: string; subtitle: string }> = {
   "/dashboard": {
@@ -119,7 +119,7 @@ export function Topbar({ initialUser }: { initialUser: AuthUser | null }) {
                 {`${user?.firstName} ${user?.lastNamePaternal}` || "Usuario"}
               </p>
               <p className="text-[11px] text-text-secondary leading-tight">
-                {ROLE_LABELS[user?.role as Role] || "Personal médico"}
+                {getRoleConfig(user?.role as Role).label || "Personal médico"}
               </p>
             </div>
             <ChevronDown

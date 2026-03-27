@@ -1,13 +1,6 @@
-// ─────────────────────────────────────────────────────────────
-// Tipos del módulo Doctors
-// Reflejan exactamente el DOCTOR_SELECT del backend.
-// Si el backend cambia un campo, este archivo es el primer lugar
-// donde se actualiza — el compilador marcará todo lo demás.
-// ─────────────────────────────────────────────────────────────
+import { User } from "./users.types";
 
-import { SystemUser } from "./users.types";
-
-// Consultorio resumido — solo lo que se necesita en la lista de doctores
+// ─── Consultorio resumido ─────────────────────────────────────
 export interface DoctorClinicItem {
   id: string;
   isPrimary: boolean;
@@ -22,41 +15,74 @@ export interface DoctorClinicItem {
   };
 }
 
-// Perfil médico completo
+// ─── Perfil médico completo ───────────────────────────────────
+// Refleja exactamente el modelo DoctorProfile de Prisma
 export interface DoctorProfile {
   id: string;
+  // Dirección (NOT NULL en Prisma)
   address: string;
   numHome: string;
   colony: string;
   city: string;
   state: string;
   zipCode: string;
-  specialty?: string | null;
-  professionalLicense: string;
-  university?: string | null;
-  fullTitle?: string | null;
-  signatureUrl?: string | null;
+  // Datos profesionales
+  professionalLicense: string; // NOT NULL en Prisma
+  specialty?: string | null; // opcional
+  university?: string | null; // opcional
+  fullTitle?: string | null; // opcional
+  signatureUrl?: string | null; // sube por Cloudinary
   createdAt: string;
   doctorClinics: DoctorClinicItem[];
 }
 
-// ─── Payloads para los endpoints POST ────────────────────────
-
-// POST /doctors — crear usuario + perfil desde cero
-export interface CreateDoctorPayload
-  extends Omit<SystemUser, "id" | "role" | "isActive" | "createdAt">,
-    Omit<DoctorProfile, "id" | "createdAt" | "doctorClinics"> {
+// ─── Payload POST /api/doctors ────────────────────────────────
+// Crear usuario + perfil médico desde cero en una sola operación
+export interface CreateDoctorPayload {
+  // Datos de cuenta (User)
+  email: string;
   password: string;
+  firstName: string;
+  middleName?: string | null;
+  lastNamePaternal: string;
+  lastNameMaternal: string;
+  phone?: string | null;
+  // Perfil médico obligatorio (DoctorProfile NOT NULL)
+  professionalLicense: string;
+  address: string;
+  numHome: string;
+  colony: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  // Perfil médico opcional
+  specialty?: string | null;
+  university?: string | null;
+  fullTitle?: string | null;
+  // Consultorios opcionales al crear
   clinicIds?: string[];
 }
 
-export function isDoctor(u: Pick<SystemUser, "role">) {
-  return u.role === "DOCTOR" || u.role === "MAIN_DOCTOR";
+// ─── Payload POST /api/doctors/assign ────────────────────────
+// Asignar perfil médico a usuario que ya existe
+export interface AssignDoctorPayload {
+  userId: string;
+  // Perfil médico obligatorio
+  professionalLicense: string;
+  address: string;
+  numHome: string;
+  colony: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  // Opcionales
+  specialty?: string | null;
+  university?: string | null;
+  fullTitle?: string | null;
+  clinicIds?: string[];
 }
-//POST /doctors/assign — Asignar perfil a usuario existente
 
-export interface AssignDoctorPayload
-  extends Omit<DoctorProfile, "id" | "createdAt" | "doctorClinics"> {
-  userId: string; // El usuario que ya existe
-  clinicIds?: string[]; // Para asignarle sus clínicas de una vez
+// ─── Type guard ───────────────────────────────────────────────
+export function isDoctor(u: Pick<User, "role">) {
+  return u.role === "DOCTOR" || u.role === "MAIN_DOCTOR";
 }

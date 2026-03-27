@@ -1,12 +1,14 @@
 import { DoctorProfile } from "./doctors.types";
 
-export type Role =
+// ─── Roles ────────────────────────────────────────────────────
+export type StaffRole =
   | "ADMIN_SYSTEM"
   | "MAIN_DOCTOR"
   | "DOCTOR"
-  | "RECEPTIONIST"
-  | "PATIENT";
+  | "RECEPTIONIST";
+export type Role = StaffRole | "PATIENT";
 
+// ─── Entidad principal ────────────────────────────────────────
 export interface User {
   id: string;
   email: string;
@@ -19,10 +21,24 @@ export interface User {
   photoUrl?: string | null;
   isActive: boolean;
   createdAt: string;
-  // Solo presente en DOCTOR / MAIN_DOCTOR
   doctorProfile?: DoctorProfile | null;
 }
 
+// ─── Payload POST /api/users ──────────────────────────────────
+// Solo los campos que el endpoint CreateUserDTO espera.
+// No hereda User completo para evitar incompatibilidades de tipo.
+export interface CreateUserPayload {
+  email: string;
+  password: string;
+  firstName: string;
+  middleName?: string | null;
+  lastNamePaternal: string;
+  lastNameMaternal: string;
+  role: StaffRole;
+  phone?: string | null;
+}
+
+// ─── Helpers ──────────────────────────────────────────────────
 export function getFullName(
   u: Pick<
     User,
@@ -38,10 +54,5 @@ export function getInitials(u: Pick<User, "firstName" | "lastNamePaternal">) {
   return `${u.firstName[0] ?? ""}${u.lastNamePaternal[0] ?? ""}`.toUpperCase();
 }
 
-// ─── Payloads ────────────────────────────────────────────────
-
-export interface CreateUserPayload
-  extends Omit<User, "id" | "isActive" | "createdAt" | "doctorProfile"> {
-  password: string; // 👈 Obligatorio para crear la cuenta
-  role: Role; // 👈 Opcional si el backend asigna uno por defecto
-}
+// Alias para compatibilidad — usar User directamente en código nuevo
+export type SystemUser = User;

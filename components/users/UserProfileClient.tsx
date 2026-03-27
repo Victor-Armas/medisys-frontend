@@ -16,13 +16,16 @@ import {
   GraduationCap,
   FileSignature,
   Stethoscope,
+  ShieldCheck,
+  UserRound,
+  Clock,
+  CheckCircle2,
+  XCircle,
+  Award,
+  BookOpen,
 } from "lucide-react";
 import { getFullName, getInitials, type User } from "@/types/users.types";
-import {
-  ROLE_AVATAR_GRADIENT,
-  ROLE_BADGE,
-  ROLE_LABELS,
-} from "@/constants/roles";
+import { getRoleConfig } from "@/constants/roles";
 import { isDoctor } from "@/types/doctors.types";
 import Image from "next/image";
 
@@ -30,10 +33,18 @@ interface Props {
   user: User;
 }
 
+const ROLE_ICON: Record<string, React.ReactNode> = {
+  ADMIN_SYSTEM: <ShieldCheck size={14} />,
+  MAIN_DOCTOR: <Stethoscope size={14} />,
+  DOCTOR: <Stethoscope size={14} />,
+  RECEPTIONIST: <UserRound size={14} />,
+  PATIENT: <UserRound size={14} />,
+};
+
 export function UserProfileClient({ user }: Props) {
   const fullName = getFullName(user);
   const initials = getInitials(user);
-  const gradient = ROLE_AVATAR_GRADIENT[user.role];
+  const config = getRoleConfig(user.role);
   const doctor = isDoctor(user);
   const profile = user.doctorProfile;
   const activeClinics = profile?.doctorClinics?.filter((c) => c.isActive) ?? [];
@@ -46,7 +57,7 @@ export function UserProfileClient({ user }: Props) {
 
   return (
     <div className="max-w-[1400px] mx-auto pb-10 space-y-6">
-      {/* Breadcrumb + acciones */}
+      {/* ─── Breadcrumb + acciones ─────────────────── */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-3">
           <Link
@@ -60,8 +71,8 @@ export function UserProfileClient({ user }: Props) {
             <h2 className="text-2xl font-bold text-text-primary tracking-tight">
               Perfil de usuario
             </h2>
-            <p className="text-sm text-text-secondary mt-0.5">
-              ID: <span className="font-mono text-xs">{user.id}</span>
+            <p className="text-sm text-text-secondary mt-0.5 flex items-center gap-1.5">
+              <span className=" text-md">{config.desc}</span>
             </p>
           </div>
         </div>
@@ -76,243 +87,327 @@ export function UserProfileClient({ user }: Props) {
         </div>
       </div>
 
-      {/* Hero card */}
+      {/* ─── Hero Card ─────────────────────────────── */}
       <div className="bg-bg-surface border border-border-default rounded-2xl overflow-hidden shadow-sm">
-        {/* Banda superior de color */}
-        <div className="h-20 bg-linear-to-r from-brand-gradient-from to-brand-gradient-to relative">
-          <div className="absolute top-3 right-4 flex gap-2">
+        {/* Banda con gradiente por rol */}
+        <div
+          className="h-20 relative overflow-hidden"
+          style={{
+            background: `linear-gradient(135deg, ${config.colors.from} 0%, ${config.colors.to} 100%)`,
+          }}
+        >
+          {/* Decoración abstracta */}
+          <div
+            className="absolute -right-10 -top-10 w-48 h-48 rounded-full opacity-20"
+            style={{ background: "rgba(255,255,255,0.3)" }}
+          />
+          <div
+            className="absolute right-20 bottom-0 w-24 h-24 rounded-full opacity-10"
+            style={{ background: "rgba(255,255,255,0.5)" }}
+          />
+
+          {/* Badges top-right */}
+          <div className="absolute top-4 right-4 flex gap-2">
             <span
-              className={`inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold border ${
-                ROLE_BADGE[user.role]
-              }`}
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold border bg-white ${config.badge}`}
             >
-              {ROLE_LABELS[user.role]}
+              {ROLE_ICON[user.role]}
+              {config.label}
             </span>
             <span
-              className={`inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold border
-                              ${
-                                user.isActive
-                                  ? "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-900/40 dark:text-emerald-300 dark:border-emerald-700"
-                                  : "bg-zinc-100 text-zinc-600 border-zinc-300 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-600"
-                              }`}
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold border
+                ${
+                  user.isActive
+                    ? "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-900/40 dark:text-emerald-300 dark:border-emerald-700"
+                    : "bg-zinc-100 text-zinc-600 border-zinc-300 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-600"
+                }`}
             >
-              {user.isActive ? "Activo" : "Inactivo"}
+              {user.isActive ? (
+                <>
+                  <CheckCircle2 size={11} /> Activo
+                </>
+              ) : (
+                <>
+                  <XCircle size={11} /> Inactivo
+                </>
+              )}
             </span>
           </div>
         </div>
 
-        <div className="px-6 pb-6 relative">
-          {/* Avatar */}
-          <div
-            className={`w-20 h-20 rounded-full bg-linear-to-br ${gradient}
-                          flex items-center justify-center text-white text-2xl font-bold
-                          border-4 border-bg-surface shadow-sm absolute -top-10`}
-          >
-            {user.photoUrl ? (
-              <Image
-                src={user.photoUrl}
-                alt={fullName}
-                className="w-20 h-20 rounded-full object-cover"
-              />
-            ) : (
-              initials
-            )}
+        {/* Contenido del hero */}
+        <div className="px-6 pb-6 relative flex flex-col sm:flex-row items-center sm:items-end gap-5">
+          {/* Avatar flotante */}
+          <div className="relative sm:absolute sm:left-6 shrink-0 z-10">
+            <div
+              className={`w-24 h-24 rounded-2xl bg-linear-to-br ${config.gradient}
+                flex items-center justify-center text-white text-2xl font-bold
+                border-4 border-bg-surface shadow-lg`}
+            >
+              {user.photoUrl ? (
+                <Image
+                  src={user.photoUrl}
+                  alt={fullName}
+                  width={96}
+                  height={96}
+                  className="w-24 h-24 rounded-2xl object-cover"
+                />
+              ) : (
+                initials
+              )}
+            </div>
           </div>
 
-          <div className="mt-12">
-            <h3 className="text-xl font-bold text-text-primary">{fullName}</h3>
-            {doctor && profile?.fullTitle && (
-              <p className="text-sm text-brand font-medium mt-0.5">
-                {profile.fullTitle}
-              </p>
-            )}
-            {doctor && profile?.specialty && (
-              <p className="text-sm text-text-secondary mt-0.5">
-                {profile.specialty}
-              </p>
-            )}
+          <div className="w-full mt-6 sm:pl-32 text-center sm:text-left">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+              <div>
+                <h3 className="text-2xl font-bold text-text-primary leading-tight">
+                  {fullName}
+                </h3>
+                {doctor && profile?.fullTitle && (
+                  <p
+                    className="text-sm font-semibold mt-0.5"
+                    style={{ color: config.label }}
+                  >
+                    {profile.fullTitle}
+                  </p>
+                )}
+                {doctor && profile?.specialty && (
+                  <p className="text-sm text-text-secondary mt-0.5 flex items-center gap-1.5">
+                    <Stethoscope size={13} />
+                    {profile.specialty}
+                  </p>
+                )}
+              </div>
 
-            <div className="flex flex-wrap gap-4 mt-4 text-sm text-text-secondary">
-              <span className="flex items-center gap-1.5">
-                <Mail size={13} />
-                {user.email}
-              </span>
+              {/* Stats rápidas */}
+              {doctor && (
+                <div className="flex gap-3">
+                  <StatPill
+                    icon={<Building2 size={12} />}
+                    label={`${activeClinics.length} ${
+                      activeClinics.length === 1
+                        ? "Consultorio"
+                        : "Consultorios"
+                    }`}
+                    color={config.label}
+                    bg={config.badge}
+                  />
+                  {profile?.professionalLicense && (
+                    <StatPill
+                      icon={<Award size={12} />}
+                      label={`Ced. ${profile.professionalLicense}`}
+                      color={config.label}
+                      bg={config.badge}
+                    />
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Meta-info */}
+            <div className="flex flex-wrap gap-x-5 gap-y-2 mt-4 pt-4 border-t border-border-default">
+              <MetaItem icon={<Mail size={13} />} value={user.email} />
               {user.phone && (
-                <span className="flex items-center gap-1.5">
-                  <Phone size={13} />
-                  {user.phone}
-                </span>
+                <MetaItem icon={<Phone size={13} />} value={user.phone} />
               )}
-              <span className="flex items-center gap-1.5">
-                <Calendar size={13} />
-                Desde {createdAt}
-              </span>
-              {activeClinics.length > 0 && (
-                <span className="flex items-center gap-1.5">
-                  <Building2 size={13} />
-                  {activeClinics.length}{" "}
-                  {activeClinics.length === 1 ? "consultorio" : "consultorios"}
-                </span>
-              )}
+              <MetaItem
+                icon={<Clock size={13} />}
+                value={`Desde ${createdAt}`}
+              />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Cuerpo */}
+      {/* ─── Cuerpo Principal ─────────────────────── */}
       <div
         className={`grid gap-6 ${
           doctor ? "grid-cols-1 xl:grid-cols-12" : "grid-cols-1 max-w-2xl"
         }`}
       >
-        {/* Columna izquierda */}
+        {/* ── Columna Izquierda ── */}
         <div className={`space-y-4 ${doctor ? "xl:col-span-4" : ""}`}>
           {/* Datos de cuenta */}
-          <InfoCard title="Datos de cuenta">
-            <FieldRow label="Nombre(s)" value={user.firstName} />
-            <FieldRow label="Segundo nombre" value={user.middleName} />
-            <FieldRow label="Apellido paterno" value={user.lastNamePaternal} />
-            <FieldRow label="Apellido materno" value={user.lastNameMaternal} />
-            <FieldRow label="Email" value={user.email} />
-            <FieldRow label="Teléfono" value={user.phone} />
-          </InfoCard>
+          <SectionCard title="Datos de cuenta" accentColor={config.label}>
+            <FieldList>
+              <FieldRow label="Nombre(s)" value={user.firstName} />
+              <FieldRow label="Segundo nombre" value={user.middleName} />
+              <FieldRow
+                label="Apellido paterno"
+                value={user.lastNamePaternal}
+              />
+              <FieldRow
+                label="Apellido materno"
+                value={user.lastNameMaternal}
+              />
+              <FieldRow
+                label="Correo electrónico"
+                value={user.email}
+                icon={<Mail size={12} />}
+              />
+              <FieldRow
+                label="Teléfono"
+                value={user.phone}
+                icon={user.phone ? <Phone size={12} /> : undefined}
+              />
+            </FieldList>
+          </SectionCard>
 
           {/* Perfil profesional — solo doctores */}
           {doctor && profile && (
-            <InfoCard
+            <SectionCard
               title="Perfil profesional"
               icon={<Stethoscope size={14} />}
+              accentColor="#1d9e75"
             >
-              <FieldRow
-                label="Cédula profesional"
-                value={profile.professionalLicense}
-                mono
-              />
-              <FieldRow label="Especialidad" value={profile.specialty} />
-              <FieldRow
-                label="Universidad"
-                value={profile.university}
-                icon={<GraduationCap size={12} />}
-              />
-              <FieldRow label="Título completo" value={profile.fullTitle} />
-              <FieldRow
-                label="Domicilio"
-                value={profile.address}
-                icon={<MapPin size={12} />}
-              />
-              <FieldRow label="Ciudad" value={profile.city} />
-              <FieldRow label="Estado" value={profile.state} />
-              <FieldRow label="C.P." value={profile.zipCode} />
-            </InfoCard>
+              <FieldList>
+                <FieldRow
+                  label="Cédula profesional"
+                  value={profile.professionalLicense}
+                  mono
+                  icon={<Award size={12} />}
+                />
+                <FieldRow
+                  label="Especialidad"
+                  value={profile.specialty}
+                  icon={<Stethoscope size={12} />}
+                />
+                <FieldRow
+                  label="Universidad"
+                  value={profile.university}
+                  icon={<GraduationCap size={12} />}
+                />
+                <FieldRow
+                  label="Título completo"
+                  value={profile.fullTitle}
+                  icon={<BookOpen size={12} />}
+                />
+              </FieldList>
+
+              {/* Dirección en bloque separado */}
+              <div className="mx-4 mb-4 p-3 rounded-xl bg-bg-base border border-border-default/60">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-text-secondary mb-2 flex items-center gap-1.5">
+                  <MapPin size={10} />
+                  Dirección de consultorio
+                </p>
+                <p className="text-sm text-text-primary leading-relaxed">
+                  {[profile.address, profile.numHome]
+                    .filter(Boolean)
+                    .join(" #")}
+                  {profile.colony && `, ${profile.colony}`}
+                  {profile.city && `, ${profile.city}`}
+                  {profile.state && `, ${profile.state}`}
+                  {profile.zipCode && ` C.P. ${profile.zipCode}`}
+                </p>
+              </div>
+            </SectionCard>
           )}
 
           {/* Firma digital */}
           {doctor && profile && (
-            <InfoCard title="Firma digital" icon={<FileSignature size={14} />}>
+            <SectionCard
+              title="Firma digital"
+              icon={<FileSignature size={14} />}
+              accentColor="#7c6ab5"
+            >
               {profile.signatureUrl ? (
                 <div className="p-4">
-                  <div className="border border-dashed border-border-strong rounded-xl p-4 flex items-center justify-center bg-bg-base">
+                  <div
+                    className="border border-dashed border-border-strong rounded-xl p-4
+                                flex items-center justify-center bg-bg-base min-h-[72px]"
+                  >
                     <Image
                       src={profile.signatureUrl}
                       alt="Firma digital"
+                      width={200}
+                      height={72}
                       className="max-h-16 object-contain"
                     />
                   </div>
                   <p className="text-xs text-text-secondary mt-2 text-center">
-                    Firma registrada — se usa en recetas y documentos
+                    Se estampa en recetas y documentos PDF
                   </p>
                 </div>
               ) : (
-                <div className="p-4">
+                <div className="p-4 space-y-3">
                   <div
                     className="border border-dashed border-border-default rounded-xl h-16
-                                  flex items-center justify-center bg-bg-base"
+                                flex flex-col items-center justify-center bg-bg-base gap-1"
                   >
+                    <FileSignature size={18} className="text-text-disabled" />
                     <p className="text-xs text-text-disabled">
                       Sin firma registrada
                     </p>
                   </div>
                   <button
-                    className="mt-3 w-full text-xs font-medium text-brand hover:text-brand-hover
-                                     py-2 border border-border-default rounded-xl transition-colors"
+                    className="w-full text-xs font-semibold py-2 border border-dashed border-border-strong
+                               rounded-xl transition-colors hover:border-brand hover:text-brand text-text-secondary"
                   >
-                    Subir firma digital
+                    + Subir firma digital
                   </button>
                 </div>
               )}
-            </InfoCard>
+            </SectionCard>
           )}
         </div>
 
-        {/* Columna derecha — solo doctores */}
+        {/* ── Columna Derecha — solo doctores ── */}
         {doctor && (
           <div className="xl:col-span-8 space-y-4">
             {/* Consultorios asignados */}
-            <InfoCard
+            <SectionCard
               title="Consultorios asignados"
               icon={<Building2 size={14} />}
+              accentColor="#534ab7"
               action={
-                <button className="text-xs font-medium text-brand hover:text-brand-hover transition-colors">
+                <button
+                  className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-brand/20
+                             text-brand bg-brand/5 hover:bg-brand/10 transition-colors"
+                >
                   + Asignar
                 </button>
               }
             >
               {activeClinics.length === 0 ? (
-                <div className="px-5 py-8 text-center">
-                  <Building2
-                    size={28}
-                    className="mx-auto text-text-disabled mb-2"
-                  />
-                  <p className="text-sm text-text-secondary">
-                    Sin consultorios asignados
-                  </p>
+                <div className="px-5 py-10 flex flex-col items-center gap-3 text-center">
+                  <div className="w-12 h-12 rounded-2xl bg-bg-subtle flex items-center justify-center">
+                    <Building2 size={20} className="text-text-disabled" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-text-secondary">
+                      Sin consultorios asignados
+                    </p>
+                    <p className="text-xs text-text-disabled mt-1">
+                      Asigna un consultorio para activar la gestión de citas
+                    </p>
+                  </div>
                 </div>
               ) : (
-                <div className="p-4 space-y-3">
+                <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {activeClinics.map((dc) => (
-                    <div
-                      key={dc.id}
-                      className="flex items-center justify-between p-3.5 rounded-xl border border-border-default bg-bg-base/50 hover:border-brand/30 transition-colors"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-bg-subtle flex items-center justify-center">
-                          <Building2 size={16} className="text-brand" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-semibold text-text-primary">
-                            {dc.clinic.name}
-                          </p>
-                          <p className="text-xs text-text-secondary mt-0.5">
-                            {dc.clinic.city} · Asignado{" "}
-                            {new Date(dc.assignedAt).toLocaleDateString(
-                              "es-MX"
-                            )}
-                          </p>
-                        </div>
-                      </div>
-                      {dc.isPrimary && (
-                        <span
-                          className="inline-flex items-center gap-1 text-[11px] font-semibold
-                                         bg-bg-subtle text-brand border border-border-strong px-2 py-1 rounded-md"
-                        >
-                          <Star size={10} className="fill-current" />
-                          Principal
-                        </span>
-                      )}
-                    </div>
+                    <ClinicCard key={dc.id} dc={dc} />
                   ))}
                 </div>
               )}
-            </InfoCard>
+            </SectionCard>
 
             {/* Actividad reciente */}
-            <InfoCard title="Actividad reciente">
-              <div className="px-5 py-8 text-center">
-                <p className="text-sm text-text-secondary">
-                  El historial de actividad estará disponible en la Fase 4.
-                </p>
+            <SectionCard title="Actividad reciente" accentColor="#888780">
+              <div className="px-5 py-10 flex flex-col items-center gap-3 text-center">
+                <div className="w-12 h-12 rounded-2xl bg-bg-subtle flex items-center justify-center">
+                  <Clock size={20} className="text-text-disabled" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-text-secondary">
+                    Historial de actividad
+                  </p>
+                  <p className="text-xs text-text-disabled mt-1">
+                    Disponible en la Fase 4 del desarrollo
+                  </p>
+                </div>
               </div>
-            </InfoCard>
+            </SectionCard>
           </div>
         )}
       </div>
@@ -322,22 +417,34 @@ export function UserProfileClient({ user }: Props) {
 
 // ─── Sub-componentes ──────────────────────────────────────────
 
-function InfoCard({
+function SectionCard({
   title,
   children,
   icon,
   action,
+  accentColor,
 }: {
   title: string;
   children: React.ReactNode;
   icon?: React.ReactNode;
   action?: React.ReactNode;
+  accentColor?: string;
 }) {
   return (
     <div className="bg-bg-surface border border-border-default rounded-2xl overflow-hidden shadow-sm">
-      <div className="flex items-center justify-between px-5 py-4 border-b border-border-default">
-        <div className="flex items-center gap-2">
-          {icon && <span className="text-text-secondary">{icon}</span>}
+      {/* Header con acento de color izquierdo */}
+      <div className="flex items-center justify-between px-5 py-3.5 border-b border-border-default relative overflow-hidden">
+        {/* Línea de acento izquierda */}
+        <div
+          className="absolute left-0 top-0 bottom-0 w-1 rounded-r-full"
+          style={{ background: accentColor ?? "var(--color-brand)" }}
+        />
+        <div className="flex items-center gap-2 pl-2">
+          {icon && (
+            <span style={{ color: accentColor ?? "var(--color-brand)" }}>
+              {icon}
+            </span>
+          )}
           <h4 className="text-sm font-semibold text-text-primary">{title}</h4>
         </div>
         {action}
@@ -345,6 +452,10 @@ function InfoCard({
       {children}
     </div>
   );
+}
+
+function FieldList({ children }: { children: React.ReactNode }) {
+  return <div className="divide-y divide-border-default/50">{children}</div>;
 }
 
 function FieldRow({
@@ -359,17 +470,140 @@ function FieldRow({
   icon?: React.ReactNode;
 }) {
   return (
-    <div className="flex items-start justify-between px-5 py-3 border-b border-border-default last:border-b-0">
+    <div className="flex items-start justify-between px-5 py-3 group hover:bg-bg-base/30 transition-colors">
       <span className="text-xs font-medium text-text-secondary w-36 shrink-0 pt-0.5">
         {label}
       </span>
       <span
-        className={`text-right text-sm text-text-primary flex items-center gap-1.5
-                        ${mono ? "font-mono text-xs" : ""}`}
+        className={`text-right text-sm text-text-primary flex items-center gap-1.5 min-w-0
+                    ${mono ? "font-mono text-xs tracking-wider" : ""}`}
       >
-        {icon}
-        {value ?? <span className="text-text-disabled">—</span>}
+        {icon && <span className="text-text-disabled shrink-0">{icon}</span>}
+        {value ? (
+          <span className="truncate">{value}</span>
+        ) : (
+          <span className="text-text-disabled">—</span>
+        )}
       </span>
+    </div>
+  );
+}
+
+function MetaItem({ icon, value }: { icon: React.ReactNode; value: string }) {
+  return (
+    <span className="flex items-center gap-1.5 text-sm text-text-secondary">
+      <span className="text-text-disabled">{icon}</span>
+      {value}
+    </span>
+  );
+}
+
+function StatPill({
+  icon,
+  label,
+  color,
+  bg,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  color: string;
+  bg: string;
+}) {
+  return (
+    <span
+      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border"
+      style={{
+        color,
+        backgroundColor: bg,
+        borderColor: `${color}30`,
+      }}
+    >
+      {icon}
+      {label}
+    </span>
+  );
+}
+
+function ClinicCard({
+  dc,
+}: {
+  dc: {
+    id: string;
+    isPrimary: boolean;
+    assignedAt: string;
+    clinic: {
+      id: string;
+      name: string;
+      slug: string;
+      city: string | null;
+      isActive: boolean;
+    };
+  };
+}) {
+  return (
+    <div
+      className={`relative flex flex-col gap-3 p-4 rounded-xl border transition-all
+                  hover:shadow-sm group cursor-pointer
+                  ${
+                    dc.isPrimary
+                      ? "border-brand/30 bg-brand/5"
+                      : "border-border-default bg-bg-base/50 hover:border-border-strong"
+                  }`}
+    >
+      {/* Cabecera */}
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div
+            className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0
+                        ${
+                          dc.isPrimary
+                            ? "bg-brand/10 text-brand"
+                            : "bg-bg-subtle text-text-secondary"
+                        }`}
+          >
+            <Building2 size={16} strokeWidth={1.8} />
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-text-primary truncate">
+              {dc.clinic.name}
+            </p>
+            {dc.clinic.city && (
+              <p className="text-xs text-text-secondary flex items-center gap-1 mt-0.5">
+                <MapPin size={10} />
+                {dc.clinic.city}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {dc.isPrimary && (
+          <span
+            className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide
+                       bg-brand/10 text-brand border border-brand/20 px-2 py-0.5 rounded-md shrink-0"
+          >
+            <Star size={9} className="fill-current" />
+            Principal
+          </span>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="flex items-center justify-between pt-2 border-t border-border-default/50">
+        <span className="text-[11px] text-text-disabled flex items-center gap-1">
+          <Calendar size={10} />
+          Asignado{" "}
+          {new Date(dc.assignedAt).toLocaleDateString("es-MX", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          })}
+        </span>
+        <span
+          className={`w-1.5 h-1.5 rounded-full ${
+            dc.clinic.isActive ? "bg-emerald-500" : "bg-zinc-400"
+          }`}
+        />
+      </div>
     </div>
   );
 }

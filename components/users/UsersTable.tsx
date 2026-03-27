@@ -8,11 +8,7 @@ import { cn } from "@/lib/utils";
 import type { User } from "@/types/users.types";
 import { getFullName, getInitials } from "@/types/users.types";
 import { isDoctor } from "@/types/doctors.types";
-import {
-  ROLE_LABELS,
-  ROLE_BADGE,
-  ROLE_AVATAR_GRADIENT,
-} from "@/constants/roles";
+import { getRoleConfig } from "@/constants/roles";
 
 interface Props {
   users: User[];
@@ -25,7 +21,7 @@ const TABLE_HEADERS = [
   "Especialidad",
   "Consultorio",
   "Estado",
-  "",
+  "Acciones",
 ];
 
 export function UsersTable({ users, isLoading }: Props) {
@@ -103,7 +99,8 @@ function UserRow({
 }) {
   const fullName = getFullName(user);
   const initials = getInitials(user);
-  const gradient = ROLE_AVATAR_GRADIENT[user.role];
+  const config = getRoleConfig(user.role);
+
   const clinics =
     user.doctorProfile?.doctorClinics?.filter((c) => c.isActive) ?? [];
   const primary = clinics.find((c) => c.isPrimary) ?? clinics[0];
@@ -122,8 +119,8 @@ function UserRow({
           <div
             className={cn(
               "w-9 h-9 rounded-full bg-linear-to-br shrink-0 flex items-center justify-center text-white text-xs font-bold",
-              !user.isActive && "opacity-40",
-              gradient
+              config.gradient,
+              !user.isActive && "opacity-40"
             )}
           >
             {user.photoUrl ? (
@@ -154,10 +151,10 @@ function UserRow({
         <span
           className={cn(
             "inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold border tracking-wide",
-            ROLE_BADGE[user.role]
+            config.badge
           )}
         >
-          {ROLE_LABELS[user.role]}
+          {config.label}
         </span>
       </td>
 
