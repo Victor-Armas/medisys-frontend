@@ -2,10 +2,14 @@
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
-import type { SystemUser } from "@/types/users.types";
+import type { User } from "@/types/users.types";
 import { UserProfileClient } from "@/components/users/UserProfileClient";
 
-async function fetchUserServer(id: string): Promise<SystemUser | null> {
+type Props = {
+  params: Promise<{ id: string }>;
+};
+
+async function fetchUserServer(id: string): Promise<User | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   if (!token) return null;
@@ -34,12 +38,9 @@ async function fetchUserServer(id: string): Promise<SystemUser | null> {
   return null;
 }
 
-export default async function UserProfilePage({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const user = await fetchUserServer(params.id);
+export default async function UserProfilePage({ params }: Props) {
+  const { id } = await params;
+  const user = await fetchUserServer(id);
   if (!user) notFound();
   return <UserProfileClient user={user} />;
 }

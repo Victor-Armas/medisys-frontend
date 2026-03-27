@@ -17,7 +17,7 @@ import {
   FileSignature,
   Stethoscope,
 } from "lucide-react";
-import { getFullName, getInitials, type SystemUser } from "@/types/users.types";
+import { getFullName, getInitials, type User } from "@/types/users.types";
 import {
   ROLE_AVATAR_GRADIENT,
   ROLE_BADGE,
@@ -27,7 +27,7 @@ import { isDoctor } from "@/types/doctors.types";
 import Image from "next/image";
 
 interface Props {
-  user: SystemUser;
+  user: User;
 }
 
 export function UserProfileClient({ user }: Props) {

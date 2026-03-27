@@ -10,14 +10,14 @@ import type {
   AssignDoctorPayload,
   CreateDoctorPayload,
 } from "@/types/doctors.types";
-import type { CreateUserPayload, SystemUser } from "@/types/users.types";
+import type { CreateUserPayload, User } from "@/types/users.types";
 
 export const userKeys = {
   all: ["users"] as const,
   detail: (id: string) => ["users", id] as const,
 };
 
-export function useUsers(options?: { initialData?: SystemUser[] }) {
+export function useUsers(options?: { initialData?: User[] }) {
   return useQuery({
     queryKey: userKeys.all,
     queryFn: getAllUsers,

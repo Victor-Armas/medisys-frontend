@@ -6,8 +6,8 @@ import { Bell, Search, LogOut, ChevronDown } from "lucide-react";
 import { useAuthStore } from "@/store/auth.store";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { AuthUser } from "@/types/auth.types";
-import { ROLE_CONFIG } from "@/utils/getRoleLabel";
 import { Role } from "@/types/users.types";
+import { ROLE_LABELS } from "@/constants/roles";
 
 const pageTitles: Record<string, { title: string; subtitle: string }> = {
   "/dashboard": {
@@ -119,7 +119,7 @@ export function Topbar({ initialUser }: { initialUser: AuthUser | null }) {
                 {`${user?.firstName} ${user?.lastNamePaternal}` || "Usuario"}
               </p>
               <p className="text-[11px] text-text-secondary leading-tight">
-                {ROLE_CONFIG[user?.role as Role].label || "Personal médico"}
+                {ROLE_LABELS[user?.role as Role] || "Personal médico"}
               </p>
             </div>
             <ChevronDown

@@ -1,10 +1,10 @@
 // app/(dashboard)/users/page.tsx
 import { cookies } from "next/headers";
 
-import type { SystemUser } from "@/types/users.types";
+import type { User } from "@/types/users.types";
 import { UsersPanelClient } from "@/components/users/UsersPanelClient";
 
-async function fetchAllUsersServer(): Promise<SystemUser[]> {
+async function fetchAllUsersServer(): Promise<User[]> {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   if (!token) return [];
@@ -17,9 +17,9 @@ async function fetchAllUsersServer(): Promise<SystemUser[]> {
       fetch(`${base}/users`, { headers, cache: "no-store" }),
       fetch(`${base}/doctors`, { headers, cache: "no-store" }),
     ]);
-    const users: SystemUser[] = usersRes.ok ? await usersRes.json() : [];
-    const doctors: SystemUser[] = doctorsRes.ok ? await doctorsRes.json() : [];
-    const map = new Map<string, SystemUser>();
+    const users: User[] = usersRes.ok ? await usersRes.json() : [];
+    const doctors: User[] = doctorsRes.ok ? await doctorsRes.json() : [];
+    const map = new Map<string, User>();
     [...users, ...doctors].forEach((u) => map.set(u.id, u));
     return Array.from(map.values());
   } catch {

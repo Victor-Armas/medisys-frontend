@@ -37,5 +37,11 @@ export const assignDoctorSchema = doctorFormSchema
     userId: z.string().uuid("Debe ser un UUID válido"),
   });
 
+export const DOCTOR_STEP_FIELDS: (keyof DoctorFormData)[][] = [
+  ["email", "password", "firstName", "lastNamePaternal", "lastNameMaternal"],
+  ["professionalLicense"],
+  ["address", "numHome", "colony", "city", "state", "zipCode"],
+];
+
 export type DoctorFormData = z.infer<typeof doctorFormSchema>;
 export type AssignDoctorFormData = z.infer<typeof assignDoctorSchema>;

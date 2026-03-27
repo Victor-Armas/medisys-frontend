@@ -7,7 +7,7 @@ export type Role =
   | "RECEPTIONIST"
   | "PATIENT";
 
-export interface SystemUser {
+export interface User {
   id: string;
   email: string;
   firstName: string;
@@ -25,7 +25,7 @@ export interface SystemUser {
 
 export function getFullName(
   u: Pick<
-    SystemUser,
+    User,
     "firstName" | "middleName" | "lastNamePaternal" | "lastNameMaternal"
   >
 ) {
@@ -34,16 +34,14 @@ export function getFullName(
     .join(" ");
 }
 
-export function getInitials(
-  u: Pick<SystemUser, "firstName" | "lastNamePaternal">
-) {
+export function getInitials(u: Pick<User, "firstName" | "lastNamePaternal">) {
   return `${u.firstName[0] ?? ""}${u.lastNamePaternal[0] ?? ""}`.toUpperCase();
 }
 
 // ─── Payloads ────────────────────────────────────────────────
 
 export interface CreateUserPayload
-  extends Omit<SystemUser, "id" | "isActive" | "createdAt" | "doctorProfile"> {
+  extends Omit<User, "id" | "isActive" | "createdAt" | "doctorProfile"> {
   password: string; // 👈 Obligatorio para crear la cuenta
   role: Role; // 👈 Opcional si el backend asigna uno por defecto
 }

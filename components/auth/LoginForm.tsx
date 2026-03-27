@@ -5,11 +5,11 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
 import { authService } from "@/services/auth.service";
 import { useAuthStore } from "@/store/auth.store";
 import { loginSchema, LoginFormData } from "@/validations/auth.validations";
+import { InputLogin } from "../ui/InputLogin";
+import { ButtonLogin } from "../ui/ButtonLogin";
 
 export function LoginForm() {
   const router = useRouter();
@@ -53,7 +53,7 @@ export function LoginForm() {
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-        <Input
+        <InputLogin
           label="Email"
           type="email"
           placeholder="dr.smith@clinica.mx"
@@ -74,7 +74,7 @@ export function LoginForm() {
               ¿Olvidaste tu contraseña?
             </button>
           </div>
-          <Input
+          <InputLogin
             type={showPassword ? "text" : "password"}
             placeholder="••••••••"
             icon={Lock}
@@ -94,14 +94,14 @@ export function LoginForm() {
 
         {serverError && <p className="text-sm text-red-500">{serverError}</p>}
 
-        <Button
+        <ButtonLogin
           type="submit"
           fullWidth
           loading={isSubmitting}
           icon={ArrowRight}
         >
           Iniciar sesión
-        </Button>
+        </ButtonLogin>
       </form>
     </div>
   );
