@@ -4,7 +4,7 @@ import { Search, SlidersHorizontal } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
+import { Input } from "../../ui/input";
 
 type TabFilter =
   | "all"
