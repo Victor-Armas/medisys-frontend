@@ -7,7 +7,7 @@ import type {
   AssignDoctorPayload,
   CreateDoctorPayload,
 } from "@/features/users/types/doctors.types";
-import type { CreateUserPayload, User } from "@/types/users.types";
+import { CreateUserPayload, User } from "../types";
 
 // ─── Staff general ────────────────────────────────────────────
 

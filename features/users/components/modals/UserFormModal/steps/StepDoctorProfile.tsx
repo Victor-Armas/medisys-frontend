@@ -24,7 +24,7 @@ export function StepDoctorProfile({ register, errors }: Props) {
         <div className="col-span-2">
           <Input
             label="Cédula profesional *"
-            icon={<Award size={15} />}
+            icon={Award}
             error={errors.professionalLicense?.message}
             className="font-mono tracking-wider"
             {...register("professionalLicense")}
@@ -32,20 +32,20 @@ export function StepDoctorProfile({ register, errors }: Props) {
         </div>
         <Input
           label="Especialidad"
-          icon={<Stethoscope size={15} />}
+          icon={Stethoscope}
           error={errors.specialty?.message}
           {...register("specialty")}
         />
         <Input
           label="Universidad de egreso"
-          icon={<GraduationCap size={15} />}
+          icon={GraduationCap}
           error={errors.university?.message}
           {...register("university")}
         />
         <div className="col-span-2">
           <Input
             label="Título completo para recetas"
-            icon={<BookOpen size={15} />}
+            icon={BookOpen}
             error={errors.fullTitle?.message}
             {...register("fullTitle")}
           />
@@ -58,7 +58,7 @@ export function StepDoctorProfile({ register, errors }: Props) {
         <div className="col-span-2">
           <Input
             label="Calle *"
-            icon={<MapPin size={15} />}
+            icon={MapPin}
             error={errors.address?.message}
             {...register("address")}
           />

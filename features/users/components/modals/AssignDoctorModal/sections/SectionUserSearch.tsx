@@ -1,11 +1,12 @@
 import { useRef, useEffect } from "react";
 import { Search, X, ChevronDown, UserRound } from "lucide-react";
 import { Input } from "@/shared/ui/input";
-import { type User } from "@/types/users.types";
+
 import { SectionDivider } from "../components/SectionDivider";
 import { SelectedUserCard } from "../components/SelectedUserCard";
 import { UserDropdownItem } from "../components/UserDropdownItem";
 import { GREEN } from "../constants";
+import { User } from "@/features/users/types";
 
 interface Props {
   selectedUser: User | null;

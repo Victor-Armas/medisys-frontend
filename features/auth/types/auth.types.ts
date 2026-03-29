@@ -1,4 +1,4 @@
-import { User } from "./users.types";
+import { User } from "@/features/users/types";
 
 export type AuthUser = Pick<
   User,
