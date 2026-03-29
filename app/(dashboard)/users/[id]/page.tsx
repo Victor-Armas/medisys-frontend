@@ -2,8 +2,8 @@
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
-import type { User } from "@/types/users.types";
-import { UserProfileClient } from "@/components/users/UserProfileClient";
+import { UserProfileClient } from "@/features/users/components/UserProfileClient";
+import { User } from "@/features/users/types/users.types";
 
 type Props = {
   params: Promise<{ id: string }>;

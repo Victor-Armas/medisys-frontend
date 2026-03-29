@@ -31,7 +31,7 @@ export function proxy(request: NextRequest) {
   return NextResponse.next();
 }
 
-export const routing = {
+export const config = {
   // Matcher más agresivo para evitar interceptar estáticos
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico|.*\\..*$).*)"],
 };

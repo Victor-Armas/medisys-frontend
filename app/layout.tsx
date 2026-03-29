@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { ThemeProvider } from "@/components/providers/ThemeProvider";
-import QueryProvider from "@/providers/QueryProvider";
+import { ThemeProvider } from "@/shared/providers/ThemeProvider";
+import QueryProvider from "@/shared/providers/QueryProvider";
 import { Inter } from "next/font/google";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/lib/utils";
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "MediSys",
@@ -18,7 +18,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" suppressHydrationWarning className={cn("font-sans", inter.variable)}>
+    <html
+      lang="es"
+      suppressHydrationWarning
+      className={cn("font-sans", inter.variable)}
+    >
       <body>
         <QueryProvider>
           <ThemeProvider>{children}</ThemeProvider>

@@ -1,8 +1,7 @@
 // app/(dashboard)/users/page.tsx
+import { UsersPanelClient } from "@/features/users/components/UsersPanelClient";
+import type { User } from "@/features/users/types/users.types";
 import { cookies } from "next/headers";
-
-import type { User } from "@/types/users.types";
-import { UsersPanelClient } from "@/components/users/UsersPanelClient";
 
 async function fetchAllUsersServer(): Promise<User[]> {
   const cookieStore = await cookies();
