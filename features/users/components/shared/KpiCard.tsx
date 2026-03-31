@@ -34,14 +34,7 @@ const COLOR_VARIANTS: Record<KpiColor, { icon: string; value: string }> = {
   },
 };
 
-export function KpiCard({
-  label,
-  value,
-  icon: Icon,
-  color = "blue",
-  sub,
-  className,
-}: KpiCardProps) {
+export function KpiCard({ label, value, icon: Icon, color = "blue", sub, className }: KpiCardProps) {
   const variant = COLOR_VARIANTS[color];
 
   return (
@@ -55,29 +48,20 @@ export function KpiCard({
       <CardContent className="">
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-1 min-w-0">
-            <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider truncate">
-              {label}
-            </p>
+            <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider truncate">{label}</p>
             <p
               className={cn(
                 "text-[32px] font-bold tracking-tight leading-none font-heading",
-                // Color neutral para "Total" (no distrae), color semántico para el resto
+
                 color === "blue" ? "text-text-primary" : variant.value
               )}
             >
               {value}
             </p>
-            {sub && (
-              <p className="text-xs text-text-muted font-medium">{sub}</p>
-            )}
+            {sub && <p className="text-xs text-text-muted font-medium">{sub}</p>}
           </div>
 
-          <div
-            className={cn(
-              "p-3 rounded-2xl border shrink-0 transition-colors",
-              variant.icon
-            )}
-          >
+          <div className={cn("p-3 rounded-2xl border shrink-0 transition-colors", variant.icon)}>
             <Icon size={22} strokeWidth={1.8} />
           </div>
         </div>

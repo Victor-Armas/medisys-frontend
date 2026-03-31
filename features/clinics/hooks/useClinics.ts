@@ -1,20 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { clinicsService } from "@features/clinics/services/clinics.service";
-import type {
-  CreateClinicPayload,
-  UpdateClinicPayload,
-  CreateSchedulePayload,
-} from "@features/clinics/types/clinic.types";
+import type { CreateClinicPayload, UpdateClinicPayload, CreateSchedulePayload, Clinic } from "@features/clinics/types/clinic.types";
 
 export const clinicKeys = {
   all: ["clinics"] as const,
   detail: (id: string) => ["clinics", id] as const,
 };
 
-export function useClinics() {
+export function useClinics(options?: { initialData?: Clinic[] }) {
   return useQuery({
     queryKey: clinicKeys.all,
     queryFn: clinicsService.getAll,
+    initialData: options?.initialData,
   });
 }
 
@@ -29,13 +26,7 @@ export function useCreateClinic() {
 export function useUpdateClinic() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      id,
-      payload,
-    }: {
-      id: string;
-      payload: UpdateClinicPayload;
-    }) => clinicsService.update(id, payload),
+    mutationFn: ({ id, payload }: { id: string; payload: UpdateClinicPayload }) => clinicsService.update(id, payload),
     onSuccess: () => qc.invalidateQueries({ queryKey: clinicKeys.all }),
   });
 }
@@ -59,8 +50,7 @@ export function useAddSchedule() {
 export function useRemoveSchedule() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (scheduleId: string) =>
-      clinicsService.removeSchedule(scheduleId),
+    mutationFn: (scheduleId: string) => clinicsService.removeSchedule(scheduleId),
     onSuccess: () => qc.invalidateQueries({ queryKey: clinicKeys.all }),
   });
 }
@@ -68,8 +58,7 @@ export function useRemoveSchedule() {
 export function useToggleDoctorAvailability() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (doctorProfileId: string) =>
-      clinicsService.toggleDoctorAvailability(doctorProfileId),
+    mutationFn: (doctorProfileId: string) => clinicsService.toggleDoctorAvailability(doctorProfileId),
     onSuccess: () => qc.invalidateQueries({ queryKey: clinicKeys.all }),
   });
 }

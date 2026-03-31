@@ -1,11 +1,21 @@
 import { User } from "./users.types";
 
+// ─── Horarios del doctor ─────────────────────────────────────
+export interface DoctorSchedule {
+  id: string;
+  weekDay: number;
+  startTime: string;
+  endTime: string;
+  isActive: boolean;
+}
+
 // ─── Consultorio resumido ─────────────────────────────────────
 export interface DoctorClinicItem {
   id: string;
   isPrimary: boolean;
   isActive: boolean;
   assignedAt: string;
+  schedules: DoctorSchedule[];
   clinic: {
     id: string;
     name: string;

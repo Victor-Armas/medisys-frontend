@@ -21,11 +21,9 @@ export function Topbar({ initialUser }: Props) {
   });
 
   return (
-    <header className="h-14 bg-bg-surface border-b border-border-default flex items-center justify-between px-6 shrink-0 relative z-10">
+    <header className="h-14 bg-bg-surface border-b border-border-default flex items-center justify-between px-6 shrink-0 relative z-50">
       <div>
-        <h1 className="text-sm font-semibold text-text-primary capitalize">
-          {`Sección: ${page.title}`}
-        </h1>
+        <h1 className="text-sm font-semibold text-text-primary capitalize">{`Sección: ${page.title}`}</h1>
         <p className="text-[11px] text-text-secondary capitalize">{fecha}</p>
       </div>
 

@@ -3,10 +3,15 @@ import { UsersPanelClient } from "@/features/users/components/UsersPanelClient";
 import type { User } from "@/features/users/types/users.types";
 import { cookies } from "next/headers";
 
-async function fetchAllUsersServer(): Promise<User[]> {
+interface FetchDataResponse {
+  users: User[];
+}
+
+async function fetchAllUsersServer(): Promise<FetchDataResponse> {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
-  if (!token) return [];
+
+  if (!token) return { users: [] };
 
   const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api";
   const headers = { Authorization: `Bearer ${token}` };
@@ -16,17 +21,25 @@ async function fetchAllUsersServer(): Promise<User[]> {
       fetch(`${base}/users`, { headers, cache: "no-store" }),
       fetch(`${base}/doctors`, { headers, cache: "no-store" }),
     ]);
-    const users: User[] = usersRes.ok ? await usersRes.json() : [];
-    const doctors: User[] = doctorsRes.ok ? await doctorsRes.json() : [];
-    const map = new Map<string, User>();
-    [...users, ...doctors].forEach((u) => map.set(u.id, u));
-    return Array.from(map.values());
-  } catch {
-    return [];
+
+    const [usersData, doctorsData]: [User[], User[]] = await Promise.all([
+      usersRes.ok ? usersRes.json() : Promise.resolve([]),
+      doctorsRes.ok ? doctorsRes.json() : Promise.resolve([]),
+    ]);
+
+    const mergedUsersMap = new Map<string, User>();
+    [...usersData, ...doctorsData].forEach((u) => mergedUsersMap.set(u.id, u));
+
+    return {
+      users: Array.from(mergedUsersMap.values()),
+    };
+  } catch (error) {
+    console.error("Fetch error:", error);
+    return { users: [] };
   }
 }
 
 export default async function UsersPage() {
-  const initialUsers = await fetchAllUsersServer();
-  return <UsersPanelClient initialUsers={initialUsers} />;
+  const { users } = await fetchAllUsersServer();
+  return <UsersPanelClient initialUsers={users} />;
 }

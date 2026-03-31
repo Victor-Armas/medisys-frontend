@@ -32,21 +32,13 @@ export function UsersPanelClient({ initialUsers }: Props) {
       {/* Encabezado */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-heading font-bold text-text-primary tracking-tight">
-            Usuarios del sistema
-          </h2>
-          <p className="text-base font-body text-text-secondary mt-1">
-            Gestión de médicos, recepcionistas y administradores.
-          </p>
+          <h2 className="text-3xl font-heading font-bold text-text-primary tracking-tight">Usuarios del sistema</h2>
+          <p className="text-base font-body text-text-secondary mt-1">Gestión de médicos, recepcionistas y administradores.</p>
         </div>
 
         <div className="flex items-center gap-3">
           {/* Botón "Asignar perfil médico" - variante outline */}
-          <Button
-            variant="outline"
-            onClick={() => setModal("assign-doctor")}
-            className="flex items-center gap-2 h-10 px-5 bg-bg-surface"
-          >
+          <Button variant="outline" onClick={() => setModal("assign-doctor")} className="flex items-center gap-2 h-10 px-5 bg-bg-surface">
             <UserPlus />
             Asignar perfil médico
           </Button>
@@ -67,33 +59,18 @@ export function UsersPanelClient({ initialUsers }: Props) {
       {/* KPIs */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
         {stats.map((stat) => (
-          <KpiCard
-            key={stat.label}
-            label={stat.label}
-            value={stat.value}
-            color={stat.color}
-            icon={stat.icon}
-          />
+          <KpiCard key={stat.label} label={stat.label} value={stat.value} color={stat.color} icon={stat.icon} />
         ))}
       </div>
 
       {/* Toolbar */}
-      <UsersToolbar
-        tab={tab}
-        setTab={setTab}
-        search={search}
-        setSearch={setSearch}
-      />
+      <UsersToolbar tab={tab} setTab={setTab} search={search} setSearch={setSearch} />
 
       {/* Tabla */}
       <UsersTable users={filtered} isLoading={isLoading} />
 
-      {modal === "create-user-unified" && (
-        <UserFormModal onClose={() => setModal("none")} />
-      )}
-      {modal === "assign-doctor" && (
-        <AssignDoctorModal onClose={() => setModal("none")} />
-      )}
+      {modal === "create-user-unified" && <UserFormModal onClose={() => setModal("none")} />}
+      {modal === "assign-doctor" && <AssignDoctorModal onClose={() => setModal("none")} />}
     </div>
   );
 }

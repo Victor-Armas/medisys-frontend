@@ -1,14 +1,8 @@
 import { Role } from "@/features/users/types/users.types";
 import type { LucideIcon } from "lucide-react";
-import {
-  UserRound,
-  Stethoscope,
-  ShieldCheck,
-  Heart,
-  Crown,
-} from "lucide-react";
+import { UserRound, Stethoscope, ShieldCheck, Heart, Crown } from "lucide-react";
 
-type RoleConfig = {
+export type RoleConfig = {
   label: string;
   desc: string;
   icon: LucideIcon;
@@ -24,12 +18,7 @@ type RoleConfig = {
 
 // util para obtener solo los roles que aparecen en formularios de staff
 // Cuando agregues un rol nuevo, solo decides si va aquí o no
-export const STAFF_ROLES = [
-  "ADMIN_SYSTEM",
-  "MAIN_DOCTOR",
-  "DOCTOR",
-  "RECEPTIONIST",
-] as const satisfies readonly Role[];
+export const STAFF_ROLES = ["ADMIN_SYSTEM", "MAIN_DOCTOR", "DOCTOR", "RECEPTIONIST"] as const satisfies readonly Role[];
 
 //mapa de objetos, agregar un rol = agregar una entrada, nunca modificar lógica existente
 const ROLE_CONFIG_MAP: Record<Role, RoleConfig> = {
@@ -43,8 +32,7 @@ const ROLE_CONFIG_MAP: Record<Role, RoleConfig> = {
       light: "rgba(107,70,193,0.08)",
       text: "#6b46c1",
     },
-    badge:
-      "text-purple-600 bg-linear-to-br from-purple-500/20 to-purple-500/5 border-purple-500/30 shadow-sm shadow-purple-500/10",
+    badge: "text-purple-600 bg-linear-to-br from-purple-500/20 to-purple-500/5 border-purple-500/30 shadow-sm shadow-purple-500/10",
     gradient: "from-purple-600 to-purple-900",
   },
   MAIN_DOCTOR: {
@@ -57,8 +45,7 @@ const ROLE_CONFIG_MAP: Record<Role, RoleConfig> = {
       light: "rgba(159,122,234,0.08)",
       text: "#9f7aea",
     },
-    badge:
-      "text-purple-400 bg-linear-to-br from-purple-400/20 to-purple-400/5 border-purple-400/30 shadow-sm shadow-purple-400/10",
+    badge: "text-purple-400 bg-linear-to-br from-purple-400/20 to-purple-400/5 border-purple-400/30 shadow-sm shadow-purple-400/10",
     gradient: "from-purple-400 to-purple-700",
   },
   DOCTOR: {
@@ -71,8 +58,7 @@ const ROLE_CONFIG_MAP: Record<Role, RoleConfig> = {
       light: "rgba(56,161,105,0.08)",
       text: "#38a169",
     },
-    badge:
-      "text-green-600 bg-linear-to-br from-green-500/20 to-green-500/5 border-green-500/30 shadow-sm shadow-green-500/10",
+    badge: "text-green-600 bg-linear-to-br from-green-500/20 to-green-500/5 border-green-500/30 shadow-sm shadow-green-500/10",
     gradient: "from-green-500 to-green-700",
   },
   RECEPTIONIST: {
@@ -85,8 +71,7 @@ const ROLE_CONFIG_MAP: Record<Role, RoleConfig> = {
       light: "rgba(49,130,206,0.08)",
       text: "#3182ce",
     },
-    badge:
-      "text-sky-600 bg-linear-to-br from-sky-500/20 to-sky-500/5 border-sky-500/30 shadow-sm shadow-sky-500/10",
+    badge: "text-sky-600 bg-linear-to-br from-sky-500/20 to-sky-500/5 border-sky-500/30 shadow-sm shadow-sky-500/10",
     gradient: "from-sky-500 to-sky-700",
   },
   PATIENT: {
@@ -99,8 +84,7 @@ const ROLE_CONFIG_MAP: Record<Role, RoleConfig> = {
       light: "rgba(113,128,150,0.08)",
       text: "#718096",
     },
-    badge:
-      "text-gray-600 bg-linear-to-br from-gray-500/20 to-gray-500/5 border-gray-500/30 shadow-sm shadow-gray-500/10",
+    badge: "text-gray-600 bg-linear-to-br from-gray-500/20 to-gray-500/5 border-gray-500/30 shadow-sm shadow-gray-500/10",
     gradient: "from-gray-400 to-gray-600",
   },
 };

@@ -1,16 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  assignDoctorProfile,
-  createDoctor,
-  createUser,
-  getAllUsers,
-  getUserById,
-} from "@/features/users/services/users.service";
-import type {
-  AssignDoctorPayload,
-  CreateDoctorPayload,
-} from "@/features/users/types/doctors.types";
+import { assignDoctorProfile, createDoctor, createUser, getAllUsers, getUserById } from "@/features/users/services/users.service";
+import type { AssignDoctorPayload, CreateDoctorPayload } from "@/features/users/types/doctors.types";
 import { CreateUserPayload, User } from "../types";
+
+const ADMIN_STALE_TIME = 1000 * 60 * 5;
 
 export const userKeys = {
   all: ["users"] as const,
@@ -22,7 +15,7 @@ export function useUsers(options?: { initialData?: User[] }) {
     queryKey: userKeys.all,
     queryFn: getAllUsers,
     initialData: options?.initialData,
-    staleTime: options?.initialData ? 30_000 : 0,
+    staleTime: options?.initialData ? ADMIN_STALE_TIME : 0,
   });
 }
 
