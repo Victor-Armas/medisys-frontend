@@ -3,10 +3,7 @@
 // El backend tiene endpoints separados pero el frontend los unifica aquí.
 
 import api from "@/shared/lib/api";
-import type {
-  AssignDoctorPayload,
-  CreateDoctorPayload,
-} from "@/features/users/types/doctors.types";
+import type { AssignDoctorPayload, CreateDoctorPayload, DoctorProfile } from "@/features/users/types/doctors.types";
 import { CreateUserPayload, User } from "../types";
 
 // ─── Staff general ────────────────────────────────────────────
@@ -15,11 +12,8 @@ import { CreateUserPayload, User } from "../types";
 // GET /api/doctors — lista médicos con perfil
 // Los combinamos en el hook para mostrar todo en una sola tabla
 export async function getAllUsers(): Promise<User[]> {
-  const [usersRes, doctorsRes] = await Promise.all([
-    api.get<User[]>("/users"),
-    api.get<User[]>("/doctors"),
-  ]);
-  // Deduplica por id (doctores aparecen en ambas listas)
+  const [usersRes, doctorsRes] = await Promise.all([api.get<User[]>("/users"), api.get<User[]>("/doctors")]);
+  // Deduplica por id (doctores aparecen en ambas listas)x|
   const map = new Map<string, User>();
   [...usersRes.data, ...doctorsRes.data].forEach((u) => map.set(u.id, u));
   return Array.from(map.values());
@@ -46,17 +40,18 @@ export async function createUser(payload: CreateUserPayload): Promise<User> {
 // ─── Doctores ─────────────────────────────────────────────────
 
 // POST /api/doctors — crear doctor desde cero
-export async function createDoctor(
-  payload: CreateDoctorPayload
-): Promise<User> {
+export async function createDoctor(payload: CreateDoctorPayload): Promise<User> {
   const res = await api.post<User>("/doctors", payload);
   return res.data;
 }
 
 // POST /api/doctors/assign — asignar perfil a usuario existente
-export async function assignDoctorProfile(
-  payload: AssignDoctorPayload
-): Promise<User> {
+export async function assignDoctorProfile(payload: AssignDoctorPayload): Promise<User> {
   const res = await api.post<User>("/doctors/assign", payload);
+  return res.data;
+}
+
+export async function doctorActiveToggle(doctorProfileId: string): Promise<DoctorProfile> {
+  const res = await api.patch<DoctorProfile>(`/doctors/${doctorProfileId}/availability`);
   return res.data;
 }

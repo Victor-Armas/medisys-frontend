@@ -1,10 +1,5 @@
 import api from "@shared/lib/api";
-import type {
-  Clinic,
-  CreateClinicPayload,
-  UpdateClinicPayload,
-  CreateSchedulePayload,
-} from "@features/clinics/types/clinic.types";
+import type { Clinic, CreateClinicPayload, UpdateClinicPayload, CreateSchedulePayload } from "@features/clinics/types/clinic.types";
 
 export const clinicsService = {
   getAll: async (): Promise<Clinic[]> => {
@@ -38,9 +33,5 @@ export const clinicsService = {
 
   removeSchedule: async (scheduleId: string): Promise<void> => {
     await api.delete(`/clinics/schedules/${scheduleId}`);
-  },
-
-  toggleDoctorAvailability: async (doctorProfileId: string): Promise<void> => {
-    await api.patch(`/clinics/doctors/${doctorProfileId}/availability`);
   },
 };

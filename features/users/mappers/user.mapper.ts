@@ -7,10 +7,10 @@ export function toCreateUserPayload(data: UnifiedUserFormData): CreateUserPayloa
     email: data.email,
     password: data.password,
     firstName: data.firstName,
-    middleName: data.middleName,
+    middleName: data.middleName!,
     lastNamePaternal: data.lastNamePaternal,
     lastNameMaternal: data.lastNameMaternal,
-    phone: data.phone,
+    phone: data.phone!,
     role: data.role,
   };
 }
@@ -26,8 +26,8 @@ export function toCreateDoctorPayload(data: UnifiedUserFormData): CreateDoctorPa
     city: data.city!,
     state: data.state!,
     zipCode: data.zipCode!,
-    specialty: data.specialty,
-    university: data.university,
-    fullTitle: data.fullTitle,
+    specialty: data.specialty!,
+    university: data.university!,
+    fullTitle: data.fullTitle!,
   };
 }

@@ -11,6 +11,7 @@ import { getCapacityColor } from "@features/clinics/utils/clinic.utils";
 import { cn } from "@shared/lib/utils";
 import { DoctorScheduleCard } from "./DoctorScheduleCard";
 import { Pencil, Plus, Users } from "lucide-react";
+import { ClinicCalendar } from "./calendar/ClinicCalendar";
 
 interface Props {
   initialClinics: Clinic[];
@@ -57,7 +58,7 @@ export function ClinicsPanelClient({ initialClinics }: Props) {
           </div>
           <button
             onClick={() => setModal("create-clinic")}
-            className="w-8 h-8 rounded-xl bg-brand flex items-center justify-center text-white hover:bg-brand-hover transition-colors"
+            className="w-8 h-8 rounded-xl bg-brand flex items-center justify-center text-white hover:bg-brand-hover transition-colors cursor-pointer"
           >
             <Plus size={16} strokeWidth={2.5} />
           </button>
@@ -65,7 +66,13 @@ export function ClinicsPanelClient({ initialClinics }: Props) {
 
         <div className="flex-1 overflow-y-auto py-2 space-y-1 px-2">
           {clinics.map((clinic) => (
-            <ClinicListItem key={clinic.id} clinic={clinic} isSelected={activeClinic?.id === clinic.id} onSelect={setSelected} />
+            <ClinicListItem
+              key={clinic.id}
+              clinic={clinic}
+              toggleClinic={toggleClinic.mutate}
+              isSelected={activeClinic?.id === clinic.id}
+              onSelect={setSelected}
+            />
           ))}
         </div>
       </aside>
@@ -94,9 +101,8 @@ export function ClinicsPanelClient({ initialClinics }: Props) {
                 <div className="flex items-center gap-2 shrink-0">
                   <button
                     onClick={() => toggleClinic.mutate(activeClinic.id)}
-                    disabled={toggleClinic.isPending}
                     className={cn(
-                      "px-3 py-2 rounded-xl border text-sm font-medium transition-colors",
+                      "px-3 py-2 rounded-xl border text-sm font-medium transition-colors cursor-pointer",
                       activeClinic.isActive
                         ? "border-emerald-500/30 text-emerald-600 bg-emerald-500/5 hover:bg-emerald-500/10"
                         : "border-red-500 text-red-600 hover:bg-red-500/20 bg-red-500/10",
@@ -107,7 +113,7 @@ export function ClinicsPanelClient({ initialClinics }: Props) {
 
                   <button
                     onClick={() => handleEditClinic(activeClinic)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl border border-border-default bg-brand text-sm text-white hover:bg-bg-subtle transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl border border-border-default bg-brand text-sm text-white hover:bg-bg-subtle transition-colors cursor-pointer"
                   >
                     <Pencil size={14} strokeWidth={2} />
                     Editar
@@ -187,6 +193,8 @@ export function ClinicsPanelClient({ initialClinics }: Props) {
       {modal === "add-schedule" && (
         <AddScheduleModal doctorClinicId={addScheduleDoctorClinicId} doctorName={addScheduleDoctorName} onClose={() => setModal("none")} />
       )}
+
+      <ClinicCalendar />
     </div>
   );
 }

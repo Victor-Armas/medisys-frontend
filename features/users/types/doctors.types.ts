@@ -1,7 +1,8 @@
 import { User } from "./users.types";
+import type { DoctorProfile as PrismaDoctor, Schedule, DoctorClinic } from "@db/models";
 
 // ─── Horarios del doctor ─────────────────────────────────────
-export interface DoctorSchedule {
+export interface DoctorSchedule extends Schedule {
   id: string;
   weekDay: number;
   startTime: string;
@@ -10,11 +11,11 @@ export interface DoctorSchedule {
 }
 
 // ─── Consultorio resumido ─────────────────────────────────────
-export interface DoctorClinicItem {
+export interface DoctorClinicItem extends DoctorClinic {
   id: string;
   isPrimary: boolean;
   isActive: boolean;
-  assignedAt: string;
+  assignedAt: Date;
   schedules: DoctorSchedule[];
   clinic: {
     id: string;
@@ -27,7 +28,7 @@ export interface DoctorClinicItem {
 
 // ─── Perfil médico completo ───────────────────────────────────
 // Refleja exactamente el modelo DoctorProfile de Prisma
-export interface DoctorProfile {
+export interface DoctorProfile extends PrismaDoctor {
   id: string;
   // Dirección (NOT NULL en Prisma)
   address: string;
@@ -38,57 +39,33 @@ export interface DoctorProfile {
   zipCode: string;
   // Datos profesionales
   professionalLicense: string; // NOT NULL en Prisma
-  specialty?: string | null; // opcional
-  university?: string | null; // opcional
-  fullTitle?: string | null; // opcional
-  signatureUrl?: string | null; // sube por Cloudinary
-  createdAt: string;
+  specialty: string | null; // opcional
+  university: string | null; // opcional
+  fullTitle: string | null; // opcional
+  signatureUrl: string | null; // sube por Cloudinary
+  createdAt: Date;
+  isAvailable: boolean;
   doctorClinics: DoctorClinicItem[];
 }
 
 // ─── Payload POST /api/doctors ────────────────────────────────
 // Crear usuario + perfil médico desde cero en una sola operación
-export interface CreateDoctorPayload {
-  // Datos de cuenta (User)
-  email: string;
-  password: string;
-  firstName: string;
-  middleName?: string | null;
-  lastNamePaternal: string;
-  lastNameMaternal: string;
-  phone?: string | null;
-  // Perfil médico obligatorio (DoctorProfile NOT NULL)
-  professionalLicense: string;
-  address: string;
-  numHome: string;
-  colony: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  // Perfil médico opcional
-  specialty?: string | null;
-  university?: string | null;
-  fullTitle?: string | null;
-  // Consultorios opcionales al crear
+
+export interface CreateDoctorPayload
+  // 1. Extraemos los campos de la cuenta (User) [cite: 4]
+  extends
+    Pick<User, "email" | "password" | "firstName" | "middleName" | "lastNamePaternal" | "lastNameMaternal" | "phone">,
+    Pick<PrismaDoctor, "professionalLicense" | "address" | "numHome" | "colony" | "city" | "state" | "zipCode" | "specialty" | "university" | "fullTitle"> {
   clinicIds?: string[];
 }
 
 // ─── Payload POST /api/doctors/assign ────────────────────────
 // Asignar perfil médico a usuario que ya existe
-export interface AssignDoctorPayload {
+export interface AssignDoctorPayload extends Pick<
+  PrismaDoctor,
+  "professionalLicense" | "address" | "numHome" | "colony" | "city" | "state" | "zipCode" | "specialty" | "university" | "fullTitle"
+> {
   userId: string;
-  // Perfil médico obligatorio
-  professionalLicense: string;
-  address: string;
-  numHome: string;
-  colony: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  // Opcionales
-  specialty?: string | null;
-  university?: string | null;
-  fullTitle?: string | null;
   clinicIds?: string[];
 }
 
