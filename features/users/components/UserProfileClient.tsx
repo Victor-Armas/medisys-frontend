@@ -23,7 +23,6 @@ export function UserProfileClient({ user }: Props) {
   const config = getRoleConfig(user.role);
   const doctor = isDoctor(user);
   const profile = user.doctorProfile;
-
   return (
     <div className="max-w-[1400px] mx-auto pb-10 space-y-6">
       {/* Breadcrumb + acciones */}
@@ -61,7 +60,7 @@ export function UserProfileClient({ user }: Props) {
         {/* Columna derecha — solo doctores */}
         {doctor && (
           <div className="xl:col-span-8 space-y-4">
-            <DoctorClinicsCard doctorClinics={profile?.doctorClinics ?? []} />
+            <DoctorClinicsCard profileDoctor={profile} />
             <UserActivityCard />
           </div>
         )}

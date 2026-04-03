@@ -1,12 +1,22 @@
 import { User } from "./users.types";
-import type { DoctorProfile as PrismaDoctor, Schedule, DoctorClinic } from "@db/models";
+import type { DoctorProfile as PrismaDoctor, ScheduleRange as PrismaSchedule, DoctorClinic, ScheduleOverride as ScheduleOverrideBase } from "@db/models";
 
 // ─── Horarios del doctor ─────────────────────────────────────
-export interface DoctorSchedule extends Schedule {
+export interface DoctorSchedule extends PrismaSchedule {
   id: string;
   weekDay: number;
   startTime: string;
   endTime: string;
+  dateFrom: string;
+  dateTo: string;
+  isActive: boolean;
+}
+
+export interface ScheduleOverrides extends ScheduleOverrideBase {
+  id: string;
+  name: string;
+  slug: string;
+  city: string | null;
   isActive: boolean;
 }
 
@@ -16,7 +26,9 @@ export interface DoctorClinicItem extends DoctorClinic {
   isPrimary: boolean;
   isActive: boolean;
   assignedAt: Date;
-  schedules: DoctorSchedule[];
+  doctorClinicId: string;
+  scheduleRanges: DoctorSchedule[];
+  scheduleOverrides: ScheduleOverrides[];
   clinic: {
     id: string;
     name: string;
@@ -37,6 +49,7 @@ export interface DoctorProfile extends PrismaDoctor {
   city: string;
   state: string;
   zipCode: string;
+  defaultAppointmentDuration: number;
   // Datos profesionales
   professionalLicense: string; // NOT NULL en Prisma
   specialty: string | null; // opcional

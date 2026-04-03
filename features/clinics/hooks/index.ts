@@ -5,6 +5,9 @@ export {
   useToggleClinic,
   useAddSchedule,
   useRemoveSchedule,
-  useToggleDoctorAvailability,
+  useAddScheduleOverride,
+  useRemoveScheduleOverride,
+  useUpdateSchedule,
+  useUpdateScheduleOverride,
   clinicKeys,
 } from "./useClinics";

@@ -1,16 +1,16 @@
 import { Building2 } from "lucide-react";
 
 import { ClinicDetailItem } from "./clinic-detail/ClinicDetailItem";
-import type { DoctorClinicItem } from "@features/users/types/doctors.types";
+import type { DoctorClinicItem, DoctorProfile } from "@features/users/types/doctors.types";
 import { SectionCard } from "./shared/SectionCard";
-
 interface Props {
-  doctorClinics: DoctorClinicItem[];
+  profileDoctor?: DoctorProfile | null;
 }
 
-export function DoctorClinicsCard({ doctorClinics }: Props) {
-  const activeClinics = doctorClinics.filter((c) => c.isActive);
-
+export function DoctorClinicsCard({ profileDoctor }: Props) {
+  const doctorClinic: DoctorClinicItem[] = profileDoctor?.doctorClinics ?? [];
+  const activeClinics = doctorClinic.filter((c) => c.isActive);
+  const apointmentDuration = profileDoctor ? profileDoctor.defaultAppointmentDuration : 30; // respaldo solo si profileDoctor no existe
   return (
     <SectionCard title="Consultorios asignados" icon={<Building2 size={14} />} accentColor="#534ab7">
       {activeClinics.length === 0 ? (
@@ -24,7 +24,7 @@ export function DoctorClinicsCard({ doctorClinics }: Props) {
       ) : (
         <div className="p-4 space-y-3">
           {activeClinics.map((dc) => (
-            <ClinicDetailItem key={dc.id} dc={dc} />
+            <ClinicDetailItem key={dc.id} dc={dc} apointmentDuration={apointmentDuration} />
           ))}
         </div>
       )}

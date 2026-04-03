@@ -1,5 +1,13 @@
 import api from "@shared/lib/api";
-import type { Clinic, CreateClinicPayload, UpdateClinicPayload, CreateSchedulePayload } from "@features/clinics/types/clinic.types";
+import type {
+  Clinic,
+  CreateClinicPayload,
+  UpdateClinicPayload,
+  CreateScheduleRangePayload,
+  CreateScheduleOverridePayload,
+  UpdateScheduleRangePayload,
+  UpdateScheduleOverridePayload,
+} from "@features/clinics/types/clinic.types";
 
 export const clinicsService = {
   getAll: async (): Promise<Clinic[]> => {
@@ -27,11 +35,28 @@ export const clinicsService = {
     return res.data;
   },
 
-  addSchedule: async (payload: CreateSchedulePayload): Promise<void> => {
-    await api.post("/clinics/schedules", payload);
+  // ── Schedule Ranges ──────────────────────────────────────
+  addSchedule: async (payload: CreateScheduleRangePayload): Promise<void> => {
+    await api.post("/clinics/schedules/range", payload);
+  },
+
+  updateSchedule: async (id: string, payload: UpdateScheduleRangePayload): Promise<void> => {
+    await api.patch(`/clinics/schedules/range/${id}`, payload);
   },
 
   removeSchedule: async (scheduleId: string): Promise<void> => {
-    await api.delete(`/clinics/schedules/${scheduleId}`);
+    await api.delete(`/clinics/schedules/range/${scheduleId}`);
+  },
+  // ── Schedule Overrides ───────────────────────────────────
+  addScheduleOverride: async (payload: CreateScheduleOverridePayload): Promise<void> => {
+    await api.post("/clinics/schedules/override", payload);
+  },
+
+  updateScheduleOverride: async (id: string, payload: UpdateScheduleOverridePayload): Promise<void> => {
+    await api.patch(`/clinics/schedules/override/${id}`, payload);
+  },
+
+  removeScheduleOverride: async (overrideId: string): Promise<void> => {
+    await api.delete(`/clinics/schedules/override/${overrideId}`);
   },
 };

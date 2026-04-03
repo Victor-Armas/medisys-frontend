@@ -1,12 +1,15 @@
+// features/users/components/profile/clinic-detail/ClinicDetailItem.tsx
+
 import { Building2, MapPin, Star, Calendar } from "lucide-react";
-import { ClinicWeeklySchedule } from "./ClinicWeeklySchedule";
 import type { DoctorClinicItem } from "@features/users/types/doctors.types";
+import { DoctorAvailabilityView } from "./availability/DoctorAvailabilityView";
 
 interface Props {
   dc: DoctorClinicItem;
+  apointmentDuration: number;
 }
 
-export function ClinicDetailItem({ dc }: Props) {
+export function ClinicDetailItem({ dc, apointmentDuration }: Props) {
   return (
     <div className={`rounded-xl border p-4 ${dc.isPrimary ? "border-brand/30 bg-brand/5" : "border-border-default bg-bg-base/50"}`}>
       {/* Header */}
@@ -34,14 +37,26 @@ export function ClinicDetailItem({ dc }: Props) {
         )}
       </div>
 
-      {/* Horarios */}
-      <ClinicWeeklySchedule schedules={dc.schedules ?? []} />
+      {/* Vista de disponibilidad */}
+      <DoctorAvailabilityView
+        input={{
+          doctorClinicId: dc.id,
+          scheduleRanges: dc.scheduleRanges,
+          scheduleOverrides: dc.scheduleOverrides,
+          slotDurationMinutes: apointmentDuration,
+        }}
+      />
 
       {/* Footer */}
-      <div className="flex items-center justify-between pt-3 mt-3 border-t border-border-default/50">
+      <div className="flex items-center justify-between pt-3 mt-4 border-t border-border-default/50">
         <span className="text-[11px] text-text-disabled flex items-center gap-1">
           <Calendar size={10} />
-          Asignado {new Date(dc.assignedAt).toLocaleDateString("es-MX", { day: "numeric", month: "short", year: "numeric" })}
+          Asignado{" "}
+          {new Date(dc.assignedAt).toLocaleDateString("es-MX", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          })}
         </span>
         <span className={`w-1.5 h-1.5 rounded-full ${dc.clinic.isActive ? "bg-emerald-500" : "bg-zinc-400"}`} />
       </div>

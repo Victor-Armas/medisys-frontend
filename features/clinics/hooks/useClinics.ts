@@ -1,6 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { clinicsService } from "@features/clinics/services/clinics.service";
-import type { CreateClinicPayload, UpdateClinicPayload, CreateSchedulePayload, Clinic } from "@features/clinics/types/clinic.types";
+import type {
+  CreateClinicPayload,
+  UpdateClinicPayload,
+  CreateScheduleRangePayload,
+  CreateScheduleOverridePayload,
+  Clinic,
+  UpdateScheduleRangePayload,
+  UpdateScheduleOverridePayload,
+} from "@features/clinics/types/clinic.types";
 
 /*
 ----ESCENARIO A: Creas una clínica nueva------
@@ -96,7 +104,7 @@ export function useToggleClinic() {
 export function useAddSchedule() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (p: CreateSchedulePayload) => clinicsService.addSchedule(p),
+    mutationFn: (p: CreateScheduleRangePayload) => clinicsService.addSchedule(p),
     onSuccess: () => qc.invalidateQueries({ queryKey: clinicKeys.all }),
   });
 }
@@ -106,5 +114,37 @@ export function useRemoveSchedule() {
   return useMutation({
     mutationFn: (scheduleId: string) => clinicsService.removeSchedule(scheduleId),
     onSuccess: () => qc.invalidateQueries({ queryKey: clinicKeys.all }),
+  });
+}
+
+export function useAddScheduleOverride() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (p: CreateScheduleOverridePayload) => clinicsService.addScheduleOverride(p),
+    onSuccess: () => qc.invalidateQueries({ queryKey: clinicKeys.all }),
+  });
+}
+
+export function useRemoveScheduleOverride() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => clinicsService.removeScheduleOverride(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: clinicKeys.all }),
+  });
+}
+
+export function useUpdateSchedule() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: UpdateScheduleRangePayload }) => clinicsService.updateSchedule(id, payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: clinicKeys.lists() }),
+  });
+}
+
+export function useUpdateScheduleOverride() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: UpdateScheduleOverridePayload }) => clinicsService.updateScheduleOverride(id, payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: clinicKeys.lists() }),
   });
 }

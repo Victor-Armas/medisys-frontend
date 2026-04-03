@@ -2,16 +2,15 @@
 
 import { useState } from "react";
 import { useClinics, useToggleClinic } from "@features/clinics/hooks";
-import type { Clinic, ClinicModalState } from "@features/clinics/types/clinic.types";
+import type { ActiveModalContext, Clinic, ClinicModalState, DoctorInClinic } from "@features/clinics/types/clinic.types";
 import { ClinicListItem } from "./ClinicListItem";
-
 import { ClinicFormModal } from "./modals/ClinicFormModal";
 import { AddScheduleModal } from "./modals/AddScheduleModal";
 import { getCapacityColor } from "@features/clinics/utils/clinic.utils";
 import { cn } from "@shared/lib/utils";
 import { DoctorScheduleCard } from "./DoctorScheduleCard";
 import { Pencil, Plus, Users } from "lucide-react";
-import { ClinicCalendar } from "./calendar/ClinicCalendar";
+import { AddOverrideModal } from "./modals/AddOverrideModal";
 
 interface Props {
   initialClinics: Clinic[];
@@ -23,15 +22,37 @@ export function ClinicsPanelClient({ initialClinics }: Props) {
   const [selected, setSelected] = useState<Clinic | null>(null);
   const [modal, setModal] = useState<ClinicModalState>("none");
   const [editingClinic, setEditingClinic] = useState<Clinic | null>(null);
-  const [addScheduleDoctorClinicId, setAddScheduleDoctorClinicId] = useState<string>("");
-  const [addScheduleDoctorName, setAddScheduleDoctorName] = useState<string>("");
+  const [modalContext, setModalContext] = useState<ActiveModalContext>({
+    doctorClinicId: "",
+    doctorName: "",
+    doctorProfileId: "",
+  });
 
   const activeClinic = clinics.find((c) => c.id === selected?.id) ?? clinics[0] ?? null;
 
-  function handleAddSchedule(doctorClinicId: string, doctorName: string) {
-    setAddScheduleDoctorClinicId(doctorClinicId);
-    setAddScheduleDoctorName(doctorName);
+  function openScheduleModal(dc: DoctorInClinic, prefillDate?: string) {
+    setModalContext({
+      doctorClinicId: dc.id,
+      doctorName: `${dc.doctorProfile.user.firstName} ${dc.doctorProfile.user.lastNamePaternal}`,
+      doctorProfileId: dc.doctorProfile.id,
+      prefillDate,
+    });
     setModal("add-schedule");
+  }
+
+  function openOverrideModal(dc: DoctorInClinic, prefillDate?: string) {
+    setModalContext({
+      doctorClinicId: dc.id,
+      doctorName: `${dc.doctorProfile.user.firstName} ${dc.doctorProfile.user.lastNamePaternal}`,
+      doctorProfileId: dc.doctorProfile.id,
+      prefillDate,
+    });
+    setModal("add-override");
+  }
+
+  function closeModal() {
+    setModal("none");
+    setEditingClinic(null);
   }
 
   function handleEditClinic(clinic: Clinic) {
@@ -86,10 +107,12 @@ export function ClinicsPanelClient({ initialClinics }: Props) {
         ) : (
           <>
             {/* Header */}
-            <div className="bg-bg-surface border-b border-border-default px-8 py-5 sticky top-0 z-10">
+            <div className="bg-bg-surface border-b border-border-default px-8 py-5 sticky top-0 z-40">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-1">Gestión de consultorio</p>
+                  <p className="text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-1">
+                    Gestión de consultorio
+                  </p>
                   <h1 className="text-2xl font-bold text-text-primary tracking-tight">{activeClinic.name}</h1>
                   <p className="text-sm text-text-secondary mt-1">
                     {[activeClinic.address, activeClinic.city].filter(Boolean).join(", ")}
@@ -143,7 +166,10 @@ export function ClinicsPanelClient({ initialClinics }: Props) {
                     <div className="w-px h-4 bg-border-default" />
                     <div className="flex items-center gap-1.5">
                       <span className="text-xs text-text-secondary">Color marca</span>
-                      <div className="w-4 h-4 rounded border border-border-default" style={{ backgroundColor: activeClinic.brandColor }} />
+                      <div
+                        className="w-4 h-4 rounded border border-border-default"
+                        style={{ backgroundColor: activeClinic.brandColor }}
+                      />
                       <span className="text-xs font-mono text-text-secondary">{activeClinic.brandColor}</span>
                     </div>
                   </>
@@ -162,17 +188,15 @@ export function ClinicsPanelClient({ initialClinics }: Props) {
                   <p className="text-xs text-text-disabled mt-1">Agrega un médico para comenzar a gestionar horarios</p>
                 </div>
               ) : (
-                activeClinic.doctorClinics.map((dc) => {
-                  const { firstName, lastNamePaternal } = dc.doctorProfile.user;
-                  return (
-                    <DoctorScheduleCard
-                      key={dc.id}
-                      doctorClinic={dc}
-                      canManage={true}
-                      onAddSchedule={(dcId) => handleAddSchedule(dcId, `${firstName} ${lastNamePaternal}`)}
-                    />
-                  );
-                })
+                activeClinic.doctorClinics.map((dc) => (
+                  <DoctorScheduleCard
+                    key={dc.id}
+                    doctorClinic={dc}
+                    canManage={true}
+                    onAddSchedule={(_, prefillDate) => openScheduleModal(dc, prefillDate)}
+                    onAddOverride={(_, prefillDate) => openOverrideModal(dc, prefillDate)}
+                  />
+                ))
               )}
             </div>
           </>
@@ -190,11 +214,25 @@ export function ClinicsPanelClient({ initialClinics }: Props) {
           }}
         />
       )}
-      {modal === "add-schedule" && (
-        <AddScheduleModal doctorClinicId={addScheduleDoctorClinicId} doctorName={addScheduleDoctorName} onClose={() => setModal("none")} />
-      )}
 
-      <ClinicCalendar />
+      {modal === "create-clinic" && <ClinicFormModal onClose={closeModal} />}
+      {modal === "edit-clinic" && editingClinic && <ClinicFormModal clinic={editingClinic} onClose={closeModal} />}
+      {modal === "add-schedule" && (
+        <AddScheduleModal
+          doctorClinicId={modalContext.doctorClinicId}
+          doctorName={modalContext.doctorName}
+          prefillDate={modalContext.prefillDate}
+          onClose={closeModal}
+        />
+      )}
+      {modal === "add-override" && (
+        <AddOverrideModal
+          doctorClinicId={modalContext.doctorClinicId}
+          doctorName={modalContext.doctorName}
+          prefillDate={modalContext.prefillDate}
+          onClose={closeModal}
+        />
+      )}
     </div>
   );
 }

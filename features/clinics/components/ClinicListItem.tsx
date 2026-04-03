@@ -13,7 +13,6 @@ interface Props {
 }
 
 export function ClinicListItem({ clinic, isSelected, onSelect, toggleClinic }: Props) {
-  console.log(isSelected);
   const activeDoctors = clinic.doctorClinics.filter((dc) => dc.isActive).length;
   const capColor = getCapacityColor(activeDoctors, clinic.maxDoctors);
 

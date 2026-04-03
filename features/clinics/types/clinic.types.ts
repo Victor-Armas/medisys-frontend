@@ -1,9 +1,25 @@
-export interface Schedule {
+import type { EventInput } from "@fullcalendar/core";
+
+export type ScheduleOverrideType = "AVAILABLE" | "UNAVAILABLE" | "CUSTOM";
+
+export interface ScheduleRange {
   id: string;
+  doctorClinicId: string;
   weekDay: number;
   startTime: string;
   endTime: string;
+  dateFrom: string;
+  dateTo: string;
   isActive: boolean;
+}
+
+export interface ScheduleOverride {
+  id: string;
+  date: string;
+  startTime: string | null;
+  endTime: string | null;
+  type: ScheduleOverrideType;
+  note: string | null;
 }
 
 export interface DoctorInClinic {
@@ -11,7 +27,8 @@ export interface DoctorInClinic {
   isPrimary: boolean;
   isActive: boolean;
   assignedAt: string;
-  schedules: Schedule[];
+  scheduleRanges: ScheduleRange[];
+  scheduleOverrides: ScheduleOverride[];
   doctorProfile: {
     id: string;
     specialty: string | null;
@@ -68,15 +85,55 @@ export interface CreateClinicPayload {
 
 export type UpdateClinicPayload = Partial<CreateClinicPayload>;
 
-export interface CreateSchedulePayload {
+export interface CreateScheduleRangePayload {
   doctorClinicId: string;
   weekDay: number;
   startTime: string;
   endTime: string;
+  dateFrom: string;
+  dateTo: string;
 }
 
-export type ClinicModalState =
-  | "none"
-  | "create-clinic"
-  | "edit-clinic"
-  | "add-schedule";
+export interface CreateScheduleOverridePayload {
+  doctorClinicId: string;
+  date: string;
+  type: ScheduleOverrideType;
+  startTime?: string;
+  endTime?: string;
+  note?: string;
+}
+
+// Estado del modal — tipado centralizado
+export type ClinicModalState = "none" | "create-clinic" | "edit-clinic" | "add-schedule" | "add-override";
+
+// Contexto de modal activo — evita variables sueltas en ClinicsPanelClient
+export interface ActiveModalContext {
+  doctorClinicId: string;
+  doctorName: string;
+  doctorProfileId: string; // Para multi-consultorio futuro
+  prefillDate?: string;
+}
+
+export interface ClinicCalendarEvent extends EventInput {
+  extendedProps: {
+    type: ScheduleOverrideType | "BASE";
+    note: string | null;
+  };
+}
+
+// Payloads para PATCH
+export interface UpdateScheduleRangePayload {
+  startTime?: string;
+  endTime?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  isActive?: boolean;
+}
+
+export interface UpdateScheduleOverridePayload {
+  date?: string;
+  type?: ScheduleOverrideType;
+  startTime?: string;
+  endTime?: string;
+  note?: string;
+}

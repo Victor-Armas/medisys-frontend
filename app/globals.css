@@ -2,8 +2,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-
 @custom-variant dark (&:where(.dark, .dark *));
+@source "../node_modules/@ilamy/calendar/dist";
 
 @theme {
   /* todo tu @theme anterior se queda igual... */
