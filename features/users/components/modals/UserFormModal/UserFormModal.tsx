@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { isAxiosError } from "axios";
 import { cn } from "@/shared/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/shared/ui/dialog";
-import { isDoctorRole } from "@/features/users/types/doctors.types";
+import { isDoctor } from "@/features/users/types/doctors.types";
 import { unifiedUserSchema, FORM_STEPS_FIELDS, type UnifiedUserFormData } from "@/validations/user.schema";
 import { StepperHeader } from "./components/StepperHeader";
 import { ModalFooter } from "./components/ModalFooter";
@@ -40,7 +40,7 @@ export function UserFormModal({ onClose }: Props) {
   });
 
   const selectedRole = useWatch({ control, name: "role" });
-  const isSelectedDoctor = isDoctorRole({ role: selectedRole });
+  const isSelectedDoctor = isDoctor({ role: selectedRole });
   const stepLabels = isSelectedDoctor ? STEP_LABELS_DOCTOR : STEP_LABELS_STAFF;
   const fieldsByStep = isSelectedDoctor ? FORM_STEPS_FIELDS.doctor : FORM_STEPS_FIELDS.staff;
 

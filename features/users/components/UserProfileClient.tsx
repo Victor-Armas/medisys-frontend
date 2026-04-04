@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ArrowLeft, Pencil } from "lucide-react";
 import { getRoleConfig } from "@shared/constants/roles";
-import { isDoctorRole } from "@features/users/types/doctors.types";
+import { isDoctor } from "@features/users/types/doctors.types";
 import { UserActivityCard } from "./profile/UserActivityCard";
 import type { User } from "@features/users/types/users.types";
 import UserAccountCard from "./profile/UserAccountCard";
@@ -18,7 +18,7 @@ interface Props {
 
 export function UserProfileClient({ user }: Props) {
   const config = getRoleConfig(user.role);
-  const doctor = isDoctorRole(user.role);
+  const doctor = isDoctor(user);
   const profile = user.doctorProfile;
   return (
     <div className="max-w-[1400px] mx-auto pb-10 space-y-6">

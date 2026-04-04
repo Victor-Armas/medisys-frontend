@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Card } from "@/shared/ui/card";
 import { cn } from "@/shared/lib/utils";
 
-import { isDoctorRole } from "@/features/users/types/doctors.types";
+import { isDoctor } from "@/features/users/types/doctors.types";
 import { getRoleConfig } from "@/shared/constants/roles";
 import { getFullName, getInitials, type User } from "../types/users.types";
 
@@ -126,10 +126,10 @@ function UserRow({ user, isLast, onClick }: { user: User; isLast: boolean; onCli
         <span
           className={cn(
             "text-[13px]",
-            isDoctorRole(user) && user.doctorProfile?.specialty ? "text-text-primary font-medium" : "text-text-muted",
+            isDoctor(user) && user.doctorProfile?.specialty ? "text-text-primary font-medium" : "text-text-muted",
           )}
         >
-          {isDoctorRole(user) && user.doctorProfile?.specialty ? user.doctorProfile.specialty : "—"}
+          {isDoctor(user) && user.doctorProfile?.specialty ? user.doctorProfile.specialty : "—"}
         </span>
       </td>
 

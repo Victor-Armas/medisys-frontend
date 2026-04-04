@@ -1,10 +1,10 @@
 import { getFullName, getInitials, User } from "../types/users.types";
-import { isDoctorRole } from "../types/doctors.types";
+import { isDoctor } from "../types/doctors.types";
 
 export const useProfileFormatter = (user: User) => {
   const fullName = getFullName(user);
   const initials = getInitials(user);
-  const doctor = isDoctorRole(user);
+  const doctor = isDoctor(user);
   const profile = user.doctorProfile;
   const activeClinics = profile?.doctorClinics?.filter((c) => c.isActive) ?? [];
 

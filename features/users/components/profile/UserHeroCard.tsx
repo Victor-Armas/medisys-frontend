@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Mail, Phone, Clock, Stethoscope, CheckCircle2, XCircle, Award, Building2 } from "lucide-react";
 import { getFullName, getInitials } from "@features/users/types/users.types";
-import { isDoctorRole } from "@features/users/types/doctors.types";
+import { isDoctor } from "@features/users/types/doctors.types";
 import { StatPill } from "./shared/StatPill";
 import type { User } from "@features/users/types/users.types";
 import { RoleConfig } from "@/shared/constants/roles";
@@ -14,7 +14,7 @@ interface Props {
 export function UserHeroCard({ user, config }: Props) {
   const fullName = getFullName(user);
   const initials = getInitials(user);
-  const doctor = isDoctorRole(user);
+  const doctor = isDoctor(user);
   const profile = user.doctorProfile;
   const activeClinics = profile?.doctorClinics?.filter((c) => c.isActive) ?? [];
 

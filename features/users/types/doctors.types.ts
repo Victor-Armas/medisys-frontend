@@ -1,14 +1,12 @@
-import { Role, User } from "./users.types";
-import type {
-  DoctorProfile as PrismaDoctor,
-  ScheduleRange as PrismaSchedule,
-  DoctorClinic,
-  ScheduleOverride as ScheduleOverrideBase,
-} from "@db/models";
+import type { User } from "./users.types";
 
-// ─── Horarios del doctor ─────────────────────────────────────
-export interface DoctorSchedule extends PrismaSchedule {
+/* ─────────────────────────────────────────────
+   Horarios del doctor
+───────────────────────────────────────────── */
+
+export interface DoctorSchedule {
   id: string;
+  doctorClinicId: string;
   weekDay: number;
   startTime: string;
   endTime: string;
@@ -17,23 +15,34 @@ export interface DoctorSchedule extends PrismaSchedule {
   isActive: boolean;
 }
 
-export interface ScheduleOverrides extends ScheduleOverrideBase {
+export type ScheduleOverrideType = "AVAILABLE" | "UNAVAILABLE" | "CUSTOM";
+
+export interface ScheduleOverrides {
   id: string;
-  name: string;
-  slug: string;
-  city: string | null;
-  isActive: boolean;
+  doctorClinicId: string;
+  date: string;
+  startTime: string | null;
+  endTime: string | null;
+  type: ScheduleOverrideType;
+  note: string | null;
 }
 
-// ─── Consultorio resumido ─────────────────────────────────────
-export interface DoctorClinicItem extends DoctorClinic {
+/* ─────────────────────────────────────────────
+   Consultorio resumido
+───────────────────────────────────────────── */
+
+export interface DoctorClinicItem {
   id: string;
+  doctorClinicId: string;
+
   isPrimary: boolean;
   isActive: boolean;
-  assignedAt: Date;
-  doctorClinicId: string;
+
+  assignedAt: string;
+
   scheduleRanges: DoctorSchedule[];
   scheduleOverrides: ScheduleOverrides[];
+
   clinic: {
     id: string;
     name: string;
@@ -43,72 +52,88 @@ export interface DoctorClinicItem extends DoctorClinic {
   };
 }
 
-// ─── Perfil médico completo ───────────────────────────────────
-// Refleja exactamente el modelo DoctorProfile de Prisma
-export interface DoctorProfile extends PrismaDoctor {
+/* ─────────────────────────────────────────────
+   Perfil médico completo
+───────────────────────────────────────────── */
+
+export interface DoctorProfile {
   id: string;
-  // Dirección (NOT NULL en Prisma)
+
   address: string;
   numHome: string;
   colony: string;
   city: string;
   state: string;
   zipCode: string;
+
   defaultAppointmentDuration: number;
-  // Datos profesionales
-  professionalLicense: string; // NOT NULL en Prisma
-  specialty: string | null; // opcional
-  university: string | null; // opcional
-  fullTitle: string | null; // opcional
-  signatureUrl: string | null; // sube por Cloudinary
-  createdAt: Date;
+
+  professionalLicense: string;
+
+  specialty: string | null;
+  university: string | null;
+  fullTitle: string | null;
+
+  signatureUrl: string | null;
+
+  createdAt: string;
+
   isAvailable: boolean;
+
   doctorClinics: DoctorClinicItem[];
 }
 
-// ─── Payload POST /api/doctors ────────────────────────────────
-// Crear usuario + perfil médico desde cero en una sola operación
+/* ─────────────────────────────────────────────
+   Payload crear doctor
+───────────────────────────────────────────── */
 
-export interface CreateDoctorPayload
-  // 1. Extraemos los campos de la cuenta (User) [cite: 4]
-  extends
-    Pick<User, "email" | "password" | "firstName" | "middleName" | "lastNamePaternal" | "lastNameMaternal" | "phone">,
-    Pick<
-      PrismaDoctor,
-      | "professionalLicense"
-      | "address"
-      | "numHome"
-      | "colony"
-      | "city"
-      | "state"
-      | "zipCode"
-      | "specialty"
-      | "university"
-      | "fullTitle"
-    > {
-  clinicIds?: string[];
-}
-
-// ─── Payload POST /api/doctors/assign ────────────────────────
-// Asignar perfil médico a usuario que ya existe
-export interface AssignDoctorPayload extends Pick<
-  PrismaDoctor,
-  | "professionalLicense"
-  | "address"
-  | "numHome"
-  | "colony"
-  | "city"
-  | "state"
-  | "zipCode"
-  | "specialty"
-  | "university"
-  | "fullTitle"
+export interface CreateDoctorPayload extends Pick<
+  User,
+  "email" | "password" | "firstName" | "middleName" | "lastNamePaternal" | "lastNameMaternal" | "phone"
 > {
-  userId: string;
+  professionalLicense: string;
+
+  address: string;
+  numHome: string;
+  colony: string;
+  city: string;
+  state: string;
+  zipCode: string;
+
+  specialty?: string | null;
+  university?: string | null;
+  fullTitle?: string | null;
+
   clinicIds?: string[];
 }
 
-// ─── Type guard ───────────────────────────────────────────────
-export function isDoctorRole(role: Role) {
-  return role === "DOCTOR" || role === "MAIN_DOCTOR";
+/* ─────────────────────────────────────────────
+   Payload asignar doctor existente
+───────────────────────────────────────────── */
+
+export interface AssignDoctorPayload {
+  userId: string;
+
+  professionalLicense: string;
+
+  address: string;
+  numHome: string;
+  colony: string;
+  city: string;
+  state: string;
+  zipCode: string;
+
+  specialty?: string | null;
+  university?: string | null;
+  fullTitle?: string | null;
+
+  clinicIds?: string[];
+}
+
+/* ─────────────────────────────────────────────
+   Type guard
+───────────────────────────────────────────── */
+
+export function isDoctor(u: Pick<User, "role">) {
+  return u.role === "DOCTOR" || u.role === "MAIN_DOCTOR";
 }
