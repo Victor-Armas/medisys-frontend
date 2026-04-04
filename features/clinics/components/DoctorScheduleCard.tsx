@@ -31,8 +31,8 @@ export function DoctorScheduleCard({ doctorClinic, canManage, onAddSchedule, onA
         <div className="flex gap-3 p-3 bg-bg-base border border-border-default rounded-xl items-start">
           <Info size={14} className="text-brand shrink-0 mt-0.5" />
           <p className="text-xs text-text-secondary leading-relaxed">
-            Haz click en una celda vacía para agregar un bloque de horario. Haz click en un evento existente para agregar una
-            excepción. Arrastra los eventos para moverlos o redimensionarlos.
+            Haz click en una celda vacía para agregar un bloque de horario. Haz click en un evento existente para poder borrarlo.
+            Arrastra los eventos de excepciones para moverlos de fecha .
           </p>
         </div>
 
@@ -45,16 +45,6 @@ export function DoctorScheduleCard({ doctorClinic, canManage, onAddSchedule, onA
           scheduleRanges={doctorClinic.scheduleRanges}
           scheduleOverrides={doctorClinic.scheduleOverrides}
         />
-
-        {/* <DoctorScheduleCalendar
-          doctorClinicId={doctorClinic.id}
-          scheduleRanges={doctorClinic.scheduleRanges}
-          scheduleOverrides={doctorClinic.scheduleOverrides}
-          canManage={canManage}
-          isPaused={isPaused}
-          onAddSchedule={onAddSchedule}|
-          onAddOverride={onAddOverride}
-        /> */}
 
         {/* Excepciones listadas */}
         <DoctorOverrides

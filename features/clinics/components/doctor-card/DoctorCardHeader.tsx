@@ -12,12 +12,7 @@ interface Props {
   isPaused: boolean;
 }
 
-export function DoctorCardHeader({
-  doctorClinic,
-  fullName,
-  initials,
-  isPaused,
-}: Props) {
+export function DoctorCardHeader({ doctorClinic, fullName, initials, isPaused }: Props) {
   const { doctorProfile } = doctorClinic;
   const toggleAvailability = useToggleDoctorAvailability();
 
@@ -39,9 +34,7 @@ export function DoctorCardHeader({
       {/* Nombre y especialidad */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <h3 className="text-sm font-semibold text-text-primary truncate">
-            {fullName}
-          </h3>
+          <h3 className="text-sm font-semibold text-text-primary truncate">{fullName}</h3>
           {isPaused && (
             <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 uppercase tracking-wide shrink-0">
               Pausado
@@ -49,8 +42,7 @@ export function DoctorCardHeader({
           )}
         </div>
         <p className="text-xs text-text-secondary mt-0.5 truncate">
-          {doctorProfile.specialty ?? "Sin especialidad"} · Cédula{" "}
-          {doctorProfile.professionalLicense}
+          {doctorProfile.specialty ?? "Sin especialidad"} · Cédula {doctorProfile.professionalLicense}
         </p>
       </div>
 
@@ -58,16 +50,12 @@ export function DoctorCardHeader({
       <div className="flex items-center gap-5 shrink-0">
         {/* Estado global */}
         <div className="text-center">
-          <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1.5">
-            Estado global
-          </p>
+          <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1.5">Estado global</p>
           <div className="flex items-center gap-2">
             <span
               className={cn(
                 "text-xs font-medium",
-                isPaused
-                  ? "text-amber-600 dark:text-amber-400"
-                  : "text-emerald-600 dark:text-emerald-400",
+                isPaused ? "text-amber-600 dark:text-amber-400" : "text-emerald-600 dark:text-emerald-400",
               )}
             >
               {isPaused ? "Pausado" : "Disponible"}
@@ -80,12 +68,7 @@ export function DoctorCardHeader({
                 isPaused ? "bg-border-strong" : "bg-emerald-500",
               )}
             >
-              <div
-                className={cn(
-                  "w-4 h-4 bg-white rounded-full transition-all",
-                  !isPaused && "ml-auto",
-                )}
-              />
+              <div className={cn("w-4 h-4 bg-white rounded-full transition-all", !isPaused && "ml-auto")} />
             </button>
           </div>
         </div>
@@ -94,34 +77,24 @@ export function DoctorCardHeader({
 
         {/* Duración */}
         <div className="text-center">
-          <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1.5">
-            Duración cita
-          </p>
-          <span className="text-xs font-semibold text-text-primary">
-            {doctorProfile.defaultAppointmentDuration} min
-          </span>
+          <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1.5">Duración cita</p>
+          <span className="text-xs font-semibold text-text-primary">{doctorProfile.defaultAppointmentDuration} min</span>
         </div>
 
         <div className="w-px h-8 bg-border-default" />
 
         {/* Permiso auto-gestión */}
         <div className="text-center">
-          <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1.5">
-            Permisos
-          </p>
+          <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1.5">Permisos</p>
           <div className="flex items-center gap-1.5">
             <span className="text-xs text-text-primary">Auto-gestión</span>
             <div
               className={cn(
                 "w-4 h-4 rounded flex items-center justify-center",
-                doctorProfile.canManageOwnSchedule
-                  ? "bg-brand"
-                  : "border border-border-strong bg-bg-subtle",
+                doctorProfile.canManageOwnSchedule ? "bg-brand" : "border border-border-strong bg-bg-subtle",
               )}
             >
-              {doctorProfile.canManageOwnSchedule && (
-                <Check size={10} strokeWidth={3} color="white" />
-              )}
+              {doctorProfile.canManageOwnSchedule && <Check size={10} strokeWidth={3} color="white" />}
             </div>
           </div>
         </div>

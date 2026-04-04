@@ -45,14 +45,14 @@ export function DoctorCalendarHeader() {
         >
           Mes
         </button>
-        <button
+        {/* <button
           onClick={() => setView("week")}
           className={`px-3 py-1 rounded-md text-xs border transition ${
             view === "week" ? "bg-brand text-white border-brand" : "border-border-default hover:bg-muted"
           }`}
         >
           Semana
-        </button>
+        </button> */}
       </div>
     </div>
   );

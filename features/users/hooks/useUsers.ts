@@ -1,6 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { assignDoctorProfile, createDoctor, createUser, doctorActiveToggle, getAllUsers, getUserById } from "@/features/users/services/users.service";
-import type { AssignDoctorPayload, CreateDoctorPayload, DoctorProfile } from "@/features/users/types/doctors.types";
+import {
+  assignDoctorProfile,
+  createDoctor,
+  createUser,
+  doctorActiveToggle,
+  getAllUsers,
+  getUserById,
+} from "@/features/users/services/users.service";
+import type { AssignDoctorPayload, CreateDoctorPayload } from "@/features/users/types/doctors.types";
 import { CreateUserPayload, User } from "../types";
 import { Clinic, clinicKeys } from "@/features/clinics";
 

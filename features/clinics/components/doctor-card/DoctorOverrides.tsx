@@ -1,9 +1,39 @@
 "use client";
 
+import { useState } from "react";
 import { cn } from "@shared/lib/utils";
 import type { ScheduleOverride } from "@features/clinics/types/clinic.types";
 import { useRemoveScheduleOverride } from "@features/clinics/hooks";
-import { Clock, Plus, X } from "lucide-react";
+import { Clock, Plus, Trash2 } from "lucide-react";
+import { ConfirmDialog } from "@/shared/providers/ConfirmDialog";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const OVERRIDE_CONFIG = {
+  AVAILABLE: {
+    label: "Día Extra",
+    badge: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/20",
+    dot: "bg-emerald-500",
+  },
+  UNAVAILABLE: {
+    label: "Inhábil",
+    badge: "bg-red-500/10 text-red-600 border-red-500/20 dark:text-red-400 dark:border-red-500/20",
+    dot: "bg-red-500",
+  },
+  CUSTOM: {
+    label: "Especial",
+    badge: "bg-amber-500/10 text-amber-700 border-amber-500/20 dark:text-amber-400 dark:border-amber-500/20",
+    dot: "bg-amber-500",
+  },
+} as const;
+
+// ─── Props ────────────────────────────────────────────────────────────────────
 
 interface Props {
   doctorClinicId: string;
@@ -13,106 +43,132 @@ interface Props {
   onAddOverride: (id: string) => void;
 }
 
+// ─── Component ────────────────────────────────────────────────────────────────
+
 export function DoctorOverrides({ doctorClinicId, scheduleOverrides = [], canManage, isPaused, onAddOverride }: Props) {
+  const [pendingId, setPendingId] = useState<string | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const removeOverride = useRemoveScheduleOverride();
 
-  if (scheduleOverrides.length === 0 && !canManage) {
-    return null;
+  if (scheduleOverrides.length === 0 && !canManage) return null;
+
+  const todayMX = dayjs().tz("America/Mexico_City").startOf("day");
+
+  const formattedOverrides = scheduleOverrides
+    .filter((override) => {
+      const overrideDate = dayjs.tz(override.date, "America/Mexico_City").startOf("day");
+      return !overrideDate.isBefore(todayMX); // solo fechas >= hoy
+    })
+    .map((override) => ({
+      ...override,
+      formattedDate: dayjs.tz(override.date, "America/Mexico_City").format("DD MMM YYYY"),
+    }))
+    .sort((a, b) => dayjs(a.date).unix() - dayjs(b.date).unix());
+  const pendingOverride = formattedOverrides.find((o) => o.id === pendingId);
+  const confirmMessage = pendingOverride ? `¿Deseas eliminar la excepción del ${pendingOverride.date}?` : "";
+
+  function handleRequestDelete(id: string) {
+    setPendingId(id);
+    setConfirmOpen(true);
+  }
+
+  async function handleConfirmDelete() {
+    if (!pendingId) return;
+    await removeOverride.mutateAsync(pendingId);
+    setConfirmOpen(false);
+    setPendingId(null);
   }
 
   return (
     <>
-      <div className="pt-4 border-t border-border-default mt-4">
-        {scheduleOverrides.length > 0 && (
-          <>
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Excepciones y Ajustes</p>
-            </div>
-            <div className="flex flex-col gap-2">
-              {scheduleOverrides.map((override) => {
-                let badgeColors = "bg-bg-subtle text-text-secondary border-border-default";
-                let labelTexto = "";
+      <div className="pt-2 border-t border-border-default">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-[11px] font-bold text-text-secondary uppercase tracking-wider flex items-center gap-1">
+            Excepciones y ajustes
+            {formattedOverrides.length > 0 && (
+              <span className="ml-1 px-1 py-0.5 rounded bg-bg-subtle text-text-secondary font-semibold text-[10px]">
+                {formattedOverrides.length}
+              </span>
+            )}
+          </p>
 
-                if (override.type === "AVAILABLE") {
-                  badgeColors =
-                    "bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20";
-                  labelTexto = "Día Extra";
-                } else if (override.type === "UNAVAILABLE") {
-                  badgeColors =
-                    "bg-red-50 text-red-600 border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20";
-                  labelTexto = "Inhábil";
-                } else if (override.type === "CUSTOM") {
-                  badgeColors =
-                    "bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20";
-                  labelTexto = "Especial";
-                }
-
-                return (
-                  <div
-                    key={override.id}
-                    className={cn(
-                      "flex items-center justify-between px-3 py-2.5 rounded-xl border group",
-                      isPaused ? "opacity-60 grayscale" : "",
-                      badgeColors,
-                    )}
-                  >
-                    <div className="flex flex-col gap-0.5">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[12px] font-bold">{override.date}</span>
-                        <span className="text-[10px] uppercase font-semibold tracking-wide border px-1.5 rounded-md shadow-sm border-current/30">
-                          {labelTexto}
-                        </span>
-                      </div>
-                      {(override.type === "CUSTOM" || override.type === "AVAILABLE") &&
-                        override.startTime &&
-                        override.endTime && (
-                          <span className="text-[11px] font-medium opacity-90 mt-0.5 flex flex-row items-center gap-1">
-                            <Clock size={10} className="opacity-70" />
-                            {override.startTime} — {override.endTime}
-                          </span>
-                        )}
-                      {override.note && (
-                        <span className="text-[10px] opacity-80 italic mt-0.5 max-w-[200px] truncate">
-                          &quot;{override.note}&quot;
-                        </span>
-                      )}
-                    </div>
-
-                    {canManage && !isPaused && (
-                      <button
-                        onClick={() => removeOverride.mutate(override.id)}
-                        disabled={removeOverride.isPending}
-                        className="opacity-0 group-hover:opacity-100 p-1 rounded-md hover:bg-black/5 dark:hover:bg-white/10 transition-all cursor-pointer"
-                      >
-                        <X size={14} strokeWidth={2.5} />
-                      </button>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </>
-        )}
-
-        {/* Botón para añadir Excepción en la base */}
-        {canManage && (
-          <div className={cn("w-full", scheduleOverrides.length > 0 && "mt-4")}>
+          {canManage && (
             <button
               onClick={() => !isPaused && onAddOverride(doctorClinicId)}
               disabled={isPaused}
               className={cn(
-                "flex items-center justify-center w-full gap-2 px-3 py-2 rounded-xl border border-dashed transition-all text-[12px] font-semibold cursor-pointer",
+                "flex items-center gap-1 px-2 py-1 rounded-lg border text-[11px] font-semibold transition-all cursor-pointer",
                 isPaused
                   ? "border-border-default text-text-disabled cursor-not-allowed opacity-40"
-                  : "border-brand/40 text-brand bg-brand/5 hover:border-brand hover:bg-brand hover:text-white",
+                  : "border-brand/30 text-brand bg-brand/5 hover:bg-brand hover:text-white hover:border-brand",
               )}
             >
-              <Plus size={14} strokeWidth={3} />
-              Añadir Excepción
+              <Plus size={12} strokeWidth={3} />
+              Añadir
             </button>
+          )}
+        </div>
+
+        {/* Overrides grid */}
+        {formattedOverrides.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {formattedOverrides.map((override) => {
+              const config = OVERRIDE_CONFIG[override.type];
+              const hasTime =
+                (override.type === "CUSTOM" || override.type === "AVAILABLE") && override.startTime && override.endTime;
+
+              return (
+                <div
+                  key={override.id}
+                  className={cn(
+                    "flex items-center gap-1 px-2 py-1 rounded-full border text-[10px] font-medium group",
+                    isPaused ? "opacity-50 grayscale pointer-events-none" : "",
+                    config.badge,
+                  )}
+                >
+                  <div className={cn("w-1.5 h-1.5 rounded-full shrink-0", config.dot)} />
+
+                  <span className="whitespace-nowrap font-bold">{override.formattedDate}</span>
+
+                  <span className="uppercase px-1 rounded-full text-[9px] font-semibold">{config.label}</span>
+
+                  {hasTime && (
+                    <span className="flex items-center gap-1 text-[9px] opacity-80">
+                      <Clock size={10} />
+                      {override.startTime}-{override.endTime}
+                    </span>
+                  )}
+
+                  {override.note && <span className="italic opacity-70 max-w-[80px] truncate">{override.note}</span>}
+
+                  {canManage && (
+                    <button
+                      onClick={() => handleRequestDelete(override.id)}
+                      disabled={removeOverride.isPending && pendingId === override.id}
+                      className="opacity-0 group-hover:opacity-100 p-1 cursor-pointer rounded-full hover:bg-red-500/10 text-red-500 transition-all"
+                    >
+                      <Trash2 size={12} strokeWidth={2} />
+                    </button>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        onOpenChange={(open) => {
+          setConfirmOpen(open);
+          if (!open) setPendingId(null);
+        }}
+        title="Eliminar excepción"
+        message={confirmMessage}
+        variant="danger"
+        onConfirm={handleConfirmDelete}
+      />
     </>
   );
 }

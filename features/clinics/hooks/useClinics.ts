@@ -136,7 +136,8 @@ export function useRemoveScheduleOverride() {
 export function useUpdateSchedule() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: UpdateScheduleRangePayload }) => clinicsService.updateSchedule(id, payload),
+    mutationFn: ({ id, payload }: { id: string; payload: UpdateScheduleRangePayload }) =>
+      clinicsService.updateSchedule(id, payload),
     onSuccess: () => qc.invalidateQueries({ queryKey: clinicKeys.lists() }),
   });
 }
@@ -144,7 +145,8 @@ export function useUpdateSchedule() {
 export function useUpdateScheduleOverride() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: UpdateScheduleOverridePayload }) => clinicsService.updateScheduleOverride(id, payload),
+    mutationFn: ({ id, payload }: { id: string; payload: UpdateScheduleOverridePayload }) =>
+      clinicsService.updateScheduleOverride(id, payload),
     onSuccess: () => qc.invalidateQueries({ queryKey: clinicKeys.lists() }),
   });
 }
