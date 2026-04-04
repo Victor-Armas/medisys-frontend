@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Mail, Phone, Clock, Stethoscope, CheckCircle2, XCircle, Award, Building2 } from "lucide-react";
 import { getFullName, getInitials } from "@features/users/types/users.types";
-import { isDoctor } from "@features/users/types/doctors.types";
+import { isDoctorRole } from "@features/users/types/doctors.types";
 import { StatPill } from "./shared/StatPill";
 import type { User } from "@features/users/types/users.types";
 import { RoleConfig } from "@/shared/constants/roles";
@@ -14,7 +14,7 @@ interface Props {
 export function UserHeroCard({ user, config }: Props) {
   const fullName = getFullName(user);
   const initials = getInitials(user);
-  const doctor = isDoctor(user);
+  const doctor = isDoctorRole(user);
   const profile = user.doctorProfile;
   const activeClinics = profile?.doctorClinics?.filter((c) => c.isActive) ?? [];
 
@@ -27,11 +27,22 @@ export function UserHeroCard({ user, config }: Props) {
   return (
     <div className="bg-bg-surface border border-border-default rounded-2xl overflow-hidden shadow-sm">
       {/* Banda con gradiente */}
-      <div className="h-20 relative overflow-hidden" style={{ background: `linear-gradient(135deg, ${config.colors.from} 0%, ${config.colors.to} 100%)` }}>
-        <div className="absolute -right-10 -top-10 w-48 h-48 rounded-full opacity-20" style={{ background: "rgba(255,255,255,0.3)" }} />
-        <div className="absolute right-20 bottom-0 w-24 h-24 rounded-full opacity-10" style={{ background: "rgba(255,255,255,0.5)" }} />
+      <div
+        className="h-20 relative overflow-hidden"
+        style={{ background: `linear-gradient(135deg, ${config.colors.from} 0%, ${config.colors.to} 100%)` }}
+      >
+        <div
+          className="absolute -right-10 -top-10 w-48 h-48 rounded-full opacity-20"
+          style={{ background: "rgba(255,255,255,0.3)" }}
+        />
+        <div
+          className="absolute right-20 bottom-0 w-24 h-24 rounded-full opacity-10"
+          style={{ background: "rgba(255,255,255,0.5)" }}
+        />
         <div className="absolute top-4 right-4 flex gap-2">
-          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold border bg-white ${config.badge}`}>
+          <span
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold border bg-white ${config.badge}`}
+          >
             <config.icon />
             {config.label}
           </span>
@@ -61,7 +72,11 @@ export function UserHeroCard({ user, config }: Props) {
           <div
             className={`w-24 h-24 rounded-2xl bg-linear-to-br ${config.gradient} flex items-center justify-center text-white text-2xl font-bold border-4 border-bg-surface shadow-lg`}
           >
-            {user.photoUrl ? <Image src={user.photoUrl} alt={fullName} width={96} height={96} className="w-24 h-24 rounded-2xl object-cover" /> : initials}
+            {user.photoUrl ? (
+              <Image src={user.photoUrl} alt={fullName} width={96} height={96} className="w-24 h-24 rounded-2xl object-cover" />
+            ) : (
+              initials
+            )}
           </div>
         </div>
 
@@ -90,7 +105,12 @@ export function UserHeroCard({ user, config }: Props) {
                   bg={config.colors.light}
                 />
                 {profile?.professionalLicense && (
-                  <StatPill icon={<Award size={12} />} label={`Ced. ${profile.professionalLicense}`} color={config.colors.from} bg={config.colors.light} />
+                  <StatPill
+                    icon={<Award size={12} />}
+                    label={`Ced. ${profile.professionalLicense}`}
+                    color={config.colors.from}
+                    bg={config.colors.light}
+                  />
                 )}
               </div>
             )}

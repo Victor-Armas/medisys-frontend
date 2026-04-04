@@ -1,5 +1,10 @@
-import { User } from "./users.types";
-import type { DoctorProfile as PrismaDoctor, ScheduleRange as PrismaSchedule, DoctorClinic, ScheduleOverride as ScheduleOverrideBase } from "@db/models";
+import { Role, User } from "./users.types";
+import type {
+  DoctorProfile as PrismaDoctor,
+  ScheduleRange as PrismaSchedule,
+  DoctorClinic,
+  ScheduleOverride as ScheduleOverrideBase,
+} from "@db/models";
 
 // ─── Horarios del doctor ─────────────────────────────────────
 export interface DoctorSchedule extends PrismaSchedule {
@@ -68,7 +73,19 @@ export interface CreateDoctorPayload
   // 1. Extraemos los campos de la cuenta (User) [cite: 4]
   extends
     Pick<User, "email" | "password" | "firstName" | "middleName" | "lastNamePaternal" | "lastNameMaternal" | "phone">,
-    Pick<PrismaDoctor, "professionalLicense" | "address" | "numHome" | "colony" | "city" | "state" | "zipCode" | "specialty" | "university" | "fullTitle"> {
+    Pick<
+      PrismaDoctor,
+      | "professionalLicense"
+      | "address"
+      | "numHome"
+      | "colony"
+      | "city"
+      | "state"
+      | "zipCode"
+      | "specialty"
+      | "university"
+      | "fullTitle"
+    > {
   clinicIds?: string[];
 }
 
@@ -76,13 +93,22 @@ export interface CreateDoctorPayload
 // Asignar perfil médico a usuario que ya existe
 export interface AssignDoctorPayload extends Pick<
   PrismaDoctor,
-  "professionalLicense" | "address" | "numHome" | "colony" | "city" | "state" | "zipCode" | "specialty" | "university" | "fullTitle"
+  | "professionalLicense"
+  | "address"
+  | "numHome"
+  | "colony"
+  | "city"
+  | "state"
+  | "zipCode"
+  | "specialty"
+  | "university"
+  | "fullTitle"
 > {
   userId: string;
   clinicIds?: string[];
 }
 
 // ─── Type guard ───────────────────────────────────────────────
-export function isDoctor(u: Pick<User, "role">) {
+export function isDoctorRole(u: { role: Role }) {
   return u.role === "DOCTOR" || u.role === "MAIN_DOCTOR";
 }

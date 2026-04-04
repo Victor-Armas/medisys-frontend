@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { isAxiosError } from "axios";
 import { cn } from "@/shared/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/shared/ui/dialog";
-import { isDoctor } from "@/features/users/types/doctors.types";
+import { isDoctorRole } from "@/features/users/types/doctors.types";
 import { unifiedUserSchema, FORM_STEPS_FIELDS, type UnifiedUserFormData } from "@/validations/user.schema";
 import { StepperHeader } from "./components/StepperHeader";
 import { ModalFooter } from "./components/ModalFooter";
@@ -40,7 +40,7 @@ export function UserFormModal({ onClose }: Props) {
   });
 
   const selectedRole = useWatch({ control, name: "role" });
-  const isSelectedDoctor = isDoctor({ role: selectedRole });
+  const isSelectedDoctor = isDoctorRole({ role: selectedRole });
   const stepLabels = isSelectedDoctor ? STEP_LABELS_DOCTOR : STEP_LABELS_STAFF;
   const fieldsByStep = isSelectedDoctor ? FORM_STEPS_FIELDS.doctor : FORM_STEPS_FIELDS.staff;
 
@@ -81,7 +81,9 @@ export function UserFormModal({ onClose }: Props) {
         {/* Header */}
         <DialogHeader className="px-10 py-7 border-b border-border-default bg-bg-surface">
           <DialogTitle className="text-xl font-bold tracking-tight text-text-primary">Nuevo Usuario</DialogTitle>
-          <DialogDescription className="text-[13px] text-text-secondary mt-1">Registra personal médico o administrativo en MediSys</DialogDescription>
+          <DialogDescription className="text-[13px] text-text-secondary mt-1">
+            Registra personal médico o administrativo en MediSys
+          </DialogDescription>
         </DialogHeader>
 
         {/* Stepper */}
@@ -103,7 +105,14 @@ export function UserFormModal({ onClose }: Props) {
             )}
           </div>
 
-          <ModalFooter step={step} totalSteps={stepLabels.length} isPending={isPending} isDoctor={isSelectedDoctor} onBack={handleBack} onNext={handleNext} />
+          <ModalFooter
+            step={step}
+            totalSteps={stepLabels.length}
+            isPending={isPending}
+            isDoctor={isSelectedDoctor}
+            onBack={handleBack}
+            onNext={handleNext}
+          />
         </form>
       </DialogContent>
     </Dialog>

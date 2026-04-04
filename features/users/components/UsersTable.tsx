@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Card } from "@/shared/ui/card";
 import { cn } from "@/shared/lib/utils";
 
-import { isDoctor } from "@/features/users/types/doctors.types";
+import { isDoctorRole } from "@/features/users/types/doctors.types";
 import { getRoleConfig } from "@/shared/constants/roles";
 import { getFullName, getInitials, type User } from "../types/users.types";
 
@@ -15,14 +15,7 @@ interface Props {
   isLoading: boolean;
 }
 
-const TABLE_HEADERS = [
-  "Usuario",
-  "Rol",
-  "Especialidad",
-  "Consultorio",
-  "Estado",
-  "Acciones",
-];
+const TABLE_HEADERS = ["Usuario", "Rol", "Especialidad", "Consultorio", "Estado", "Acciones"];
 
 export function UsersTable({ users, isLoading }: Props) {
   const router = useRouter();
@@ -33,18 +26,10 @@ export function UsersTable({ users, isLoading }: Props) {
     return (
       <Card className="border-border-default bg-bg-surface shadow-none">
         <div className="flex flex-col items-center justify-center gap-3 py-20">
-          <UserCircle2
-            size={40}
-            className="text-text-muted"
-            strokeWidth={1.5}
-          />
+          <UserCircle2 size={40} className="text-text-muted" strokeWidth={1.5} />
           <div className="text-center">
-            <p className="text-sm font-semibold text-text-secondary">
-              No se encontraron usuarios
-            </p>
-            <p className="text-xs text-text-muted mt-1">
-              Ajusta los filtros o crea un nuevo usuario
-            </p>
+            <p className="text-sm font-semibold text-text-secondary">No se encontraron usuarios</p>
+            <p className="text-xs text-text-muted mt-1">Ajusta los filtros o crea un nuevo usuario</p>
           </div>
         </div>
       </Card>
@@ -58,10 +43,7 @@ export function UsersTable({ users, isLoading }: Props) {
           <thead>
             <tr className="bg-bg-base/60 border-b border-border-default">
               {TABLE_HEADERS.map((h, i) => (
-                <th
-                  key={i}
-                  className="px-6 py-3.5 text-[10.5px] font-bold text-text-muted uppercase tracking-[.07em]"
-                >
+                <th key={i} className="px-6 py-3.5 text-[10.5px] font-bold text-text-muted uppercase tracking-[.07em]">
                   {h}
                 </th>
               ))}
@@ -88,21 +70,12 @@ export function UsersTable({ users, isLoading }: Props) {
   );
 }
 
-function UserRow({
-  user,
-  isLast,
-  onClick,
-}: {
-  user: User;
-  isLast: boolean;
-  onClick: () => void;
-}) {
+function UserRow({ user, isLast, onClick }: { user: User; isLast: boolean; onClick: () => void }) {
   const fullName = getFullName(user);
   const initials = getInitials(user);
   const config = getRoleConfig(user.role);
 
-  const clinics =
-    user.doctorProfile?.doctorClinics?.filter((c) => c.isActive) ?? [];
+  const clinics = user.doctorProfile?.doctorClinics?.filter((c) => c.isActive) ?? [];
   const primary = clinics.find((c) => c.isPrimary) ?? clinics[0];
 
   return (
@@ -110,7 +83,7 @@ function UserRow({
       onClick={onClick}
       className={cn(
         "group cursor-pointer transition-colors duration-100 hover:bg-bg-subtle/50",
-        !isLast && "border-b border-border-default"
+        !isLast && "border-b border-border-default",
       )}
     >
       {/* Usuario */}
@@ -120,28 +93,18 @@ function UserRow({
             className={cn(
               "w-9 h-9 rounded-full bg-linear-to-br shrink-0 flex items-center justify-center text-white text-xs font-bold",
               config.gradient,
-              !user.isActive && "opacity-40"
+              !user.isActive && "opacity-40",
             )}
           >
             {user.photoUrl ? (
-              <Image
-                src={user.photoUrl}
-                alt={fullName}
-                width={36}
-                height={36}
-                className="rounded-full object-cover"
-              />
+              <Image src={user.photoUrl} alt={fullName} width={36} height={36} className="rounded-full object-cover" />
             ) : (
               initials
             )}
           </div>
           <div className={cn(!user.isActive && "opacity-60")}>
-            <p className="text-[13.5px] font-semibold text-text-primary leading-tight">
-              {fullName}
-            </p>
-            <p className="text-[11.5px] text-text-secondary mt-0.5">
-              {user.email}
-            </p>
+            <p className="text-[13.5px] font-semibold text-text-primary leading-tight">{fullName}</p>
+            <p className="text-[11.5px] text-text-secondary mt-0.5">{user.email}</p>
           </div>
         </div>
       </td>
@@ -151,7 +114,7 @@ function UserRow({
         <span
           className={cn(
             "inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold border tracking-wide",
-            config.badge
+            config.badge,
           )}
         >
           {config.label}
@@ -163,14 +126,10 @@ function UserRow({
         <span
           className={cn(
             "text-[13px]",
-            isDoctor(user) && user.doctorProfile?.specialty
-              ? "text-text-primary font-medium"
-              : "text-text-muted"
+            isDoctorRole(user) && user.doctorProfile?.specialty ? "text-text-primary font-medium" : "text-text-muted",
           )}
         >
-          {isDoctor(user) && user.doctorProfile?.specialty
-            ? user.doctorProfile.specialty
-            : "—"}
+          {isDoctorRole(user) && user.doctorProfile?.specialty ? user.doctorProfile.specialty : "—"}
         </span>
       </td>
 
@@ -180,14 +139,8 @@ function UserRow({
           <span className="text-[12px] text-text-muted">Sin asignar</span>
         ) : (
           <div className="flex items-center gap-1.5">
-            <Building2
-              size={13}
-              className="text-text-muted shrink-0"
-              strokeWidth={1.8}
-            />
-            <span className="text-[13px] text-text-primary font-medium">
-              {primary?.clinic.name}
-            </span>
+            <Building2 size={13} className="text-text-muted shrink-0" strokeWidth={1.8} />
+            <span className="text-[13px] text-text-primary font-medium">{primary?.clinic.name}</span>
             {clinics.length > 1 && (
               <span className="text-[11px] font-bold text-text-secondary bg-bg-subtle px-1.5 py-0.5 rounded-md">
                 +{clinics.length - 1}
@@ -200,18 +153,11 @@ function UserRow({
       {/* Estado */}
       <td className="px-6 py-4">
         <div className="flex items-center gap-1.5">
-          <span
-            className={cn(
-              "w-1.5 h-1.5 rounded-full shrink-0",
-              user.isActive ? "bg-emerald-500" : "bg-zinc-400"
-            )}
-          />
+          <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", user.isActive ? "bg-emerald-500" : "bg-zinc-400")} />
           <span
             className={cn(
               "text-[12.5px] font-semibold",
-              user.isActive
-                ? "text-emerald-600 dark:text-emerald-400"
-                : "text-text-muted"
+              user.isActive ? "text-emerald-600 dark:text-emerald-400" : "text-text-muted",
             )}
           >
             {user.isActive ? "Activo" : "Inactivo"}
