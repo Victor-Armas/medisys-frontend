@@ -109,6 +109,6 @@ export interface AssignDoctorPayload extends Pick<
 }
 
 // ─── Type guard ───────────────────────────────────────────────
-export function isDoctorRole(u: { role: Role }) {
-  return u.role === "DOCTOR" || u.role === "MAIN_DOCTOR";
+export function isDoctorRole(role: Role) {
+  return role === "DOCTOR" || role === "MAIN_DOCTOR";
 }

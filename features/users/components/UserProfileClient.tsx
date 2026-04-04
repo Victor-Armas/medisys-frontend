@@ -18,7 +18,7 @@ interface Props {
 
 export function UserProfileClient({ user }: Props) {
   const config = getRoleConfig(user.role);
-  const doctor = isDoctorRole(user);
+  const doctor = isDoctorRole(user.role);
   const profile = user.doctorProfile;
   return (
     <div className="max-w-[1400px] mx-auto pb-10 space-y-6">
