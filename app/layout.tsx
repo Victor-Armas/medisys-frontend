@@ -12,20 +12,17 @@ export const metadata: Metadata = {
   description: "Sistema de gestión de consultorio médico",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+import { Toaster } from "@/shared/ui/toaster";
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="es"
-      suppressHydrationWarning
-      className={cn("font-sans", inter.variable)}
-    >
+    <html lang="es" suppressHydrationWarning className={cn("font-sans", inter.variable)}>
       <body>
         <QueryProvider>
-          <ThemeProvider>{children}</ThemeProvider>
+          <ThemeProvider>
+            {children}
+            <Toaster closeButton richColors expand={false} />
+          </ThemeProvider>
         </QueryProvider>
       </body>
     </html>

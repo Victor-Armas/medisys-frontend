@@ -12,7 +12,13 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set) => ({
   user:
     typeof window !== "undefined" && Cookies.get("user")
-      ? JSON.parse(Cookies.get("user") as string)
+      ? (() => {
+          try {
+            return JSON.parse(Cookies.get("user")!);
+          } catch {
+            return null;
+          }
+        })()
       : null,
   token: typeof window !== "undefined" ? Cookies.get("token") || null : null,
   setAuth: (user, token) => {

@@ -11,7 +11,9 @@ interface Props {
 
 export function ClinicDetailItem({ dc, apointmentDuration }: Props) {
   return (
-    <div className={`rounded-xl border p-4 ${dc.isPrimary ? "border-brand/30 bg-brand/5" : "border-border-default bg-bg-base/50"}`}>
+    <div
+      className={`rounded-xl border p-4 ${dc.isPrimary ? "border-brand/30 bg-brand/5" : "border-border-default bg-bg-base/50"}`}
+    >
       {/* Header */}
       <div className="flex items-start justify-between gap-2 mb-4">
         <div className="flex items-center gap-2.5 min-w-0">

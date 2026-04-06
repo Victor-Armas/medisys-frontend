@@ -1,27 +1,16 @@
-"use client";
-
+import { notify } from "@/shared/ui/toaster";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { isAxiosError } from "axios";
 import { useState } from "react";
-
 import { useCreateClinic, useUpdateClinic } from "@features/clinics/hooks";
-import {
-  createClinicSchema,
-  type CreateClinicFormData,
-} from "@features/clinics/validations/clinic.schema";
+import { createClinicSchema, type CreateClinicFormData } from "@features/clinics/validations/clinic.schema";
 import type { Clinic } from "@features/clinics/types/clinic.types";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/shared/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { Input } from "@/shared/ui/input";
 
 interface Props {
-  clinic?: Clinic; // si viene = edición, si no = creación
+  clinic?: Clinic;
   onClose: () => void;
 }
 
@@ -49,7 +38,7 @@ export function ClinicFormModal({ clinic, onClose }: Props) {
           zipCode: clinic.zipCode ?? "",
           rfc: clinic.rfc ?? "",
           professionalLicense: clinic.professionalLicense ?? "",
-          brandColor: clinic.brandColor ?? "",
+          // brandColor: clinic.brandColor ?? "",
           maxDoctors: clinic.maxDoctors,
         }
       : {
@@ -59,19 +48,35 @@ export function ClinicFormModal({ clinic, onClose }: Props) {
 
   async function onSubmit(data: CreateClinicFormData) {
     setServerError("");
+
     try {
       if (isEdit) {
-        await updateClinic.mutateAsync({ id: clinic.id, payload: data });
+        if (clinic.doctorClinics.length > data.maxDoctors) {
+          notify.error(`No puedes establecer un máximo menor a ${clinic.doctorClinics.length} médicos asignados actualmente.`);
+          return;
+        }
+      }
+      const loadId = notify.loading(isEdit ? "Actualizando consultorio..." : "Creando consultorio...");
+      if (isEdit) {
+        await updateClinic.mutateAsync({
+          id: clinic.id,
+          payload: data,
+        });
       } else {
         await createClinic.mutateAsync(data);
       }
+      notify.success(isEdit ? "Consultorio actualizado correctamente" : "Consultorio creado correctamente", undefined, {
+        id: loadId,
+      });
       onClose();
     } catch (err) {
       if (isAxiosError(err)) {
         const msg = err.response?.data?.message;
-        setServerError(
-          Array.isArray(msg) ? msg.join(", ") : msg ?? "Error al guardar"
-        );
+        const errorMsg = Array.isArray(msg) ? msg.join(", ") : (msg ?? "Error al guardar el consultorio");
+        setServerError(errorMsg);
+        notify.error(errorMsg);
+      } else {
+        notify.error("Error inesperado al guardar el consultorio");
       }
     }
   }
@@ -84,62 +89,24 @@ export function ClinicFormModal({ clinic, onClose }: Props) {
             {isEdit ? "Editar consultorio" : "Nuevo consultorio"}
           </DialogTitle>
           <DialogDescription className="text-xs text-text-secondary mt-1">
-            {isEdit
-              ? "Modifica los datos del consultorio"
-              : "Registra un nuevo consultorio o sede"}
+            {isEdit ? "Modifica los datos del consultorio" : "Registra un nuevo consultorio o sede"}
           </DialogDescription>
         </DialogHeader>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="px-8 py-6 space-y-5 max-h-[65vh] overflow-y-auto"
-        >
+        <form onSubmit={handleSubmit(onSubmit)} className="px-8 py-6 space-y-5 max-h-[65vh] overflow-y-auto">
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <Input
-                label="Nombre del consultorio *"
-                error={errors.name?.message}
-                {...register("name")}
-              />
+              <Input label="Nombre del consultorio *" error={errors.name?.message} {...register("name")} />
             </div>
-            <Input
-              label="Teléfono"
-              error={errors.phone?.message}
-              {...register("phone")}
-            />
-            <Input
-              label="Email"
-              type="email"
-              error={errors.email?.message}
-              {...register("email")}
-            />
+            <Input label="Teléfono" error={errors.phone?.message} {...register("phone")} />
+            <Input label="Email" type="email" error={errors.email?.message} {...register("email")} />
             <div className="col-span-2">
-              <Input
-                label="Dirección"
-                error={errors.address?.message}
-                {...register("address")}
-              />
+              <Input label="Dirección" error={errors.address?.message} {...register("address")} />
             </div>
-            <Input
-              label="Ciudad"
-              error={errors.city?.message}
-              {...register("city")}
-            />
-            <Input
-              label="Estado"
-              error={errors.state?.message}
-              {...register("state")}
-            />
-            <Input
-              label="Código postal"
-              error={errors.zipCode?.message}
-              {...register("zipCode")}
-            />
-            <Input
-              label="RFC"
-              error={errors.rfc?.message}
-              {...register("rfc")}
-            />
+            <Input label="Ciudad" error={errors.city?.message} {...register("city")} />
+            <Input label="Estado" error={errors.state?.message} {...register("state")} />
+            <Input label="Código postal" error={errors.zipCode?.message} {...register("zipCode")} />
+            <Input label="RFC" error={errors.rfc?.message} {...register("rfc")} />
             <div className="col-span-2">
               <Input
                 label="Cédula profesional del consultorio"
@@ -147,11 +114,11 @@ export function ClinicFormModal({ clinic, onClose }: Props) {
                 {...register("professionalLicense")}
               />
             </div>
-            <Input
+            {/* <Input
               label="Color de marca (ej: #534AB7)"
               error={errors.brandColor?.message}
               {...register("brandColor")}
-            />
+            /> */}
             <Input
               label="Máx. médicos simultáneos"
               type="number"
@@ -162,9 +129,7 @@ export function ClinicFormModal({ clinic, onClose }: Props) {
 
           {serverError && (
             <div className="p-3 rounded-xl bg-red-50 dark:bg-red-500/5 border border-red-200 dark:border-red-500/20">
-              <p className="text-xs text-red-700 dark:text-red-400 font-medium">
-                {serverError}
-              </p>
+              <p className="text-xs text-red-700 dark:text-red-400 font-medium">{serverError}</p>
             </div>
           )}
 
@@ -181,11 +146,7 @@ export function ClinicFormModal({ clinic, onClose }: Props) {
               disabled={isPending}
               className="flex-1 py-2.5 rounded-xl bg-brand text-white text-sm font-semibold hover:bg-brand-hover transition-colors disabled:opacity-60"
             >
-              {isPending
-                ? "Guardando..."
-                : isEdit
-                ? "Guardar cambios"
-                : "Crear consultorio"}
+              {isPending ? "Guardando..." : isEdit ? "Guardar cambios" : "Crear consultorio"}
             </button>
           </div>
         </form>

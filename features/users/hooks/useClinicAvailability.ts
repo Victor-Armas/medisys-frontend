@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { ClinicAvailabilityInput, AvailabilityData, ViewMode } from "../types/availability.types";
-import { resolveAvailability, getMonthRange, getWeekRange, formatMonthYear } from "../utils/ availability.utils";
+import { resolveAvailability, getMonthRange, getWeekRange, formatMonthYear } from "../utils/availability.utils";
 
 interface UseClinicAvailabilityReturn {
   data: AvailabilityData;

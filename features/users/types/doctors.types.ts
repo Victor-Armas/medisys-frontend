@@ -1,5 +1,7 @@
 import type { User } from "./users.types";
 
+export type ScheduleOverrideType = "AVAILABLE" | "UNAVAILABLE" | "CUSTOM";
+
 /* ─────────────────────────────────────────────
    Horarios del doctor
 ───────────────────────────────────────────── */
@@ -14,8 +16,6 @@ export interface DoctorSchedule {
   dateTo: string;
   isActive: boolean;
 }
-
-export type ScheduleOverrideType = "AVAILABLE" | "UNAVAILABLE" | "CUSTOM";
 
 export interface ScheduleOverrides {
   id: string;
@@ -34,15 +34,11 @@ export interface ScheduleOverrides {
 export interface DoctorClinicItem {
   id: string;
   doctorClinicId: string;
-
   isPrimary: boolean;
   isActive: boolean;
-
   assignedAt: string;
-
   scheduleRanges: DoctorSchedule[];
   scheduleOverrides: ScheduleOverrides[];
-
   clinic: {
     id: string;
     name: string;
@@ -58,28 +54,20 @@ export interface DoctorClinicItem {
 
 export interface DoctorProfile {
   id: string;
-
   address: string;
   numHome: string;
   colony: string;
   city: string;
   state: string;
   zipCode: string;
-
   defaultAppointmentDuration: number;
-
   professionalLicense: string;
-
   specialty: string | null;
   university: string | null;
   fullTitle: string | null;
-
   signatureUrl: string | null;
-
   createdAt: string;
-
   isAvailable: boolean;
-
   doctorClinics: DoctorClinicItem[];
 }
 
@@ -99,11 +87,9 @@ export interface CreateDoctorPayload extends Pick<
   city: string;
   state: string;
   zipCode: string;
-
   specialty?: string | null;
   university?: string | null;
   fullTitle?: string | null;
-
   clinicIds?: string[];
 }
 
@@ -113,20 +99,16 @@ export interface CreateDoctorPayload extends Pick<
 
 export interface AssignDoctorPayload {
   userId: string;
-
   professionalLicense: string;
-
   address: string;
   numHome: string;
   colony: string;
   city: string;
   state: string;
   zipCode: string;
-
   specialty?: string | null;
   university?: string | null;
   fullTitle?: string | null;
-
   clinicIds?: string[];
 }
 

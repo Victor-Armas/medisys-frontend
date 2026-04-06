@@ -16,7 +16,7 @@ export function ModalFooter({ isPending, hasSelectedUser, onClose }: Props) {
           onClick={onClose}
           className="px-5 py-2.5 text-sm font-medium rounded-xl transition-colors
                      text-text-secondary border border-border-default hover:bg-bg-subtle
-                     dark:border-white/10 dark:hover:bg-white/5"
+                     dark:border-white/10 dark:hover:bg-white/5 cursor-pointer"
         >
           Cancelar
         </button>
@@ -25,25 +25,19 @@ export function ModalFooter({ isPending, hasSelectedUser, onClose }: Props) {
           type="submit"
           disabled={isPending || !hasSelectedUser}
           className="flex items-center gap-2.5 px-7 py-2.5 text-sm font-semibold text-white
-                     rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                     rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           style={{
             background: GREEN.btn,
             boxShadow: `0 4px 14px 0 ${GREEN.btn}40`,
           }}
           onMouseEnter={(e) => {
-            if (!isPending && hasSelectedUser)
-              (e.currentTarget as HTMLButtonElement).style.background =
-                GREEN.btnHover;
+            if (!isPending && hasSelectedUser) (e.currentTarget as HTMLButtonElement).style.background = GREEN.btnHover;
           }}
           onMouseLeave={(e) => {
             (e.currentTarget as HTMLButtonElement).style.background = GREEN.btn;
           }}
         >
-          {isPending ? (
-            <Loader2 size={16} className="animate-spin" />
-          ) : (
-            <Stethoscope size={16} />
-          )}
+          {isPending ? <Loader2 size={16} className="animate-spin" /> : <Stethoscope size={16} />}
           Asignar Perfil Médico
         </button>
       </div>

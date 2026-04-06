@@ -3,6 +3,7 @@ import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { isAxiosError } from "axios";
+import { notify } from "@/shared/ui/toaster";
 import { cn } from "@/shared/lib/utils";
 import { Dialog, DialogContent } from "@/shared/ui/dialog";
 import {
@@ -56,34 +57,53 @@ export function AssignDoctorModal({ onClose }: Props) {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<AssignDoctorFormData>({
     resolver: zodResolver(assignDoctorSchema),
+    defaultValues: {
+      professionalLicense: "",
+      specialty: "",
+      university: "",
+      fullTitle: "",
+      address: "",
+      numHome: "",
+      colony: "",
+      city: "",
+      state: "",
+      zipCode: "",
+    },
   });
 
   function handleSelectUser(user: User) {
     setSelectedUser(user);
+    setValue("userId", user.id, { shouldValidate: true });
     setUserSearch("");
     setDropdownOpen(false);
   }
 
   function handleClearUser() {
     setSelectedUser(null);
+    setValue("userId", "", { shouldValidate: true });
     setUserSearch("");
   }
 
   async function onSubmit(data: AssignDoctorFormData) {
     if (!selectedUser) return;
     setServerError("");
+    const loadId = notify.loading("Asignando perfil médico...");
     try {
       await mutateAsync({ ...data, userId: selectedUser.id });
+      notify.success("Perfil médico asignado correctamente", undefined, { id: loadId });
       onClose();
     } catch (err) {
       if (isAxiosError(err)) {
         const msg = err.response?.data?.message;
-        setServerError(
-          Array.isArray(msg) ? msg.join(", ") : msg ?? "Error al asignar"
-        );
+        const errorMsg = Array.isArray(msg) ? msg.join(", ") : (msg ?? "Error al asignar");
+        setServerError(errorMsg);
+        notify.error(errorMsg, undefined, { id: loadId });
+      } else {
+        notify.error("Error inesperado", undefined, { id: loadId });
       }
     }
   }

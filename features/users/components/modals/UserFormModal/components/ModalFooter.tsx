@@ -9,14 +9,7 @@ interface Props {
   onNext: () => void;
 }
 
-export function ModalFooter({
-  step,
-  totalSteps,
-  isPending,
-  isDoctor,
-  onBack,
-  onNext,
-}: Props) {
+export function ModalFooter({ step, totalSteps, isPending, isDoctor, onBack, onNext }: Props) {
   const isLastStep = step === totalSteps - 1;
 
   return (
@@ -25,7 +18,7 @@ export function ModalFooter({
         <button
           type="button"
           onClick={onBack}
-          className="px-6 py-2.5 text-sm font-medium rounded-xl border border-border-default
+          className="px-6 py-2.5 text-sm font-medium rounded-xl border border-border-default cursor-pointer
                      text-text-secondary hover:bg-bg-subtle transition-colors"
         >
           {step === 0 ? "Cancelar" : "Anterior"}
@@ -35,7 +28,7 @@ export function ModalFooter({
           <button
             type="button"
             onClick={onNext}
-            className="px-6 py-2.5 text-sm font-semibold text-white rounded-xl transition-all
+            className="px-6 py-2.5 text-sm font-semibold text-white rounded-xl transition-all cursor-pointer
                        bg-brand hover:bg-brand-hover shadow-lg shadow-brand/15"
           >
             Continuar
@@ -44,7 +37,7 @@ export function ModalFooter({
           <button
             type="submit"
             disabled={isPending}
-            className="flex items-center gap-2 px-8 py-2.5 text-sm font-semibold text-white
+            className="flex items-center gap-2 px-8 py-2.5 text-sm font-semibold text-white cursor-pointer active:shadow-inner active:translate-y-1
                        rounded-xl bg-linear-to-br from-brand-gradient-from to-brand-gradient-to
                        shadow-lg shadow-brand/20 hover:opacity-90 transition-all
                        disabled:opacity-60 disabled:cursor-not-allowed"

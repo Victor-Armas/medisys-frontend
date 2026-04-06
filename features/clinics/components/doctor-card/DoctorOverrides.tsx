@@ -6,32 +6,12 @@ import type { ScheduleOverride } from "@features/clinics/types/clinic.types";
 import { useRemoveScheduleOverride } from "@features/clinics/hooks";
 import { Clock, Plus, Trash2 } from "lucide-react";
 import { ConfirmDialog } from "@/shared/providers/ConfirmDialog";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
+import dayjs from "@/shared/utils/date.utils";
+import { formatDate } from "@/shared/utils/date.utils";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const OVERRIDE_CONFIG = {
-  AVAILABLE: {
-    label: "Día Extra",
-    badge: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/20",
-    dot: "bg-emerald-500",
-  },
-  UNAVAILABLE: {
-    label: "Inhábil",
-    badge: "bg-red-500/10 text-red-600 border-red-500/20 dark:text-red-400 dark:border-red-500/20",
-    dot: "bg-red-500",
-  },
-  CUSTOM: {
-    label: "Especial",
-    badge: "bg-amber-500/10 text-amber-700 border-amber-500/20 dark:text-amber-400 dark:border-amber-500/20",
-    dot: "bg-amber-500",
-  },
-} as const;
+import { OVERRIDE_CONFIG } from "../../constants/calendar.constants";
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -61,7 +41,7 @@ export function DoctorOverrides({ doctorClinicId, scheduleOverrides = [], canMan
     })
     .map((override) => ({
       ...override,
-      formattedDate: dayjs.tz(override.date, "America/Mexico_City").format("DD MMM YYYY"),
+      formattedDate: formatDate(override.date),
     }))
     .sort((a, b) => dayjs(a.date).unix() - dayjs(b.date).unix());
   const pendingOverride = formattedOverrides.find((o) => o.id === pendingId);

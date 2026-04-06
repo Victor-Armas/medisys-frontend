@@ -2,7 +2,7 @@
 import { z } from "zod";
 
 const TIME_REGEX = /^([01]\d|2[0-3]):([0-5]\d)$/;
-const HEX_REGEX = /^#([0-9A-Fa-f]{6})$/;
+// const HEX_REGEX = /^#([0-9A-Fa-f]{6})$/;
 
 export const createClinicSchema = z.object({
   name: z.string().min(1, "El nombre es requerido"),
@@ -14,7 +14,7 @@ export const createClinicSchema = z.object({
   zipCode: z.string().optional(),
   rfc: z.string().optional(),
   professionalLicense: z.string().optional(),
-  brandColor: z.string().regex(HEX_REGEX, "Debe ser un color hex válido (#RRGGBB)").optional().or(z.literal("")),
+  // brandColor: z.string().regex(HEX_REGEX, "Debe ser un color hex válido (#RRGGBB)").optional().or(z.literal("")),
   maxDoctors: z.number().min(1, "Mínimo 1 médico").max(20),
 });
 

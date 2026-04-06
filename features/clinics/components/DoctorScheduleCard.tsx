@@ -5,7 +5,6 @@ import type { DoctorInClinic } from "@features/clinics/types/clinic.types";
 import { getFullName, getInitials } from "@features/clinics/utils/clinic.utils";
 import { Info } from "lucide-react";
 import { DoctorCardHeader } from "./doctor-card/DoctorCardHeader";
-
 import { DoctorOverrides } from "./doctor-card/DoctorOverrides";
 import { DoctorCalendarBase } from "./doctor-card/DoctorCalendarBase";
 

@@ -1,18 +1,14 @@
-import type { DoctorInClinic } from "@features/clinics/types/clinic.types";
+import { getFullName as sharedGetFullName, getInitials as sharedGetInitials } from "@/shared/utils/user.utils";
+import type { DoctorInClinic } from "../types/clinic.types";
 
 export const WEEK_DAYS = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 
 export function getFullName(dc: DoctorInClinic): string {
-  const { firstName, middleName, lastNamePaternal, lastNameMaternal } =
-    dc.doctorProfile.user;
-  return [firstName, middleName, lastNamePaternal, lastNameMaternal]
-    .filter(Boolean)
-    .join(" ");
+  return sharedGetFullName(dc.doctorProfile.user);
 }
 
 export function getInitials(dc: DoctorInClinic): string {
-  const { firstName, lastNamePaternal } = dc.doctorProfile.user;
-  return `${firstName[0] ?? ""}${lastNamePaternal[0] ?? ""}`.toUpperCase();
+  return sharedGetInitials(dc.doctorProfile.user);
 }
 
 export function getCapacityColor(used: number, max: number): string {

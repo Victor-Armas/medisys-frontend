@@ -8,6 +8,7 @@
 //   2. Crear Doctor / MédicoPrincipal → createDoctorSchema (usuario + perfil médico)
 //   3. Asignar perfil médico a usuario existente → assignDoctorSchema
 //   4. Modal unificado (paso 1 elige rol, luego valida según rol) → unifiedUserSchema
+//
 
 import { z } from "zod";
 
@@ -18,12 +19,12 @@ import { z } from "zod";
 /** Campos de User que aplican a CUALQUIER rol (obligatorios en Prisma) */
 const userBaseFields = {
   firstName: z.string().min(1, "El nombre es requerido").max(100, "Máximo 100 caracteres"),
-  middleName: z.string().max(100, "Máximo 100 caracteres").nullable().optional(),
+  middleName: z.string().max(100, "Máximo 100 caracteres").optional(),
   lastNamePaternal: z.string().min(1, "El apellido paterno es requerido").max(100, "Máximo 100 caracteres"),
   lastNameMaternal: z.string().min(1, "El apellido materno es requerido").max(100, "Máximo 100 caracteres"),
   email: z.string().min(1, "El email es requerido").email("El email no tiene un formato válido"),
   password: z.string().min(8, "La contraseña debe tener al menos 8 caracteres"),
-  phone: z.string().nullable().optional(),
+  phone: z.string().optional(),
 };
 
 /** Roles permitidos al crear staff (no PATIENT — ese es solo auto-registro público) */
@@ -42,9 +43,9 @@ const doctorProfileRequiredFields = {
 
 /** Campos de DoctorProfile — opcionales en Prisma (String?) */
 const doctorProfileOptionalFields = {
-  specialty: z.string().nullable(),
-  university: z.string().nullable(),
-  fullTitle: z.string().nullable(),
+  specialty: z.string().optional(),
+  university: z.string().optional(),
+  fullTitle: z.string().optional(),
   // signatureUrl y photoUrl se suben por Cloudinary en flujo separado
 };
 
@@ -153,12 +154,15 @@ export type UnifiedUserFormData = z.infer<typeof unifiedUserSchema>;
 // ─────────────────────────────────────────────────────────────
 export const FORM_STEPS_FIELDS = {
   // Admin y Recepcionista: 2 pasos
-  staff: [["role"], ["firstName", "lastNamePaternal", "lastNameMaternal", "email", "password"]] as (keyof UnifiedUserFormData)[][],
+  staff: [
+    ["role"],
+    ["firstName", "middleName", "lastNamePaternal", "lastNameMaternal", "email", "password", "phone"],
+  ] as (keyof UnifiedUserFormData)[][],
 
   // Doctor y Médico Principal: 3 pasos
   doctor: [
     ["role"],
-    ["firstName", "lastNamePaternal", "lastNameMaternal", "email", "password"],
-    ["professionalLicense", "address", "numHome", "colony", "city", "state", "zipCode"],
+    ["firstName", "middleName", "lastNamePaternal", "lastNameMaternal", "email", "password", "phone"],
+    ["professionalLicense", "specialty", "university", "fullTitle", "address", "numHome", "colony", "city", "state", "zipCode"],
   ] as (keyof UnifiedUserFormData)[][],
 };

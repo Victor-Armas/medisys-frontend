@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { isAxiosError } from "axios";
+import { notify } from "@/shared/ui/toaster";
 import { cn } from "@/shared/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/shared/ui/dialog";
 import { isDoctor } from "@/features/users/types/doctors.types";
@@ -37,6 +38,25 @@ export function UserFormModal({ onClose }: Props) {
   } = useForm<UnifiedUserFormData>({
     resolver: zodResolver(unifiedUserSchema),
     mode: "onChange",
+    defaultValues: {
+      firstName: "",
+      middleName: "",
+      lastNamePaternal: "",
+      lastNameMaternal: "",
+      email: "",
+      password: "",
+      phone: "",
+      professionalLicense: "",
+      specialty: "",
+      university: "",
+      fullTitle: "",
+      address: "",
+      numHome: "",
+      colony: "",
+      city: "",
+      state: "",
+      zipCode: "",
+    },
   });
 
   const selectedRole = useWatch({ control, name: "role" });
@@ -59,18 +79,25 @@ export function UserFormModal({ onClose }: Props) {
 
   async function onSubmit(data: UnifiedUserFormData) {
     setServerError("");
+    const loadId = notify.loading("Creando usuario...");
     try {
       if (isSelectedDoctor) {
         await createDoctor.mutateAsync(toCreateDoctorPayload(data));
+        notify.success("Perfil médico creado correctamente", undefined, { id: loadId });
       } else {
         await createUser.mutateAsync(toCreateUserPayload(data));
+        notify.success("Usuario administrativo creado", undefined, { id: loadId });
       }
       onClose();
     } catch (err) {
       if (isAxiosError(err)) {
         const msg = err.response?.data?.message;
-        setServerError(Array.isArray(msg) ? msg.join(", ") : (msg ?? "Error al crear el usuario"));
+        const errorMsg = Array.isArray(msg) ? msg.join(", ") : (msg ?? "Error al crear el usuario");
+        setServerError(errorMsg);
+        notify.error(errorMsg, undefined, { id: loadId });
         if (msg?.includes("email")) setStep(1);
+      } else {
+        notify.error("Error inesperado", undefined, { id: loadId });
       }
     }
   }

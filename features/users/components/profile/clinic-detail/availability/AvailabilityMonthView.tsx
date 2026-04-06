@@ -1,7 +1,9 @@
 // features/users/components/profile/clinic-detail/availability/AvailabilityMonthView.tsx
+"use client";
 
+import { useMemo } from "react";
 import { AvailabilityData, ResolvedDay } from "@/features/users/types/availability.types";
-import { fromDateStr, toDateStr } from "@/features/users/utils/ availability.utils";
+import { fromDateStr, toDateStr } from "@/features/users/utils/availability.utils";
 import { cn } from "@shared/lib/utils";
 
 interface Props {
@@ -33,23 +35,29 @@ function getTodayStr(): string {
 export function AvailabilityMonthView({ data }: Props) {
   const today = getTodayStr();
 
-  // Calcular offset del primer día (lunes = 0)
+  // Calcular offset del primer día (lunes = 0 en nuestro grid, pero getUTCDay() da 0=Dom)
   const firstDate = fromDateStr(data.rangeFrom);
   const firstWeekDay = firstDate.getUTCDay(); // 0=Dom..6=Sáb
-  const offset = (firstWeekDay + 6) % 7; // offset desde lunes
+  const offset = (firstWeekDay + 6) % 7; // Ajuste para que Lunes sea 0
 
-  // Construir celdas
-  const dayCells: (ResolvedDay | null)[] = Array(offset).fill(null);
-  let current = data.rangeFrom;
-  while (current <= data.rangeTo) {
-    dayCells.push(data.days[current] ?? null);
-    const d = fromDateStr(current);
-    d.setUTCDate(d.getUTCDate() + 1);
-    current = toDateStr(d);
-  }
+  // Construir celdas de forma segura
+  const dayCells = useMemo(() => {
+    const cells: (ResolvedDay | null)[] = Array(offset).fill(null);
+    
+    // Obtenemos los días ordenados por su fecha string
+    const sortedDays = Object.keys(data.days)
+      .sort()
+      .map((key) => data.days[key]);
 
-  // Rellenar hasta completar última semana
-  while (dayCells.length % 7 !== 0) dayCells.push(null);
+    cells.push(...sortedDays);
+
+    // Rellenar hasta completar la última semana (múltiplo de 7)
+    while (cells.length % 7 !== 0) {
+      cells.push(null);
+    }
+    
+    return cells;
+  }, [data.days, offset]);
 
   return (
     <div>
@@ -65,7 +73,7 @@ export function AvailabilityMonthView({ data }: Props) {
       {/* Grid días */}
       <div className="grid grid-cols-7 gap-1">
         {dayCells.map((day, i) => {
-          if (!day) return <div key={i} />;
+          if (!day) return <div key={i} className="min-h-[52px]" />;
 
           const isToday = day.dateStr === today;
           const isPast = day.dateStr < today;
@@ -77,11 +85,13 @@ export function AvailabilityMonthView({ data }: Props) {
               className={cn(
                 "rounded-lg border p-1.5 min-h-[52px] flex flex-col items-center gap-1 transition-colors",
                 KIND_BG[day.kind],
-                isToday && "ring-2 ring-brand ring-offset-1",
+                isToday && "ring-2 ring-brand ring-offset-1 z-10",
                 isPast && "opacity-50",
               )}
             >
-              <span className={cn("text-[11px] font-bold", isToday ? "text-brand" : "text-text-primary")}>{dayNum}</span>
+              <span className={cn("text-[11px] font-bold", isToday ? "text-brand" : "text-text-primary")}>
+                {dayNum}
+              </span>
 
               {day.kind !== "rest" && <div className={cn("w-1.5 h-1.5 rounded-full", KIND_DOT[day.kind])} />}
 

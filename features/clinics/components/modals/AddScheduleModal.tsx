@@ -1,7 +1,7 @@
-// features/clinics/components/modals/AddScheduleModal.tsx
 "use client";
 
-import { useForm, Controller } from "react-hook-form";
+import { notify } from "@/shared/ui/toaster";
+import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { isAxiosError } from "axios";
 import { useState } from "react";
@@ -16,12 +16,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from "@/shared/ui/input";
 import { cn } from "@/shared/lib/utils";
 
-function formatDateToISO(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
+import { toISODate } from "@/shared/utils/date.utils";
 
 interface Props {
   doctorClinicId: string;
@@ -37,7 +32,6 @@ export function AddScheduleModal({ doctorClinicId, doctorName, prefillDate, onCl
   const {
     register,
     handleSubmit,
-    watch,
     control,
     setValue,
     formState: { errors },
@@ -49,7 +43,7 @@ export function AddScheduleModal({ doctorClinicId, doctorName, prefillDate, onCl
     },
   });
 
-  const selectedDays = watch("weekDays") ?? [];
+  const selectedDays = useWatch({ control, name: "weekDays" }) ?? [];
 
   function toggleDay(day: number) {
     const current = selectedDays;
@@ -65,11 +59,11 @@ export function AddScheduleModal({ doctorClinicId, doctorName, prefillDate, onCl
 
   async function onSubmit(data: CreateScheduleRangeFormData) {
     setServerError("");
+    const loadId = notify.loading("Guardando horarios...");
     try {
-      const dateFrom = formatDateToISO(data.dateRange.from);
-      const dateTo = formatDateToISO(data.dateRange.to);
+      const dateFrom = toISODate(data.dateRange.from);
+      const dateTo = toISODate(data.dateRange.to);
 
-      // Una llamada por cada día seleccionado — el backend ya lo soporta
       await Promise.all(
         data.weekDays.map((weekDay) =>
           addSchedule.mutateAsync({
@@ -82,12 +76,16 @@ export function AddScheduleModal({ doctorClinicId, doctorName, prefillDate, onCl
           }),
         ),
       );
-
+      notify.success("Horarios guardados correctamente", undefined, { id: loadId });
       onClose();
     } catch (err) {
       if (isAxiosError(err)) {
         const msg = err.response?.data?.message;
-        setServerError(Array.isArray(msg) ? msg.join(", ") : (msg ?? "Error al agregar el bloque"));
+        const errorMsg = Array.isArray(msg) ? msg.join(", ") : (msg ?? "Error al agregar el bloque");
+        setServerError(errorMsg);
+        notify.error(errorMsg, undefined, { id: loadId });
+      } else {
+        notify.error("Error inesperado", undefined, { id: loadId });
       }
     }
   }

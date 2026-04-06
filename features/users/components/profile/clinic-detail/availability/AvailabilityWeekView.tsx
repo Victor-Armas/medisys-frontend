@@ -1,7 +1,8 @@
 // features/users/components/profile/clinic-detail/availability/AvailabilityWeekView.tsx
 
+import { useMemo } from "react";
 import { AvailabilityData, ResolvedDay } from "@/features/users/types/availability.types";
-import { formatDisplayDate, fromDateStr, toDateStr } from "@/features/users/utils/ availability.utils";
+import { formatDisplayDate, toDateStr } from "@/features/users/utils/availability.utils";
 import { cn } from "@shared/lib/utils";
 
 interface Props {
@@ -38,15 +39,12 @@ function getTodayStr(): string {
 export function AvailabilityWeekView({ data }: Props) {
   const today = getTodayStr();
 
-  // Construir array ordenado de días del rango
-  const days: ResolvedDay[] = [];
-  let current = data.rangeFrom;
-  while (current <= data.rangeTo) {
-    if (data.days[current]) days.push(data.days[current]);
-    const d = fromDateStr(current);
-    d.setUTCDate(d.getUTCDate() + 1);
-    current = toDateStr(d);
-  }
+  // Construir array ordenado de días del rango desde el objeto ya resuelto
+  const days = useMemo(() => {
+    return Object.keys(data.days)
+      .sort()
+      .map((key) => data.days[key]);
+  }, [data.days]);
 
   return (
     <div className="space-y-2">
@@ -81,7 +79,13 @@ export function AvailabilityWeekView({ data }: Props) {
               ) : (
                 <>
                   {day.blocks.map((block, i) => (
-                    <span key={i} className={cn("text-xs px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5", KIND_STYLES[day.kind])}>
+                    <span
+                      key={i}
+                      className={cn(
+                        "text-xs px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5",
+                        KIND_STYLES[day.kind],
+                      )}
+                    >
                       {block.startTime} – {block.endTime}
                       {/* Badge de tipo si no es base */}
                       {day.kind !== "base" && i === 0 && (
@@ -92,14 +96,18 @@ export function AvailabilityWeekView({ data }: Props) {
                     </span>
                   ))}
                   {/* Total horas */}
-                  {day.totalMinutes > 0 && <span className="text-[10px] font-semibold text-text-secondary ml-auto">{formatHours(day.totalMinutes)}</span>}
+                  {day.totalMinutes > 0 && (
+                    <span className="text-[10px] font-semibold text-text-secondary ml-auto">{formatHours(day.totalMinutes)}</span>
+                  )}
                 </>
               )}
             </div>
 
             {/* Nota del override */}
             {day.overrideNote && hasBlocks && (
-              <span className="text-[10px] italic text-text-secondary truncate max-w-[120px] pt-1.5 shrink-0">&quot;{day.overrideNote}&quot;</span>
+              <span className="text-[10px] italic text-text-secondary truncate max-w-[120px] pt-1.5 shrink-0">
+                &quot;{day.overrideNote}&quot;
+              </span>
             )}
           </div>
         );

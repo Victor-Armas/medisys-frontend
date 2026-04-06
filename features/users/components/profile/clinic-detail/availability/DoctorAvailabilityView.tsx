@@ -14,7 +14,14 @@ export function DoctorAvailabilityView({ input }: Props) {
   const { data, viewMode, setViewMode, periodLabel, goNext, goPrev, goToday } = useClinicAvailability(input);
   return (
     <div>
-      <AvailabilityToolbar periodLabel={periodLabel} viewMode={viewMode} onViewModeChange={setViewMode} onPrev={goPrev} onNext={goNext} onToday={goToday} />
+      <AvailabilityToolbar
+        periodLabel={periodLabel}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        onPrev={goPrev}
+        onNext={goNext}
+        onToday={goToday}
+      />
       {viewMode === "week" ? <AvailabilityWeekView data={data} /> : <AvailabilityMonthView data={data} />}
     </div>
   );

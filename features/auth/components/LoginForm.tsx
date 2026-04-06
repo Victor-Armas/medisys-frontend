@@ -1,4 +1,5 @@
 "use client";
+import { notify } from "@/shared/ui/toaster";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -30,12 +31,16 @@ export function LoginForm() {
 
   async function onSubmit(data: LoginFormData) {
     setServerError("");
+    const loadId = notify.loading("Iniciando sesión...");
     try {
       const res = await authService.login(data);
       setAuth(res.user, res.access_token);
+      notify.success(`¡Bienvenido, ${res.user.firstName}!`, "Acceso concedido", { id: loadId });
       router.push("/dashboard");
     } catch {
-      setServerError("Credenciales inválidas. Verifica tu email y contraseña.");
+      const errorMsg = "Credenciales inválidas. Verifica tu email y contraseña.";
+      setServerError(errorMsg);
+      notify.error(errorMsg, undefined, { id: loadId });
     }
   }
 

@@ -8,22 +8,17 @@ import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
+import { CALENDAR_COLORS } from "../constants/calendar.constants";
+
 interface Params {
   scheduleRanges: ScheduleRange[];
   scheduleOverrides: ScheduleOverride[];
 }
 
 export interface CustomCalendarEvent extends CalendarEvent {
-  type?: keyof typeof COLORS;
+  type?: keyof typeof CALENDAR_COLORS;
   editable?: boolean;
 }
-
-const COLORS = {
-  BASE: { bg: "#7c6ab5", text: "#ffffff", name: "BASE" as const },
-  CUSTOM: { bg: "#f59e0b", text: "#ffffff", name: "CUSTOM" as const },
-  AVAILABLE: { bg: "#10b981", text: "#ffffff", name: "AVAILABLE" as const },
-  UNAVAILABLE: { bg: "#ef4444", text: "#ffffff", name: "UNAVAILABLE" as const },
-};
 
 /** Encode IDs so we can distinguish kind + recordId when handling events */
 export function encodeBaseEventId(rangeId: string, dateStr: string): string {
@@ -75,10 +70,10 @@ export function useCalendarEvents({ scheduleRanges, scheduleOverrides }: Params)
             id: encodeBaseEventId(range.id, dateStr),
             start: dayjs(`${dateStr}T${range.startTime}`),
             end: dayjs(`${dateStr}T${range.endTime}`),
-            backgroundColor: COLORS.BASE.bg,
-            color: COLORS.BASE.text,
+            backgroundColor: CALENDAR_COLORS.BASE.bg,
+            color: CALENDAR_COLORS.BASE.text,
             title: "",
-            type: COLORS.BASE.name,
+            type: CALENDAR_COLORS.BASE.name,
             editable: false,
           });
         }
@@ -90,7 +85,7 @@ export function useCalendarEvents({ scheduleRanges, scheduleOverrides }: Params)
     // ── 2. OVERRIDE events ────────────────────────────────────────────────────
     scheduleOverrides.forEach((override) => {
       const dateStr = override.date.slice(0, 10);
-      const c = COLORS[override.type];
+      const c = CALENDAR_COLORS[override.type];
 
       if (override.type === "UNAVAILABLE") {
         // Full-day block — allDay so it floats at the top of the cell

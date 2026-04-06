@@ -5,59 +5,42 @@ import type { AvailabilityData, DayKind, ResolvedDay, TimeBlock } from "../types
 
 // ─── Helpers de fecha (UTC-safe, sin librerías) ───────────────
 
+import dayjs from "@/shared/utils/date.utils";
+
 export function toDateStr(date: Date): string {
-  const y = date.getUTCFullYear();
-  const m = String(date.getUTCMonth() + 1).padStart(2, "0");
-  const d = String(date.getUTCDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
+  return dayjs.utc(date).format("YYYY-MM-DD");
 }
 
 export function fromDateStr(dateStr: string): Date {
-  const [y, m, d] = dateStr.split("-").map(Number);
-  return new Date(Date.UTC(y, m - 1, d));
+  return dayjs.utc(dateStr).toDate();
 }
 
 export function weekDayOf(dateStr: string): number {
-  return fromDateStr(dateStr).getUTCDay();
+  return dayjs.utc(dateStr).day();
 }
 
 export function nextDateStr(dateStr: string): string {
-  const date = fromDateStr(dateStr);
-  date.setUTCDate(date.getUTCDate() + 1);
-  return toDateStr(date);
+  return dayjs.utc(dateStr).add(1, "day").format("YYYY-MM-DD");
 }
 
 export function getMonthRange(year: number, month: number): { from: string; to: string } {
-  const from = toDateStr(new Date(Date.UTC(year, month, 1)));
-  const to = toDateStr(new Date(Date.UTC(year, month + 1, 0)));
-  return { from, to };
+  const start = dayjs.utc().year(year).month(month).startOf("month");
+  const end = start.endOf("month");
+  return { from: start.format("YYYY-MM-DD"), to: end.format("YYYY-MM-DD") };
 }
 
 export function getWeekRange(referenceDate: Date): { from: string; to: string } {
-  const day = referenceDate.getUTCDay();
-  const monday = new Date(referenceDate);
-  monday.setUTCDate(referenceDate.getUTCDate() - ((day + 6) % 7));
-  const sunday = new Date(monday);
-  sunday.setUTCDate(monday.getUTCDate() + 6);
-  return { from: toDateStr(monday), to: toDateStr(sunday) };
+  const start = dayjs.utc(referenceDate).startOf("week").add(1, "day"); // Lunes
+  const end = start.add(6, "day"); // Domingo
+  return { from: start.format("YYYY-MM-DD"), to: end.format("YYYY-MM-DD") };
 }
 
-export function formatDisplayDate(dateStr: string, locale = "es-MX"): string {
-  const date = fromDateStr(dateStr);
-  return date.toLocaleDateString(locale, {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    timeZone: "UTC",
-  });
+export function formatDisplayDate(dateStr: string): string {
+  return dayjs.utc(dateStr).format("ddd D/MM/YYYY");
 }
 
-export function formatMonthYear(year: number, month: number, locale = "es-MX"): string {
-  return new Date(Date.UTC(year, month, 1)).toLocaleDateString(locale, {
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  });
+export function formatMonthYear(year: number, month: number): string {
+  return dayjs.utc().year(year).month(month).format("MMMM YYYY");
 }
 
 // ─── Helpers de tiempo ────────────────────────────────────────
@@ -97,9 +80,11 @@ function generateSlots(startHhmm: string, endHhmm: string, durationMins: number)
   const slots: string[] = [];
   let current = timeToMins(startHhmm);
   const end = timeToMins(endHhmm);
-  while (current + durationMins <= end) {
+  const safeDuration = durationMins > 0 ? durationMins : 30; // Evitar división por cero o bucle infinito
+
+  while (current + safeDuration <= end) {
     slots.push(minsToTime(current));
-    current += durationMins;
+    current += safeDuration;
   }
   return slots;
 }
@@ -121,7 +106,11 @@ export function resolveAvailability(
   const overrideMap = new Map(overrides.map((o) => [o.date, o]));
 
   let current = dateFrom;
-  while (current <= dateTo) {
+  let iterations = 0;
+  const MAX_ITERATIONS = 400; // Un año aprox, evita bucles infinitos si la fecha falla
+
+  while (current <= dateTo && iterations < MAX_ITERATIONS) {
+    iterations++;
     const override = overrideMap.get(current);
 
     let kind: DayKind;
