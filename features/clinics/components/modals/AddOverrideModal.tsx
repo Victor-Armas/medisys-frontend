@@ -56,9 +56,9 @@ export function AddOverrideModal({ doctorClinicId, doctorName, prefillDate, onCl
         doctorClinicId,
         date: toISODate(data.date),
         type: data.type,
-        startTime: data.startTime,
-        endTime: data.endTime,
-        note: data.note || undefined,
+        startTime: data.startTime ?? null,
+        endTime: data.endTime ?? null,
+        note: data.note ?? null,
       };
 
       await addOverride.mutateAsync(payload);

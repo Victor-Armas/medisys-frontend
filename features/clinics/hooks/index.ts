@@ -9,5 +9,6 @@ export {
   useRemoveScheduleOverride,
   useUpdateSchedule,
   useUpdateScheduleOverride,
+  useAssignDoctorToClinic,
   clinicKeys,
 } from "./useClinics";

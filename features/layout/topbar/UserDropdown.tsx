@@ -48,7 +48,9 @@ export function UserDropdown({ user }: Props) {
           {initials}
         </div>
         <div className="hidden md:block min-w-[100px]">
-          <p className="text-xs font-medium text-text-primary leading-tight">{`${user?.firstName} ${user?.lastNamePaternal}` || "Usuario"}</p>
+          <p className="text-xs font-medium text-text-primary leading-tight">
+            {`${user?.firstName} ${user?.lastNamePaternal}` || "Usuario"}
+          </p>
           <p className="text-[11px] text-text-secondary leading-tight">{getRoleConfig(user?.role as Role).label}</p>
         </div>
         <ChevronDown size={14} className="text-text-secondary ml-1 hidden md:block" />

@@ -59,4 +59,8 @@ export const clinicsService = {
   removeScheduleOverride: async (overrideId: string): Promise<void> => {
     await api.delete(`/clinics/schedules/override/${overrideId}`);
   },
+
+  assignDoctorToClinic: async (clinicId: string, payload: { doctorProfileId: string; isPrimary?: boolean }): Promise<void> => {
+    await api.post(`/clinics/${clinicId}/assign-doctor`, payload);
+  },
 };

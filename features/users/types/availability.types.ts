@@ -1,6 +1,6 @@
 // features/users/components/profile/clinic-detail/availability/availability.types.ts
 
-import type { ScheduleOverrideType } from "@features/clinics/types/clinic.types";
+import type { ScheduleOverrideType } from "@/features/users/types/users.types";
 import { DoctorClinicItem } from "./doctors.types";
 
 export type ViewMode = "week" | "month";
@@ -41,4 +41,4 @@ export interface AvailabilityViewProps {
 }
 
 // Input del hook y del componente orquestador
-export type ClinicAvailabilityInput = Pick<DoctorClinicItem, "doctorClinicId" | "scheduleRanges" | "scheduleOverrides"> & { slotDurationMinutes: number };
+export type ClinicAvailabilityInput = Pick<DoctorClinicItem, "scheduleRanges" | "scheduleOverrides"> & { doctorClinicId: string; slotDurationMinutes: number; };

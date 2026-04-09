@@ -1,27 +1,23 @@
-// services/users.service.ts
-// Cubre /users (staff general) y /doctors (médicos con perfil).
-// El backend tiene endpoints separados pero el frontend los unifica aquí.
-
 import api from "@/shared/lib/api";
-import type { AssignDoctorPayload, CreateDoctorPayload, DoctorProfile } from "@/features/users/types/doctors.types";
-import { CreateUserPayload, User } from "../types";
+import type {
+  AssignDoctorPayload,
+  BaseDoctorProfile,
+  CreateDoctorPayload,
+  UpdateDoctorProfilePayload,
+} from "@/features/users/types/doctors.types";
+import type { CreateUserPayload, User } from "../types";
+import { UpdateUserPayload } from "../types/users.types";
 
-// ─── Staff general ────────────────────────────────────────────
+// ─── Staff ────────────────────────────────────────────────────────────────────
 
-// GET /api/users — lista todos los usuarios (admin, recep, etc.)
-// GET /api/doctors — lista médicos con perfil
-// Los combinamos en el hook para mostrar todo en una sola tabla
 export async function getAllUsers(): Promise<User[]> {
   const [usersRes, doctorsRes] = await Promise.all([api.get<User[]>("/users"), api.get<User[]>("/doctors")]);
-  // Deduplica por id (doctores aparecen en ambas listas)x|
   const map = new Map<string, User>();
   [...usersRes.data, ...doctorsRes.data].forEach((u) => map.set(u.id, u));
   return Array.from(map.values());
 }
 
 export async function getUserById(id: string): Promise<User> {
-  // Intentar primero como doctor (trae doctorProfile)
-  // Si falla, buscar como usuario genérico
   try {
     const res = await api.get<User>(`/doctors/${id}`);
     return res.data;
@@ -31,27 +27,64 @@ export async function getUserById(id: string): Promise<User> {
   }
 }
 
-// POST /api/users — crear admin o recepcionista
 export async function createUser(payload: CreateUserPayload): Promise<User> {
   const res = await api.post<User>("/users", payload);
   return res.data;
 }
 
-// ─── Doctores ─────────────────────────────────────────────────
+export async function updateUser(id: string, payload: UpdateUserPayload): Promise<User> {
+  const res = await api.patch<User>(`/users/${id}`, payload);
+  return res.data;
+}
 
-// POST /api/doctors — crear doctor desde cero
+export async function uploadUserPhoto(userId: string, file: File): Promise<{ photoUrl: string }> {
+  const form = new FormData();
+  form.append("file", file);
+  const res = await api.post<{ photoUrl: string }>(`/users/${userId}/photo`, form, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return res.data;
+}
+
+// ─── Doctors ──────────────────────────────────────────────────────────────────
+
 export async function createDoctor(payload: CreateDoctorPayload): Promise<User> {
   const res = await api.post<User>("/doctors", payload);
   return res.data;
 }
 
-// POST /api/doctors/assign — asignar perfil a usuario existente
 export async function assignDoctorProfile(payload: AssignDoctorPayload): Promise<User> {
   const res = await api.post<User>("/doctors/assign", payload);
   return res.data;
 }
 
-export async function doctorActiveToggle(doctorProfileId: string): Promise<DoctorProfile> {
-  const res = await api.patch<DoctorProfile>(`/doctors/${doctorProfileId}/availability`);
+export async function updateDoctorProfile(
+  doctorProfileId: string,
+  payload: UpdateDoctorProfilePayload,
+): Promise<BaseDoctorProfile> {
+  const res = await api.patch<BaseDoctorProfile>(`/doctors/profile/${doctorProfileId}`, payload);
+  return res.data;
+}
+
+export async function uploadDoctorSignature(doctorProfileId: string, file: File): Promise<{ signatureUrl: string }> {
+  const form = new FormData();
+  form.append("file", file);
+  const res = await api.post<{ signatureUrl: string }>(`/doctors/${doctorProfileId}/signature`, form, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return res.data;
+}
+
+export async function doctorActiveToggle(doctorProfileId: string): Promise<BaseDoctorProfile> {
+  const res = await api.patch<BaseDoctorProfile>(`/doctors/${doctorProfileId}/availability`);
+  return res.data;
+}
+
+export async function doctorSchedulePermissionToggle(
+  doctorProfileId: string,
+): Promise<Pick<BaseDoctorProfile, "id" | "canManageOwnSchedule">> {
+  const res = await api.patch<Pick<BaseDoctorProfile, "id" | "canManageOwnSchedule">>(
+    `/doctors/${doctorProfileId}/schedule-permission`,
+  );
   return res.data;
 }

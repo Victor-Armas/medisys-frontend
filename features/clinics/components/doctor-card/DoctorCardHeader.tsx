@@ -2,8 +2,10 @@
 
 import { cn } from "@shared/lib/utils";
 import type { DoctorInClinic } from "@features/clinics/types/clinic.types";
-import { Check, MoreVertical } from "lucide-react";
-import { useToggleDoctorAvailability } from "@/features/users/hooks/useUsers";
+// import { MoreVertical } from "lucide-react";
+import { useToggleDoctorAvailability, useToggleSchedulePermission } from "@/features/users/hooks/useUsers";
+import { useAuthStore } from "@/features/auth";
+import { usePermissions } from "@/shared/hooks/usePermissions";
 
 interface Props {
   doctorClinic: DoctorInClinic;
@@ -15,6 +17,13 @@ interface Props {
 export function DoctorCardHeader({ doctorClinic, fullName, initials, isPaused }: Props) {
   const { doctorProfile } = doctorClinic;
   const toggleAvailability = useToggleDoctorAvailability();
+  const toggleSchedulePerm = useToggleSchedulePermission();
+  const { canGrantSchedulePermission } = usePermissions();
+  const currentUserId = useAuthStore((s) => s.user?.id);
+  const isAvailabilityPending = toggleAvailability.isPending;
+  const isSchedulePermPending = toggleSchedulePerm.isPending;
+
+  const canToggleAvailability = canGrantSchedulePermission || doctorProfile.user.id === currentUserId;
 
   return (
     <div className="flex items-center gap-4 px-6 py-4 border-b border-border-default">
@@ -48,7 +57,7 @@ export function DoctorCardHeader({ doctorClinic, fullName, initials, isPaused }:
 
       {/* Controles */}
       <div className="flex items-center gap-5 shrink-0">
-        {/* Estado global */}
+        {/* ── Estado global (isAvailable) ──────────────────────────── */}
         <div className="text-center">
           <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1.5">Estado global</p>
           <div className="flex items-center gap-2">
@@ -60,22 +69,30 @@ export function DoctorCardHeader({ doctorClinic, fullName, initials, isPaused }:
             >
               {isPaused ? "Pausado" : "Disponible"}
             </span>
-            <button
-              onClick={() => toggleAvailability.mutate(doctorProfile.id)}
-              disabled={toggleAvailability.isPending}
-              className={cn(
-                "w-9 h-5 rounded-full flex items-center px-0.5 transition-colors cursor-pointer",
-                isPaused ? "bg-border-strong" : "bg-emerald-500",
-              )}
-            >
-              <div className={cn("w-4 h-4 bg-white rounded-full transition-all", !isPaused && "ml-auto")} />
-            </button>
+            {canToggleAvailability ? (
+              <button
+                onClick={() => toggleAvailability.mutate(doctorProfile.id)}
+                disabled={isAvailabilityPending}
+                className={cn(
+                  "w-9 h-5 rounded-full flex items-center px-0.5 transition-colors cursor-pointer",
+                  "disabled:opacity-60 disabled:cursor-not-allowed",
+                  isPaused ? "bg-border-strong" : "bg-emerald-500",
+                )}
+                aria-label={isPaused ? "Reanudar doctor" : "Pausar doctor"}
+              >
+                <div className={cn("w-4 h-4 bg-white rounded-full transition-all", !isPaused && "ml-auto")} />
+              </button>
+            ) : (
+              <div
+                className={cn("w-4 h-4 rounded-full border-2 border-bg-surface", isPaused ? "bg-amber-500" : "bg-emerald-500")}
+              />
+            )}
           </div>
         </div>
 
         <div className="w-px h-8 bg-border-default" />
 
-        {/* Duración */}
+        {/* ── Duración cita ─────────────────────────────────────────── */}
         <div className="text-center">
           <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1.5">Duración cita</p>
           <span className="text-xs font-semibold text-text-primary">{doctorProfile.defaultAppointmentDuration} min</span>
@@ -83,27 +100,52 @@ export function DoctorCardHeader({ doctorClinic, fullName, initials, isPaused }:
 
         <div className="w-px h-8 bg-border-default" />
 
-        {/* Permiso auto-gestión */}
+        {/* ── Auto-gestión de horario (canManageOwnSchedule) ─────────── */}
         <div className="text-center">
-          <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1.5">Permisos</p>
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs text-text-primary">Auto-gestión</span>
-            <div
-              className={cn(
-                "w-4 h-4 rounded flex items-center justify-center",
-                doctorProfile.canManageOwnSchedule ? "bg-brand" : "border border-border-strong bg-bg-subtle",
-              )}
-            >
-              {doctorProfile.canManageOwnSchedule && <Check size={10} strokeWidth={3} color="white" />}
-            </div>
+          <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1.5">Auto-gestión</p>
+          <div className="flex items-center gap-2">
+            {/* Contenedor flex para alinear texto y switch */}
+            {canGrantSchedulePermission && (
+              <span
+                className={cn("text-xs font-medium", doctorProfile.canManageOwnSchedule ? "text-brand" : "text-text-secondary")}
+              >
+                {doctorProfile.canManageOwnSchedule ? "Habilitado" : "Deshabilitado"}
+              </span>
+            )}
+            {canGrantSchedulePermission ? (
+              <button
+                onClick={() => toggleSchedulePerm.mutate(doctorProfile.id)}
+                disabled={isSchedulePermPending}
+                className={cn(
+                  "w-9 h-5 rounded-full flex items-center px-0.5 transition-colors cursor-pointer",
+                  "disabled:opacity-60 disabled:cursor-not-allowed",
+                  doctorProfile.canManageOwnSchedule ? "bg-brand" : "bg-border-strong",
+                )}
+                aria-label={doctorProfile.canManageOwnSchedule ? "Revocar permiso" : "Conceder permiso"}
+              >
+                <div
+                  className={cn("w-4 h-4 bg-white rounded-full transition-all", doctorProfile.canManageOwnSchedule && "ml-auto")}
+                />
+              </button>
+            ) : (
+              <span
+                className={cn(
+                  "text-[11px] font-semibold px-2 py-0.5 rounded-md",
+                  doctorProfile.canManageOwnSchedule ? "bg-emerald-400/15  text-emerald-500" : "bg-bg-subtle text-text-secondary",
+                )}
+              >
+                {doctorProfile.canManageOwnSchedule ? "Habilitada" : "Deshabilitada"}
+              </span>
+            )}
           </div>
         </div>
 
-        {/* Menú acciones (placeholder) */}
         <div className="w-px h-8 bg-border-default" />
-        <button className="p-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-subtle transition-colors cursor-pointer">
+
+        {/* ── Menú acciones (placeholder Fase 2+) ─────────────────── */}
+        {/* <button className="p-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-subtle transition-colors cursor-pointer">
           <MoreVertical size={16} />
-        </button>
+        </button> */}
       </div>
     </div>
   );

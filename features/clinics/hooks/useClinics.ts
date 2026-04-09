@@ -150,3 +150,12 @@ export function useUpdateScheduleOverride() {
     onSuccess: () => qc.invalidateQueries({ queryKey: clinicKeys.lists() }),
   });
 }
+
+export function useAssignDoctorToClinic() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ clinicId, payload }: { clinicId: string; payload: { doctorProfileId: string; isPrimary?: boolean } }) =>
+      clinicsService.assignDoctorToClinic(clinicId, payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: clinicKeys.all }),
+  });
+}

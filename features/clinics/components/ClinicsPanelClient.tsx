@@ -9,6 +9,9 @@ import { ClinicFormModal } from "./modals/ClinicFormModal";
 import { AddScheduleModal } from "./modals/AddScheduleModal";
 import { AddOverrideModal } from "./modals/AddOverrideModal";
 import { useClinicManagement } from "../hooks/useClinicManagement";
+import { usePermissions } from "@/shared/hooks/usePermissions";
+import { AssignDoctorToClinicModal } from "./modals/AssignDoctorToClinicModal";
+import { ClinicsEmptyState } from "./ClinicsEmptyState";
 
 interface Props {
   initialClinics: Clinic[];
@@ -17,6 +20,10 @@ interface Props {
 export function ClinicsPanelClient({ initialClinics }: Props) {
   const { data: clinics = initialClinics, isLoading } = useClinics();
   const toggleClinic = useToggleClinic();
+  const { canManageClinics, canAssignDoctorToClinic } = usePermissions();
+
+  const handleAddClinic = canManageClinics ? () => setModal("create-clinic") : undefined;
+  const handleToggleClinic = canManageClinics ? (id: string) => toggleClinic.mutate(id) : undefined;
 
   const {
     selectedClinic,
@@ -39,6 +46,10 @@ export function ClinicsPanelClient({ initialClinics }: Props) {
     );
   }
 
+  if (!isLoading && clinics.length === 0) {
+    return <ClinicsEmptyState />;
+  }
+
   return (
     <div className="flex h-full gap-0 overflow-hidden">
       {/* ── Panel izquierdo ── */}
@@ -46,8 +57,8 @@ export function ClinicsPanelClient({ initialClinics }: Props) {
         clinics={clinics}
         activeClinicId={selectedClinic?.id}
         onSelect={setSelected}
-        onAddClinic={() => setModal("create-clinic")}
-        onToggleClinic={(id) => toggleClinic.mutate(id)}
+        onAddClinic={handleAddClinic}
+        onToggleClinic={handleToggleClinic}
       />
 
       {/* ── Panel derecho ── */}
@@ -60,8 +71,11 @@ export function ClinicsPanelClient({ initialClinics }: Props) {
           <>
             <ClinicDetailHeader
               clinic={selectedClinic}
+              canManage={canManageClinics}
               onEdit={handleEditClinic}
               onToggleActive={(id) => toggleClinic.mutate(id)}
+              onAssignDoctor={() => setModal("assign-doctor")}
+              canAssignDoctor={canAssignDoctorToClinic}
             />
 
             <ClinicDoctorsList
@@ -74,8 +88,8 @@ export function ClinicsPanelClient({ initialClinics }: Props) {
       </main>
 
       {/* ── Modales ── */}
-      {modal === "create-clinic" && <ClinicFormModal onClose={closeModal} />}
-      {modal === "edit-clinic" && editingClinic && (
+      {modal === "create-clinic" && canManageClinics && <ClinicFormModal onClose={closeModal} />}
+      {modal === "edit-clinic" && editingClinic && canManageClinics && (
         <ClinicFormModal clinic={editingClinic} onClose={closeModal} />
       )}
       {modal === "add-schedule" && (
@@ -93,6 +107,9 @@ export function ClinicsPanelClient({ initialClinics }: Props) {
           prefillDate={modalContext.prefillDate}
           onClose={closeModal}
         />
+      )}
+      {modal === "assign-doctor" && selectedClinic && canAssignDoctorToClinic && (
+        <AssignDoctorToClinicModal clinicId={selectedClinic.id} clinicName={selectedClinic.name} onClose={closeModal} />
       )}
     </div>
   );

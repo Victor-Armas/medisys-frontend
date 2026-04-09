@@ -1,121 +1,99 @@
-import type { User } from "./users.types";
+// doctors.types.ts
+import { BaseScheduleOverride, BaseScheduleRange } from "@/features/clinics/types/schedule.types";
+import { BaseUser } from "./users.types";
+import { BaseClinic } from "@/features/clinics/types/clinic.types";
 
-export type ScheduleOverrideType = "AVAILABLE" | "UNAVAILABLE" | "CUSTOM";
-
-/* ─────────────────────────────────────────────
-   Horarios del doctor
-───────────────────────────────────────────── */
-
-export interface DoctorSchedule {
+// ─── Entidad Base ─────────────────────────────────────────────
+export interface BaseDoctorProfile {
   id: string;
-  doctorClinicId: string;
-  weekDay: number;
-  startTime: string;
-  endTime: string;
-  dateFrom: string;
-  dateTo: string;
-  isActive: boolean;
-}
-
-export interface ScheduleOverrides {
-  id: string;
-  doctorClinicId: string;
-  date: string;
-  startTime: string | null;
-  endTime: string | null;
-  type: ScheduleOverrideType;
-  note: string | null;
-}
-
-/* ─────────────────────────────────────────────
-   Consultorio resumido
-───────────────────────────────────────────── */
-
-export interface DoctorClinicItem {
-  id: string;
-  doctorClinicId: string;
-  isPrimary: boolean;
-  isActive: boolean;
-  assignedAt: string;
-  scheduleRanges: DoctorSchedule[];
-  scheduleOverrides: ScheduleOverrides[];
-  clinic: {
-    id: string;
-    name: string;
-    slug: string;
-    city: string | null;
-    isActive: boolean;
-  };
-}
-
-/* ─────────────────────────────────────────────
-   Perfil médico completo
-───────────────────────────────────────────── */
-
-export interface DoctorProfile {
-  id: string;
+  userId: string;
   address: string;
   numHome: string;
   colony: string;
   city: string;
   state: string;
   zipCode: string;
-  defaultAppointmentDuration: number;
-  professionalLicense: string;
   specialty: string | null;
+  professionalLicense: string;
   university: string | null;
   fullTitle: string | null;
   signatureUrl: string | null;
-  createdAt: string;
+  signaturePublicId: string | null;
   isAvailable: boolean;
-  doctorClinics: DoctorClinicItem[];
+  defaultAppointmentDuration: number;
+  canManageOwnSchedule: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
-/* ─────────────────────────────────────────────
-   Payload crear doctor
-───────────────────────────────────────────── */
+// Relación Base Médico-Consultorio [cite: 39, 40, 41]
+export interface BaseDoctorClinic {
+  id: string;
+  doctorProfileId: string;
+  clinicId: string;
+  isPrimary: boolean;
+  isActive: boolean;
+  assignedAt: string;
+}
 
-export interface CreateDoctorPayload extends Pick<
-  User,
-  "email" | "password" | "firstName" | "middleName" | "lastNamePaternal" | "lastNameMaternal" | "phone"
-> {
-  professionalLicense: string;
+// ─── Agregados (Consultas con Relaciones) ─────────────────────
+export interface DoctorClinicWithRelations extends BaseDoctorClinic {
+  scheduleRanges: BaseScheduleRange[];
+  scheduleOverrides: BaseScheduleOverride[];
+  // Solo traemos la info vital de la clínica para evitar anidar infinitamente
+  clinic: Pick<BaseClinic, "id" | "name" | "slug" | "city" | "isActive">;
+}
 
-  address: string;
-  numHome: string;
-  colony: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  specialty?: string | null;
-  university?: string | null;
-  fullTitle?: string | null;
+export interface DoctorProfileWithRelations extends BaseDoctorProfile {
+  doctorClinics: DoctorClinicWithRelations[];
+}
+
+export type DoctorProfile = DoctorProfileWithRelations;
+export type DoctorClinicItem = DoctorClinicWithRelations;
+
+// ─── Payloads / DTOs ──────────────────────────────────────────
+
+// Agrupamos los campos requeridos para reutilizarlos en ambos payloads
+type DoctorProfileRequiredInputs = Pick<
+  BaseDoctorProfile,
+  "professionalLicense" | "address" | "numHome" | "colony" | "city" | "state" | "zipCode"
+>;
+
+type DoctorProfileOptionalInputs = Partial<Pick<BaseDoctorProfile, "specialty" | "university" | "fullTitle">>;
+
+export interface CreateDoctorPayload
+  extends
+    Pick<BaseUser, "email" | "password" | "firstName" | "middleName" | "lastNamePaternal" | "lastNameMaternal" | "phone">,
+    DoctorProfileRequiredInputs,
+    DoctorProfileOptionalInputs {
   clinicIds?: string[];
 }
 
-/* ─────────────────────────────────────────────
-   Payload asignar doctor existente
-───────────────────────────────────────────── */
-
-export interface AssignDoctorPayload {
+export interface AssignDoctorPayload extends DoctorProfileRequiredInputs, DoctorProfileOptionalInputs {
   userId: string;
-  professionalLicense: string;
-  address: string;
-  numHome: string;
-  colony: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  specialty?: string | null;
-  university?: string | null;
-  fullTitle?: string | null;
   clinicIds?: string[];
 }
 
-/* ─────────────────────────────────────────────
-   Type guard
-───────────────────────────────────────────── */
+export type UpdateDoctorProfilePayload = Partial<
+  Pick<
+    BaseDoctorProfile,
+    | "address"
+    | "numHome"
+    | "colony"
+    | "city"
+    | "state"
+    | "zipCode"
+    | "specialty"
+    | "professionalLicense"
+    | "university"
+    | "fullTitle"
+    | "defaultAppointmentDuration"
+    | "canManageOwnSchedule"
+    | "isAvailable"
+  >
+>;
 
-export function isDoctor(u: Pick<User, "role">) {
+// ─── Type Guard ───────────────────────────────────────────────
+export function isDoctor(u: Pick<BaseUser, "role">) {
   return u.role === "DOCTOR" || u.role === "MAIN_DOCTOR";
 }

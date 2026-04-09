@@ -1,45 +1,55 @@
-import { DoctorProfile } from "./doctors.types";
+// users.types.ts
 
-// ─── Roles ────────────────────────────────────────────────────
+import { DoctorProfileWithRelations } from "./doctors.types";
 
 export type Role = "ADMIN_SYSTEM" | "MAIN_DOCTOR" | "DOCTOR" | "RECEPTIONIST" | "PATIENT";
 export type StaffRole = Exclude<Role, "PATIENT">;
-export type TabFilter = "all" | StaffRole;
-export type ModalState = "none" | "create-user-unified" | "assign-doctor";
+export type ScheduleOverrideType = "AVAILABLE" | "UNAVAILABLE" | "CUSTOM";
 
-// ─── Entidad principal ────────────────────────────────────────
-
-export interface User {
+// ─── Entidad Base (1:1 con Prisma) ────────────────────────────
+export interface BaseUser {
   id: string;
-
   email: string;
   password?: string;
-
   firstName: string;
-  middleName?: string | null;
+  middleName: string | null;
   lastNamePaternal: string;
   lastNameMaternal: string;
   role: Role;
-  photoUrl?: string | null;
-  phone?: string | null;
+  photoUrl: string | null;
+  photoPublicId: string | null;
+  phone: string | null;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
-  doctorProfile?: DoctorProfile | null;
 }
 
-// ─── Payload POST /api/users ──────────────────────────────────
+// ─── Agregados (Consultas con Relaciones) ─────────────────────
+export interface User extends BaseUser {
+  doctorProfile?: DoctorProfileWithRelations | null;
+}
 
-export interface CreateUserPayload {
-  email: string;
-  password: string;
-  firstName: string;
+// ─── Payloads / DTOs ──────────────────────────────────────────
+export interface CreateUserPayload extends Pick<
+  BaseUser,
+  "email" | "password" | "firstName" | "lastNamePaternal" | "lastNameMaternal"
+> {
   middleName?: string | null;
-  lastNamePaternal: string;
-  lastNameMaternal: string;
   phone?: string | null;
   role: StaffRole;
 }
 
-// ─── Helpers ──────────────────────────────────────────────────
-export { getFullName, getInitials } from "@/shared/utils/user.utils";
+export type UpdateUserPayload = Partial<
+  Pick<BaseUser, "firstName" | "middleName" | "lastNamePaternal" | "lastNameMaternal" | "phone" | "role" | "isActive">
+>;
+// ─── UI Types & Helpers ───────────────────────────────────────
+export type TabFilter = "all" | StaffRole;
+export type ModalState = "none" | "create-user-unified" | "assign-doctor";
+
+export function getFullName(u: Pick<BaseUser, "firstName" | "middleName" | "lastNamePaternal" | "lastNameMaternal">) {
+  return [u.firstName, u.middleName, u.lastNamePaternal, u.lastNameMaternal].filter(Boolean).join(" ");
+}
+
+export function getInitials(u: Pick<BaseUser, "firstName" | "lastNamePaternal">) {
+  return `${u.firstName[0] ?? ""}${u.lastNamePaternal[0] ?? ""}`.toUpperCase();
+}

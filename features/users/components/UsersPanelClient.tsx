@@ -13,6 +13,7 @@ import { useUserFilters } from "@/features/users/hooks/useUserFilters";
 import type { ModalState, User } from "../types/users.types";
 import { Button } from "@/shared/ui/button";
 import { UsersTable } from "./UsersTable";
+import { usePermissions } from "@/shared/hooks/usePermissions";
 
 interface Props {
   initialUsers: User[];
@@ -20,10 +21,9 @@ interface Props {
 
 export function UsersPanelClient({ initialUsers }: Props) {
   const [modal, setModal] = useState<ModalState>("none");
-  const { data: users = initialUsers, isLoading } = useUsers({
-    initialData: initialUsers,
-  });
+  const { data: users = initialUsers, isLoading } = useUsers({ initialData: initialUsers });
   const { tab, setTab, search, setSearch, filtered } = useUserFilters(users);
+  const { canManageUsers } = usePermissions();
 
   const stats = calculateUserStats(users);
 
@@ -35,25 +35,28 @@ export function UsersPanelClient({ initialUsers }: Props) {
           <h2 className="text-3xl font-heading font-bold text-text-primary tracking-tight">Usuarios del sistema</h2>
           <p className="text-base font-body text-text-secondary mt-1">Gestión de médicos, recepcionistas y administradores.</p>
         </div>
+        {canManageUsers && (
+          <div className="flex items-center gap-3">
+            {/* Botón "Asignar perfil médico" - variante outline */}
+            <Button
+              variant="outline"
+              onClick={() => setModal("assign-doctor")}
+              className="flex items-center gap-2 h-10 px-5 bg-bg-surface"
+            >
+              <UserPlus />
+              Asignar perfil médico
+            </Button>
 
-        <div className="flex items-center gap-3">
-          {/* Botón "Asignar perfil médico" - variante outline */}
-          <Button variant="outline" onClick={() => setModal("assign-doctor")} className="flex items-center gap-2 h-10 px-5 bg-bg-surface">
-            <UserPlus />
-            Asignar perfil médico
-          </Button>
-
-          {/* Botón "Nuevo usuario" con DropdownMenu */}
-          <Button
-            onClick={() => setModal("create-user-unified")} // Abre el modal unificado
-            className="flex items-center gap-2 h-11 px-5 text-sm font-semibold
-                       bg-brand hover:bg-brand-hover text-white border-none 
-                       shadow-lg shadow-brand/10 rounded-xl transition-all"
-          >
-            <Plus size={18} strokeWidth={2.5} />
-            Nuevo usuario
-          </Button>
-        </div>
+            {/* Botón "Nuevo usuario" con DropdownMenu */}
+            <Button
+              onClick={() => setModal("create-user-unified")} // Abre el modal unificado
+              className="flex items-center gap-2 h-11 px-5 text-sm font-semibold bg-brand hover:bg-brand-hover text-white border-none shadow-lg shadow-brand/10 rounded-xl transition-all"
+            >
+              <Plus size={18} strokeWidth={2.5} />
+              Nuevo usuario
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* KPIs */}
@@ -69,8 +72,8 @@ export function UsersPanelClient({ initialUsers }: Props) {
       {/* Tabla */}
       <UsersTable users={filtered} isLoading={isLoading} />
 
-      {modal === "create-user-unified" && <UserFormModal onClose={() => setModal("none")} />}
-      {modal === "assign-doctor" && <AssignDoctorModal onClose={() => setModal("none")} />}
+      {modal === "create-user-unified" && canManageUsers && <UserFormModal onClose={() => setModal("none")} />}
+      {modal === "assign-doctor" && canManageUsers && <AssignDoctorModal onClose={() => setModal("none")} />}
     </div>
   );
 }

@@ -1,59 +1,17 @@
-import type { EventInput } from "@fullcalendar/core";
+// clinic.types.ts
 
-export type ScheduleOverrideType = "AVAILABLE" | "UNAVAILABLE" | "CUSTOM";
+import { BaseDoctorClinic, BaseDoctorProfile } from "@/features/users/types/doctors.types";
+export type { BaseScheduleOverride as ScheduleOverride, BaseScheduleRange as ScheduleRange } from "./schedule.types";
+import { BaseScheduleOverride, BaseScheduleRange } from "./schedule.types";
+import { BaseUser } from "@/features/users/types/users.types";
 
-export interface ScheduleRange {
-  id: string;
-  doctorClinicId: string;
-  weekDay: number;
-  startTime: string;
-  endTime: string;
-  dateFrom: string;
-  dateTo: string;
-  isActive: boolean;
-}
-
-export interface ScheduleOverride {
-  id: string;
-  date: string;
-  startTime: string | null;
-  endTime: string | null;
-  type: ScheduleOverrideType;
-  note: string | null;
-}
-
-export interface DoctorInClinic {
-  id: string;
-  isPrimary: boolean;
-  isActive: boolean;
-  assignedAt: string;
-  scheduleRanges: ScheduleRange[];
-  scheduleOverrides: ScheduleOverride[];
-  doctorProfile: {
-    id: string;
-    specialty: string | null;
-    professionalLicense: string;
-    isAvailable: boolean;
-    defaultAppointmentDuration: number;
-    canManageOwnSchedule: boolean;
-    user: {
-      id: string;
-      firstName: string;
-      middleName: string | null;
-      lastNamePaternal: string;
-      lastNameMaternal: string;
-      photoUrl: string | null;
-      phone: string | null;
-      isActive: boolean;
-    };
-  };
-}
-
-export interface Clinic {
+// ─── Entidad Base  ─────────────────────────────────────────────
+export interface BaseClinic {
   id: string;
   name: string;
   slug: string;
   logoUrl: string | null;
+  logoPublicId: string | null;
   phone: string | null;
   email: string | null;
   address: string | null;
@@ -66,74 +24,68 @@ export interface Clinic {
   maxDoctors: number;
   isActive: boolean;
   createdAt: string;
-  doctorClinics: DoctorInClinic[];
+  updatedAt: string;
 }
 
-export interface CreateClinicPayload {
-  name: string;
-  phone?: string;
-  email?: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  zipCode?: string;
-  rfc?: string;
-  professionalLicense?: string;
-  brandColor?: string;
-  maxDoctors?: number;
-}
-
-export type UpdateClinicPayload = Partial<CreateClinicPayload>;
-
-export interface CreateScheduleRangePayload {
-  doctorClinicId: string;
-  weekDay: number;
-  startTime: string;
-  endTime: string;
-  dateFrom: string;
-  dateTo: string;
-}
-
-export interface CreateScheduleOverridePayload {
-  doctorClinicId: string;
-  date: string;
-  type: ScheduleOverrideType;
-  startTime?: string;
-  endTime?: string;
-  note?: string;
-}
-
-// Estado del modal — tipado centralizado
-export type ClinicModalState = "none" | "create-clinic" | "edit-clinic" | "add-schedule" | "add-override";
-
-// Contexto de modal activo — evita variables sueltas en ClinicsPanelClient
-export interface ActiveModalContext {
-  doctorClinicId: string;
-  doctorName: string;
-  doctorProfileId: string; // Para multi-consultorio futuro
-  prefillDate?: string;
-}
-
-export interface ClinicCalendarEvent extends EventInput {
-  extendedProps: {
-    type: ScheduleOverrideType | "BASE";
-    note: string | null;
+// ─── Agregados (Consultas con Relaciones) ─────────────────────
+export interface DoctorInClinicContext extends BaseDoctorClinic {
+  scheduleRanges: BaseScheduleRange[];
+  scheduleOverrides: BaseScheduleOverride[];
+  doctorProfile: Pick<
+    BaseDoctorProfile,
+    "id" | "specialty" | "professionalLicense" | "isAvailable" | "defaultAppointmentDuration" | "canManageOwnSchedule"
+  > & {
+    user: Pick<
+      BaseUser,
+      "id" | "firstName" | "middleName" | "lastNamePaternal" | "lastNameMaternal" | "photoUrl" | "phone" | "isActive"
+    >;
   };
 }
 
-// Payloads para PATCH
-export interface UpdateScheduleRangePayload {
-  startTime?: string;
-  endTime?: string;
-  dateFrom?: string;
-  dateTo?: string;
-  isActive?: boolean;
+export interface ClinicWithRelations extends BaseClinic {
+  doctorClinics: DoctorInClinicContext[];
 }
 
-export interface UpdateScheduleOverridePayload {
-  date?: string;
-  type?: ScheduleOverrideType;
-  startTime?: string;
-  endTime?: string;
-  note?: string;
+export type Clinic = ClinicWithRelations;
+export type DoctorInClinic = DoctorInClinicContext;
+
+// ─── Payloads / DTOs ──────────────────────────────────────────
+export interface CreateClinicPayload
+  extends
+    Pick<BaseClinic, "name">,
+    Partial<
+      Pick<
+        BaseClinic,
+        "phone" | "email" | "address" | "city" | "state" | "zipCode" | "rfc" | "professionalLicense" | "brandColor" | "maxDoctors"
+      >
+    > {}
+
+export type UpdateClinicPayload = Partial<CreateClinicPayload>;
+
+// Schedules
+export type CreateScheduleRangePayload = Pick<
+  BaseScheduleRange,
+  "doctorClinicId" | "weekDay" | "startTime" | "endTime" | "dateFrom" | "dateTo"
+>;
+export type UpdateScheduleRangePayload = Partial<
+  Pick<BaseScheduleRange, "startTime" | "endTime" | "dateFrom" | "dateTo" | "isActive">
+>;
+
+export type CreateScheduleOverridePayload = Pick<
+  BaseScheduleOverride,
+  "doctorClinicId" | "date" | "type" | "startTime" | "endTime" | "note"
+>;
+
+export type UpdateScheduleOverridePayload = Partial<
+  Pick<BaseScheduleOverride, "date" | "type" | "startTime" | "endTime" | "note">
+>;
+
+// ─── UI Types ─────────────────────────────────────────────────
+export type ClinicModalState = "none" | "create-clinic" | "edit-clinic" | "add-schedule" | "add-override" | "assign-doctor";
+
+export interface ActiveModalContext {
+  doctorClinicId: string;
+  doctorName: string;
+  doctorProfileId: string;
+  prefillDate?: string;
 }
