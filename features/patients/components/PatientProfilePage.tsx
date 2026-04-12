@@ -1,4 +1,3 @@
-// features/patients/components/PatientProfilePage.tsx
 "use client";
 
 import { useState } from "react";
@@ -17,6 +16,7 @@ import {
   Building2,
   ChevronRight,
   ClipboardList,
+  Paperclip,
 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import {
@@ -31,15 +31,20 @@ import {
 } from "../types/patient.types";
 import { PatientMedicalHistoryTab } from "./profile/PatientMedicalHistoryTab";
 import { PatientAddressTab } from "./profile/PatientAddressTab";
+import { PatientMedicalFilesTab } from "./profile/PatientMedicalFilesTab";
 import { usePermissions } from "@/shared/hooks/usePermissions";
 import { MedicalStaffRole } from "@/features/users/types/users.types";
 
-type Tab = "overview" | "history" | "address";
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+type Tab = "overview" | "history" | "address" | "files";
 
 interface Props {
   patient: Patient;
   serverRole: MedicalStaffRole;
 }
+
+// ── Component ─────────────────────────────────────────────────────────────────
 
 export function PatientProfilePage({ patient, serverRole }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>("overview");
@@ -54,6 +59,7 @@ export function PatientProfilePage({ patient, serverRole }: Props) {
     { key: "overview", label: "Resumen", icon: <User size={15} /> },
     { key: "history", label: "Historia clínica", icon: <ClipboardList size={15} /> },
     { key: "address", label: "Domicilio", icon: <MapPin size={15} /> },
+    { key: "files", label: "Archivos médicos", icon: <Paperclip size={15} /> },
   ];
 
   return (
@@ -121,6 +127,7 @@ export function PatientProfilePage({ patient, serverRole }: Props) {
           {activeTab === "address" && (
             <PatientAddressTab patientId={patient.id} addresses={patient.addresses} canEdit={canEdit} />
           )}
+          {activeTab === "files" && <PatientMedicalFilesTab patientId={patient.id} canEdit={canEdit || isDoctor} />}
         </div>
       </div>
     </div>
@@ -147,18 +154,14 @@ function PatientHeroCard({
       {/* Banda de acento */}
       <div className="h-16 bg-linear-to-r from-brand-gradient-from to-brand-gradient-to relative">
         <div className="absolute top-3 right-4 flex gap-2">
-          <span
-            className={cn(
-              "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold border bg-white/20 backdrop-blur-sm text-white border-white/30",
-            )}
-          >
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold border bg-white/20 backdrop-blur-sm text-white border-white/30">
             {patient.isActive ? "● Activo" : "○ Inactivo"}
           </span>
         </div>
       </div>
 
       <div className="px-6 pb-6 relative flex flex-col sm:flex-row items-center sm:items-end gap-5">
-        {/* Avatar — sin foto por política de privacidad */}
+        {/* Avatar */}
         <div className="relative sm:absolute sm:left-6 shrink-0 z-10 -mt-8 sm:mt-0 sm:top-auto">
           <div className="w-20 h-20 rounded-2xl bg-linear-to-br from-brand-gradient-from to-brand-gradient-to flex items-center justify-center text-white text-2xl font-bold border-4 border-bg-surface shadow-lg">
             {initials}
@@ -177,7 +180,7 @@ function PatientHeroCard({
               </div>
             </div>
 
-            {/* Badges clínicos clave — visibles siempre */}
+            {/* Badges clínicos */}
             <div className="flex flex-wrap gap-2 justify-center sm:justify-end">
               {patient.bloodType && (
                 <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20">
@@ -231,7 +234,12 @@ function PatientOverviewTab({ patient, age }: { patient: Patient; age: number })
       {/* Datos personales */}
       <InfoCard title="Datos personales" icon={<User size={14} />} accentColor="var(--color-brand)">
         <FieldRow label="Nombre completo" value={getPatientFullName(patient)} />
-        <FieldRow label="Fecha nacimiento" value={new Date(patient.birthDate).toLocaleDateString("es-MX", { timeZone: "UTC" })} />
+        <FieldRow
+          label="Fecha nacimiento"
+          value={new Date(patient.birthDate).toLocaleDateString("es-MX", {
+            timeZone: "UTC",
+          })}
+        />
         <FieldRow label="Edad" value={`${age} años`} />
         <FieldRow label="Género" value={GENDER_LABELS[patient.gender]} />
         <FieldRow label="CURP" value={patient.curp} mono />

@@ -15,7 +15,79 @@ export type MaritalStatus = "SINGLE" | "MARRIED" | "DIVORCED" | "WIDOWED" | "FRE
 export type EducationLevel = "NONE" | "PRIMARY" | "SECONDARY" | "HIGH_SCHOOL" | "TECHNICAL" | "BACHELOR" | "POSTGRADUATE";
 export type HabitStatus = "NEVER" | "FORMER" | "CURRENT" | "UNKNOWN";
 
-// ── Catálogo SEPOMEX ─────────────────────────────────────────────────────────
+// ── Archivos médicos ──────────────────────────────────────────────────────────
+
+export type MedicalFileCategory =
+  | "LAB_RESULTS"
+  | "IMAGING"
+  | "PRESCRIPTION"
+  | "REFERRAL"
+  | "SURGERY_REPORT"
+  | "PATHOLOGY"
+  | "OTHER";
+
+export interface PatientMedicalFile {
+  id: string;
+  category: MedicalFileCategory;
+  description: string | null;
+  fileName: string;
+  fileUrl: string;
+  publicId: string;
+  mimeType: string;
+  fileSize: number;
+  uploadedById: string | null;
+  createdAt: string;
+}
+
+export const MEDICAL_FILE_CATEGORY_LABELS: Record<MedicalFileCategory, string> = {
+  LAB_RESULTS: "Laboratorio",
+  IMAGING: "Imagen / Radiología",
+  PRESCRIPTION: "Receta previa",
+  REFERRAL: "Interconsulta",
+  SURGERY_REPORT: "Informe quirúrgico",
+  PATHOLOGY: "Patología",
+  OTHER: "Otro",
+};
+
+export const MEDICAL_FILE_CATEGORY_COLORS: Record<MedicalFileCategory, { bg: string; text: string; border: string }> = {
+  LAB_RESULTS: {
+    bg: "bg-blue-500/10",
+    text: "text-blue-600",
+    border: "border-blue-500/20",
+  },
+  IMAGING: {
+    bg: "bg-purple-500/10",
+    text: "text-purple-600",
+    border: "border-purple-500/20",
+  },
+  PRESCRIPTION: {
+    bg: "bg-emerald-500/10",
+    text: "text-emerald-600",
+    border: "border-emerald-500/20",
+  },
+  REFERRAL: {
+    bg: "bg-amber-500/10",
+    text: "text-amber-600",
+    border: "border-amber-500/20",
+  },
+  SURGERY_REPORT: {
+    bg: "bg-red-500/10",
+    text: "text-red-600",
+    border: "border-red-500/20",
+  },
+  PATHOLOGY: {
+    bg: "bg-pink-500/10",
+    text: "text-pink-600",
+    border: "border-pink-500/20",
+  },
+  OTHER: {
+    bg: "bg-bg-subtle",
+    text: "text-text-secondary",
+    border: "border-border-default",
+  },
+};
+
+// ── Catálogo SEPOMEX ──────────────────────────────────────────────────────────
 
 export interface SepomexNeighborhood {
   id: string;
@@ -35,7 +107,7 @@ export interface SepomexPostalCodeResult {
   neighborhoods: SepomexNeighborhood[];
 }
 
-// ── Historia clínica ─────────────────────────────────────────────────────────
+// ── Historia clínica ──────────────────────────────────────────────────────────
 
 export interface MedicalHistory {
   id: string;
@@ -62,7 +134,6 @@ export interface MedicalHistory {
   childrenHistory?: string | null;
   siblingsHistory?: string | null;
   otherFamilyHistory?: string | null;
-  // Gineco
   menarche?: number | null;
   menstrualCycle?: string | null;
   lastMenstrualPeriod?: string | null;
@@ -78,7 +149,8 @@ export interface MedicalHistory {
   createdAt: string;
   updatedAt: string;
 }
-// ── Dirección ────────────────────────────────────────────────────────────────
+
+// ── Dirección ─────────────────────────────────────────────────────────────────
 
 export interface PatientAddress {
   id: string;
@@ -92,7 +164,6 @@ export interface PatientAddress {
     municipality: { name: string; state: { name: string } };
   } | null;
   neighborhood?: { name: string; type: string } | null;
-  // Extranjero
   foreignState?: string | null;
   foreignCity?: string | null;
   foreignPostalCode?: string | null;
