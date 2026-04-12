@@ -25,20 +25,7 @@ export interface InputProps extends React.ComponentProps<"input"> {
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  (
-    {
-      label,
-      error,
-      icon,
-      rightElement,
-      className,
-      wrapperClassName,
-      placeholder,
-      id,
-      ...props
-    },
-    ref
-  ) => {
+  ({ label, error, icon, rightElement, className, wrapperClassName, placeholder, id, ...props }, ref) => {
     const generatedId = React.useId();
     const inputId = id ?? generatedId;
     const hasIcon = !!icon;
@@ -52,9 +39,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             <span
               className={cn(
                 "absolute left-3.5 top-1/2 -translate-y-1/2 z-10 pointer-events-none transition-colors duration-200",
-                error
-                  ? "text-red-500"
-                  : "text-text-disabled group-focus-within:text-brand"
+                error ? "text-red-500" : "text-text-disabled group-focus-within:text-brand",
               )}
             >
               {React.createElement(icon, { size: 15 })}
@@ -68,7 +53,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             placeholder={label ? " " : placeholder} // espacio para activar :placeholder-shown
             className={cn(
               // Base
-              "peer w-full rounded-xl border bg-bg-surface text-sm text-text-primary",
+              "peer w-full rounded-md border bg-bg-surface text-sm text-text-primary",
               "transition-all duration-200 outline-none",
               // Padding: top aumentado para label flotante, left si hay ícono
               label ? "pt-5 pb-2" : "py-3",
@@ -79,8 +64,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               // Focus
               "focus:border-brand focus:ring-2 focus:ring-brand/15",
               // Error
-              error &&
-                "border-destructive  focus:border-destructive focus:ring-destructive/15",
+              error && "border-destructive  focus:border-destructive focus:ring-destructive/15",
               // Disabled
               "disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-bg-subtle",
               // Readonly
@@ -88,7 +72,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               // Autofill — evita el fondo azul del browser
               "[&:-webkit-autofill]:shadow-[inset_0_0_0_1000px_var(--color-bg-surface)]",
               "[&:-webkit-autofill]:[-webkit-text-fill-color:var(--color-text-primary)]",
-              className
+              className,
             )}
             aria-invalid={!!error}
             aria-describedby={error ? `${inputId}-error` : undefined}
@@ -117,9 +101,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                 // Offset si hay ícono
                 hasIcon ? "left-10" : "left-4",
                 // Color según estado
-                error
-                  ? "text-destructive peer-focus:text-destructive"
-                  : "peer-focus:text-brand"
+                error ? "text-destructive peer-focus:text-destructive" : "peer-focus:text-brand",
               )}
             >
               {label}
@@ -128,26 +110,20 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
           {/* Elemento derecho */}
           {rightElement && (
-            <span className="absolute right-3.5 top-1/2 -translate-y-1/2 z-10 flex items-center">
-              {rightElement}
-            </span>
+            <span className="absolute right-3.5 top-1/2 -translate-y-1/2 z-10 flex items-center">{rightElement}</span>
           )}
         </div>
 
         {/* Mensaje de error */}
         {error && (
-          <p
-            id={`${inputId}-error`}
-            className="text-[11px] font-medium ml-1 flex items-center gap-1"
-            role="alert"
-          >
+          <p id={`${inputId}-error`} className="text-[11px] font-medium ml-1 flex items-center gap-1" role="alert">
             <span className="inline-block w-1 h-1 rounded-full bg-red-400  shrink-0" />
             {error}
           </p>
         )}
       </div>
     );
-  }
+  },
 );
 
 Input.displayName = "Input";

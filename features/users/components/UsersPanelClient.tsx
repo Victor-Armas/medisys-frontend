@@ -10,20 +10,21 @@ import { KpiCard } from "./shared/KpiCard";
 import { calculateUserStats } from "@/features/users/utils/user-stats";
 import { UsersToolbar } from "./shared/UsersToolbar";
 import { useUserFilters } from "@/features/users/hooks/useUserFilters";
-import type { ModalState, User } from "../types/users.types";
+import type { ModalState, StaffRole, User } from "../types/users.types";
 import { Button } from "@/shared/ui/button";
 import { UsersTable } from "./UsersTable";
 import { usePermissions } from "@/shared/hooks/usePermissions";
 
 interface Props {
   initialUsers: User[];
+  serverRole: "" | StaffRole;
 }
 
-export function UsersPanelClient({ initialUsers }: Props) {
+export function UsersPanelClient({ initialUsers, serverRole }: Props) {
   const [modal, setModal] = useState<ModalState>("none");
   const { data: users = initialUsers, isLoading } = useUsers({ initialData: initialUsers });
   const { tab, setTab, search, setSearch, filtered } = useUserFilters(users);
-  const { canManageUsers } = usePermissions();
+  const { canManageUsers } = usePermissions(serverRole);
 
   const stats = calculateUserStats(users);
 

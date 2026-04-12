@@ -3,6 +3,7 @@
 import { DoctorProfileWithRelations } from "./doctors.types";
 
 export type Role = "ADMIN_SYSTEM" | "MAIN_DOCTOR" | "DOCTOR" | "RECEPTIONIST" | "PATIENT";
+export type MedicalStaffRole = Extract<Role, "ADMIN_SYSTEM" | "MAIN_DOCTOR" | "DOCTOR">;
 export type StaffRole = Exclude<Role, "PATIENT">;
 export type ScheduleOverrideType = "AVAILABLE" | "UNAVAILABLE" | "CUSTOM";
 

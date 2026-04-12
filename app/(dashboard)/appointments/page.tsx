@@ -111,12 +111,8 @@ export default function AppointmentsPage() {
       {/* 1. Encabezado */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-text-primary tracking-tight">
-            Agenda Médica
-          </h2>
-          <p className="text-sm text-text-secondary mt-1">
-            Gestión de citas, horarios y disponibilidad de la clínica.
-          </p>
+          <h2 className="text-2xl font-bold text-text-primary tracking-tight">Agenda Médica</h2>
+          <p className="text-sm text-text-secondary mt-1">Gestión de citas, horarios y disponibilidad de la clínica.</p>
         </div>
         <div className="flex items-center gap-3 w-full sm:w-auto">
           <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-brand text-white rounded-xl text-sm font-medium hover:bg-brand-hover transition-colors shadow-sm">
@@ -130,14 +126,10 @@ export default function AppointmentsPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="p-5 rounded-2xl bg-bg-surface border border-border-default flex items-center justify-between group">
           <div>
-            <p className="text-sm font-medium text-text-secondary mb-1">
-              Citas Hoy
-            </p>
+            <p className="text-sm font-medium text-text-secondary mb-1">Citas Hoy</p>
             <div className="flex items-baseline gap-2">
               <h3 className="text-2xl font-bold text-text-primary">18</h3>
-              <span className="text-xs font-semibold text-brand bg-bg-subtle px-2 py-0.5 rounded-full">
-                4 completadas
-              </span>
+              <span className="text-xs font-semibold text-brand bg-bg-subtle px-2 py-0.5 rounded-full">4 completadas</span>
             </div>
           </div>
           <div className="w-12 h-12 rounded-xl bg-bg-subtle flex items-center justify-center text-brand">
@@ -146,9 +138,7 @@ export default function AppointmentsPage() {
         </div>
         <div className="p-5 rounded-2xl bg-bg-surface border border-border-default flex items-center justify-between group">
           <div>
-            <p className="text-sm font-medium text-text-secondary mb-1">
-              En Consultorio
-            </p>
+            <p className="text-sm font-medium text-text-secondary mb-1">En Consultorio</p>
             <div className="flex items-baseline gap-2">
               <h3 className="text-2xl font-bold text-text-primary">3</h3>
               <span className="text-xs font-medium text-amber-600 bg-amber-500/10 px-2 py-0.5 rounded-full dark:text-amber-400">
@@ -162,14 +152,10 @@ export default function AppointmentsPage() {
         </div>
         <div className="p-5 rounded-2xl bg-bg-surface border border-border-default flex items-center justify-between group">
           <div>
-            <p className="text-sm font-medium text-text-secondary mb-1">
-              Confirmaciones
-            </p>
+            <p className="text-sm font-medium text-text-secondary mb-1">Confirmaciones</p>
             <div className="flex items-baseline gap-2">
               <h3 className="text-2xl font-bold text-text-primary">92%</h3>
-              <span className="text-xs font-medium text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                Óptimo
-              </span>
+              <span className="text-xs font-medium text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">Óptimo</span>
             </div>
           </div>
           <div className="w-12 h-12 rounded-xl bg-bg-subtle flex items-center justify-center text-brand">
@@ -223,9 +209,7 @@ export default function AppointmentsPage() {
 
           {/* Filtros de Doctores */}
           <div>
-            <h4 className="font-semibold text-text-primary text-sm mb-3">
-              Doctores
-            </h4>
+            <h4 className="font-semibold text-text-primary text-sm mb-3">Doctores</h4>
             <div className="space-y-2">
               <label className="flex items-center gap-3 cursor-pointer group">
                 <input
@@ -266,12 +250,8 @@ export default function AppointmentsPage() {
           {/* Header del timeline */}
           <div className="p-4 border-b border-border-default flex flex-col sm:flex-row items-center justify-between gap-4 sticky top-0 bg-bg-surface z-10">
             <div className="flex items-center gap-3">
-              <h3 className="text-lg font-bold text-text-primary">
-                24 Marzo, 2026
-              </h3>
-              <span className="px-2 py-1 bg-bg-subtle text-text-secondary rounded-md text-xs font-medium">
-                Hoy
-              </span>
+              <h3 className="text-lg font-bold text-text-primary">24 Marzo, 2026</h3>
+              <span className="px-2 py-1 bg-bg-subtle text-text-secondary rounded-md text-xs font-medium">Hoy</span>
             </div>
 
             <div className="flex items-center gap-2">
@@ -325,45 +305,30 @@ export default function AppointmentsPage() {
                           key={apt.id}
                           className={`p-3 border rounded-xl flex items-start gap-3 hover:shadow-md transition-shadow cursor-pointer ${apt.bgColor} ${apt.borderColor}`}
                         >
-                          <div
-                            className={`w-1 shrink-0 h-full rounded-full bg-current ${apt.textColor}`}
-                          />
+                          <div className={`w-1 shrink-0 h-full rounded-full bg-current ${apt.textColor}`} />
 
                           <div className="flex-1">
                             <div className="flex justify-between items-start">
-                              <h4
-                                className={`text-sm font-bold ${apt.textColor}`}
-                              >
-                                {apt.patient}
-                              </h4>
+                              <h4 className={`text-sm font-bold ${apt.textColor}`}>{apt.patient}</h4>
                               <span
                                 className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-white/50 dark:bg-black/20 ${apt.textColor}`}
                               >
                                 {apt.status}
                               </span>
                             </div>
-                            <p className="text-xs text-text-primary font-medium mt-1">
-                              {apt.title}
-                            </p>
+                            <p className="text-xs text-text-primary font-medium mt-1">{apt.title}</p>
 
                             <div className="flex items-center gap-4 mt-2">
                               <div className="flex items-center gap-1.5 text-xs text-text-secondary">
                                 <Clock size={12} />
-                                {block.hour}{" "}
-                                <span className="opacity-70">
-                                  ({apt.duration})
-                                </span>
+                                {block.hour} <span className="opacity-70">({apt.duration})</span>
                               </div>
                               <div className="flex items-center gap-1.5 text-xs text-text-secondary">
                                 <User size={12} />
                                 {apt.doctor}
                               </div>
                               <div className="flex items-center gap-1.5 text-xs text-text-secondary">
-                                {apt.type === "Video" ? (
-                                  <Video size={12} className={apt.textColor} />
-                                ) : (
-                                  <MapPin size={12} />
-                                )}
+                                {apt.type === "Video" ? <Video size={12} className={apt.textColor} /> : <MapPin size={12} />}
                                 {apt.type}
                               </div>
                             </div>
@@ -383,9 +348,7 @@ export default function AppointmentsPage() {
             {/* Fin del día de trabajo */}
             <div className="flex">
               <div className="w-16 shrink-0 text-right pr-4 border-t border-border-default pt-2">
-                <span className="text-xs font-medium text-text-disabled">
-                  18:00
-                </span>
+                <span className="text-xs font-medium text-text-disabled">18:00</span>
               </div>
               <div className="flex-1 border-t border-border-default mr-4"></div>
             </div>

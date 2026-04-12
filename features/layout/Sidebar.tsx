@@ -35,9 +35,7 @@ export function Sidebar({ initialCollapsed = false, role }: { initialCollapsed?:
 
   return (
     <aside
-      className={`${
-        isCollapsed ? "w-20" : "w-[260px]"
-      } bg-bg-surface dark:bg-bg-surface border-r border-border-default flex flex-col h-screen shrink-0 transition-all duration-300`}
+      className={`${isCollapsed ? "w-20" : "w-[230px]"} bg-bg-surface dark:bg-bg-surface border-r border-border-default flex flex-col h-screen shrink-0 transition-all duration-300`}
     >
       {/* Logo + Toggle unificados */}
       <div className="pt-8 pb-4 flex items-center justify-between px-5 shrink-0">
@@ -77,7 +75,7 @@ export function Sidebar({ initialCollapsed = false, role }: { initialCollapsed?:
       {/* Nav */}
       <div className="flex-1 overflow-y-auto pt-4 pb-4 px-3 space-y-1">
         <NavItem href="/dashboard" icon={LayoutDashboard} label="Dashboard" collapsed={isCollapsed} />
-        <NavItem href="/patients" icon={Users} label="Pacientes" badge={142} collapsed={isCollapsed} />
+        <NavItem href="/admin/patients" icon={Users} label="Pacientes" collapsed={isCollapsed} />
         <NavItem href="/appointments" icon={Calendar} label="Citas" badge={8} collapsed={isCollapsed} />
         <NavItem href="/records" icon={ClipboardList} label="Expedientes" collapsed={isCollapsed} />
         <NavItem href="/prescriptions" icon={FileText} label="Recetas" collapsed={isCollapsed} />
