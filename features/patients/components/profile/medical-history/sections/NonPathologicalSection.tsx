@@ -1,4 +1,4 @@
-import { Cigarette } from "lucide-react";
+"use client";
 import { HistorySection } from "../fields/HistorySection";
 import { HabitField } from "../fields/HabitField";
 import { CheckField } from "../fields/CheckField";
@@ -10,7 +10,7 @@ interface Props {
 
 export function NonPathologicalSection({ canEdit }: Props) {
   return (
-    <HistorySection title="Antecedentes no patológicos" icon={<Cigarette size={15} />} color="#d97706">
+    <HistorySection title="Antecedentes no patológicos" icon="cross">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         <HabitField label="Tabaquismo" name="smoking" detailName="smokingDetail" disabled={!canEdit} />
         <HabitField label="Alcoholismo" name="alcoholUse" detailName="alcoholDetail" disabled={!canEdit} />

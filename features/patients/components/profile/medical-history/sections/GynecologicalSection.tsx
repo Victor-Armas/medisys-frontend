@@ -3,6 +3,7 @@ import { HistorySection } from "../fields/HistorySection";
 import { NumberField } from "../fields/NumberField";
 import { TextareaField } from "../fields/TextareaField";
 import { CheckField } from "../fields/CheckField";
+import { DateField } from "../fields/DateField";
 
 interface Props {
   canEdit: boolean;
@@ -23,7 +24,7 @@ export function GynecologicalSection({ canEdit }: Props) {
         </div>
       </div>
       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <TextareaField label="Última menstruación" name="lastMenstrualPeriod" disabled={!canEdit} rows={1} />
+        <DateField label="Última menstruación" name="lastMenstrualPeriod" disabled={!canEdit} />
         <TextareaField label="Método anticonceptivo" name="contraceptiveMethod" disabled={!canEdit} rows={1} />
         <TextareaField label="Mastografía (fecha/res)" name="mammography" disabled={!canEdit} rows={1} />
         <TextareaField label="Citología cervical" name="cervicalCytology" disabled={!canEdit} rows={1} />

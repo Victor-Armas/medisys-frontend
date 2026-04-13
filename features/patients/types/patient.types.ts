@@ -315,3 +315,7 @@ export function getPatientAge(birthDate: string): number {
   if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
   return age;
 }
+
+export function formatPhone(phone: string) {
+  return phone.replace(/(\d{2})(\d{4})(\d{4})/, "$1 $2 $3");
+}

@@ -36,7 +36,6 @@ export const medicalHistorySchema = z.object({
   // Gineco
   menarche: optionalNumber,
   menstrualCycle: z.string(),
-  lastMenstrualPeriod: z.string(),
   sexualActivityStart: optionalNumber,
   gestations: optionalNumber,
   deliveries: optionalNumber,
@@ -46,9 +45,9 @@ export const medicalHistorySchema = z.object({
   menopause: z.boolean(),
   mammography: z.string(),
   cervicalCytology: z.string(),
+  lastMenstrualPeriod: z.preprocess((val) => (val === "" ? undefined : val), z.string().datetime().optional()).nullish(),
 });
-
-export type MedicalHistoryFormData = z.infer<typeof medicalHistorySchema>;
+export type MedicalHistoryFormData = z.input<typeof medicalHistorySchema>;
 
 // Valores por defecto explícitos para inicializar el formulario sin depender de .default() en el schema,
 // lo cual mantiene los tipos de entrada y salida alineados para el Resolver.
@@ -78,7 +77,7 @@ export const medicalHistoryDefaultValues: MedicalHistoryFormData = {
   otherFamilyHistory: "",
   menarche: null,
   menstrualCycle: "",
-  lastMenstrualPeriod: "",
+  lastMenstrualPeriod: undefined,
   sexualActivityStart: null,
   gestations: null,
   deliveries: null,

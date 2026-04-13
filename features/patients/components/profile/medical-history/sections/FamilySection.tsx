@@ -1,4 +1,4 @@
-import { Users } from "lucide-react";
+"use client";
 import { HistorySection } from "../fields/HistorySection";
 import { TextareaField } from "../fields/TextareaField";
 
@@ -8,7 +8,7 @@ interface Props {
 
 export function FamilySection({ canEdit }: Props) {
   return (
-    <HistorySection title="Antecedentes heredofamiliares" icon={<Users size={15} />} color="#3182ce">
+    <HistorySection title="Antecedentes heredofamiliares" icon="dna">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <TextareaField label="Padre" name="fatherHistory" disabled={!canEdit} />
         <TextareaField label="Madre" name="motherHistory" disabled={!canEdit} />
