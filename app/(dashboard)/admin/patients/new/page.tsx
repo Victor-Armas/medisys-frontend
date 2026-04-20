@@ -1,6 +1,6 @@
 // app/(admin)/patients/new/page.tsx
+import { PatientFormPage } from "@/features/patients";
 import { cookies } from "next/headers";
-import { PatientFormPage } from "@/features/patients/components/PatientFormPage";
 
 export default async function NewPatientPage() {
   const cookieStore = await cookies();

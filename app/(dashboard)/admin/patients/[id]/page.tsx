@@ -1,7 +1,7 @@
 // app/(admin)/patients/[id]/page.tsx
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
-import { PatientProfilePage } from "@/features/patients/components/PatientProfilePage";
+import { PatientProfilePage } from "@/features/patients";
 import type { Patient } from "@/features/patients/types/patient.types";
 import { MedicalStaffRole } from "@/features/users/types/users.types";
 

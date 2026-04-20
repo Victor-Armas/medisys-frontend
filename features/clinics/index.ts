@@ -1,5 +1,4 @@
-export { ClinicsPanelClient } from "./components/ClinicsPanelClient";
-
+export { ClinicsPanelClient } from "./panel/ClinicsPanelClient";
 export type {
   ClinicWithRelations as Clinic,
   DoctorInClinicContext as DoctorInClinic,
@@ -13,10 +12,7 @@ export type {
   UpdateScheduleOverridePayload,
 } from "./types/clinic.types";
 
-export type {
-  BaseScheduleRange as ScheduleRange,
-  BaseScheduleOverride as ScheduleOverride,
-} from "./types/schedule.types";
+export type { BaseScheduleRange as ScheduleRange, BaseScheduleOverride as ScheduleOverride } from "./types/schedule.types";
 
 export type { ScheduleOverrideType } from "@/features/users/types/users.types";
 

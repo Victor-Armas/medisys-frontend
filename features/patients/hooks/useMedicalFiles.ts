@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { medicalFilesService } from "../services/patients.service";
+import { medicalFilesService } from "../services/medicalFiles.service";
 import type { MedicalFileCategory } from "../types/patient.types";
 
 // ── Query keys ────────────────────────────────────────────────────────────────

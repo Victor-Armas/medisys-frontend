@@ -39,7 +39,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             <span
               className={cn(
                 "absolute left-3.5 top-1/2 -translate-y-1/2 z-10 pointer-events-none transition-colors duration-200",
-                error ? "text-red-500" : "text-text-disabled group-focus-within:text-brand",
+                error ? "text-red-500" : "text-subtitulo group-focus-within:text-principal",
               )}
             >
               {React.createElement(icon, { size: 15 })}
@@ -53,22 +53,22 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             placeholder={label ? " " : placeholder} // espacio para activar :placeholder-shown
             className={cn(
               // Base
-              "peer w-full rounded-md border bg-bg-surface text-sm text-text-primary",
+              "peer w-full rounded-md  bg-fondo-inputs text-sm text-encabezado",
               "transition-all duration-200 outline-none",
               // Padding: top aumentado para label flotante, left si hay ícono
               label ? "pt-5 pb-2" : "py-3",
               hasIcon ? "pl-10" : "pl-4",
               rightElement ? "pr-10" : "pr-4",
               // Border normal
-              "border-border-default",
+              "",
               // Focus
-              "focus:border-brand focus:ring-2 focus:ring-brand/15",
+              "focus:ring-2 focus:ring-principal/40",
               // Error
               error && "border-destructive  focus:border-destructive focus:ring-destructive/15",
               // Disabled
-              "disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-bg-subtle",
+              "disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-subtitulo",
               // Readonly
-              "read-only:bg-bg-base read-only:cursor-default",
+              "read-only:bg-base read-only:cursor-default",
               // Autofill — evita el fondo azul del browser
               "[&:-webkit-autofill]:shadow-[inset_0_0_0_1000px_var(--color-bg-surface)]",
               "[&:-webkit-autofill]:[-webkit-text-fill-color:var(--color-text-primary)]",
@@ -86,12 +86,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               className={cn(
                 // Posición base: centrada verticalmente (cuando NO hay valor/focus)
                 "absolute pointer-events-none select-none transition-all duration-200",
-                "text-text-secondary",
+                "text-subtitulo",
                 // Posición y tamaño "flotando" (cuando hay focus o valor)
                 // peer-focus o cuando el placeholder NO se muestra (hay valor)
-                "peer-focus:top-2 peer-focus:text-[10px] peer-focus:font-semibold peer-focus:tracking-wider peer-focus:uppercase",
+                "peer-focus:top-2 peer-focus:text-[9px] peer-focus:text-subtitulo peer-focus:font-semibold peer-focus:tracking-wider peer-focus:uppercase",
                 "peer-not-placeholder-shown:top-2",
-                "peer-not-placeholder-shown:text-[10px]",
+                "peer-not-placeholder-shown:text-[9px]",
                 "peer-not-placeholder-shown:font-semibold",
                 "peer-not-placeholder-shown:tracking-wider",
                 "peer-not-placeholder-shown:uppercase",
@@ -101,7 +101,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                 // Offset si hay ícono
                 hasIcon ? "left-10" : "left-4",
                 // Color según estado
-                error ? "text-destructive peer-focus:text-destructive" : "peer-focus:text-brand",
+                error ? "text-negative-text peer-focus:text-negative-text" : "peer-focus:text-subtitulo/60",
               )}
             >
               {label}

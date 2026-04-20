@@ -18,9 +18,14 @@ interface UserWithInitials {
  * Returns the full name of a user.
  */
 export function getFullName(u: UserWithNames): string {
-  return [u.firstName, u.middleName, u.lastNamePaternal, u.lastNameMaternal]
-    .filter(Boolean)
-    .join(" ");
+  return [u.firstName, u.middleName, u.lastNamePaternal, u.lastNameMaternal].filter(Boolean).join(" ");
+}
+
+/**
+ * Returns name y lastNamePaternal of a user.
+ */
+export function getName(u: UserWithNames): string {
+  return [u.firstName, u.lastNamePaternal].filter(Boolean).join(" ");
 }
 
 /**

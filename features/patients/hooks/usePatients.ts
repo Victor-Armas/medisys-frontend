@@ -1,7 +1,8 @@
-// features/patients/hooks/usePatients.ts
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { patientsService } from "../services/patients.service";
-import type { CreatePatientPayload, UpdatePatientPayload, CreatePatientAddressPayload } from "../types/patient.types";
+import type { CreatePatientPayload, UpdatePatientPayload } from "../types/patient.types";
+
+// ── Query key factory ─────────────────────────────────────────────────────────
 
 export const patientKeys = {
   all: ["patients"] as const,
@@ -9,9 +10,12 @@ export const patientKeys = {
   list: (params: object) => [...patientKeys.lists(), params] as const,
   detail: (id: string) => [...patientKeys.all, "detail", id] as const,
   history: (id: string) => [...patientKeys.all, "history", id] as const,
+  conditions: (id: string) => [...patientKeys.all, "conditions", id] as const,
+  medications: (id: string) => [...patientKeys.all, "medications", id] as const,
+  allergies: (id: string) => [...patientKeys.all, "allergies", id] as const,
 };
 
-// ── Queries ───────────────────────────────────────────────────────────────────
+// ── Patient queries ───────────────────────────────────────────────────────────
 
 export function usePatients(params: { clinicId?: string; search?: string; page?: number; limit?: number }) {
   return useQuery({
@@ -29,16 +33,7 @@ export function usePatient(id: string) {
   });
 }
 
-export function useMedicalHistory(patientId: string) {
-  return useQuery({
-    queryKey: patientKeys.history(patientId),
-    queryFn: () => patientsService.getMedicalHistory(patientId),
-    enabled: !!patientId,
-    retry: false,
-  });
-}
-
-// ── Mutations ─────────────────────────────────────────────────────────────────
+// ── Patient mutations ─────────────────────────────────────────────────────────
 
 export function useCreatePatient() {
   const qc = useQueryClient();
@@ -55,58 +50,6 @@ export function useUpdatePatient() {
     onSuccess: (_data, { id }) => {
       qc.invalidateQueries({ queryKey: patientKeys.detail(id) });
       qc.invalidateQueries({ queryKey: patientKeys.lists() });
-    },
-  });
-}
-
-export function useCreateMedicalHistory() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: ({ patientId, payload }: { patientId: string; payload: object }) =>
-      patientsService.createMedicalHistory(patientId, payload as never),
-    onSuccess: (_data, { patientId }) => {
-      qc.invalidateQueries({ queryKey: patientKeys.history(patientId) });
-      qc.invalidateQueries({ queryKey: patientKeys.detail(patientId) });
-    },
-  });
-}
-
-export function useUpdateMedicalHistory() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: ({ patientId, payload }: { patientId: string; payload: object }) =>
-      patientsService.updateMedicalHistory(patientId, payload as never),
-    onSuccess: (_data, { patientId }) => {
-      qc.invalidateQueries({ queryKey: patientKeys.history(patientId) });
-    },
-  });
-}
-
-export function useAddPatientAddress() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: ({ patientId, payload }: { patientId: string; payload: CreatePatientAddressPayload }) =>
-      patientsService.addAddress(patientId, payload),
-    onSuccess: (_data, { patientId }) => {
-      qc.invalidateQueries({ queryKey: patientKeys.detail(patientId) });
-    },
-  });
-}
-
-export function useUpdatePatientAddress() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: ({
-      patientId,
-      addressId,
-      payload,
-    }: {
-      patientId: string;
-      addressId: string;
-      payload: Partial<CreatePatientAddressPayload>;
-    }) => patientsService.updateAddress(patientId, addressId, payload),
-    onSuccess: (_data, { patientId }) => {
-      qc.invalidateQueries({ queryKey: patientKeys.detail(patientId) });
     },
   });
 }

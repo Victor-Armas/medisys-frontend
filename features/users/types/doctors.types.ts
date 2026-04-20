@@ -48,6 +48,8 @@ export interface DoctorProfileWithRelations extends BaseDoctorProfile {
   doctorClinics: DoctorClinicWithRelations[];
 }
 
+export type DoctorAddress = Pick<BaseDoctorProfile, "address" | "numHome" | "colony" | "city" | "state" | "zipCode">;
+
 export type DoctorProfile = DoctorProfileWithRelations;
 export type DoctorClinicItem = DoctorClinicWithRelations;
 
@@ -94,6 +96,13 @@ export type UpdateDoctorProfilePayload = Partial<
 >;
 
 // ─── Type Guard ───────────────────────────────────────────────
-export function isDoctor(u: Pick<BaseUser, "role">) {
-  return u.role === "DOCTOR" || u.role === "MAIN_DOCTOR";
+export function isDoctor(input: Pick<BaseUser, "role"> | BaseUser["role"]): boolean {
+  // 1. Guard clause para nulos
+  if (!input) return false;
+
+  // 2. Extraemos el rol independientemente de si viene en objeto o string
+  // Usamos 'typeof' para discernir en tiempo de ejecución
+  const role = typeof input === "object" ? input.role : input;
+
+  return role === "DOCTOR" || role === "MAIN_DOCTOR";
 }

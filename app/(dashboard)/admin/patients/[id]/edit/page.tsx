@@ -1,8 +1,8 @@
 // app/(admin)/patients/[id]/edit/page.tsx
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
-import { PatientFormPage } from "@/features/patients/components/PatientFormPage";
 import type { Patient } from "@/features/patients/types/patient.types";
+import { PatientFormPage } from "@/features/patients";
 
 type Props = { params: Promise<{ id: string }> };
 

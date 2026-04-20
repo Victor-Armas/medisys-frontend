@@ -2,8 +2,10 @@
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
-import { UserProfileClient } from "@/features/users/components/UserProfileClient";
 import { User } from "@/features/users/types/users.types";
+import DoctorProfileClient from "@/features/users/profile/DoctorProfile/DoctorProfileClient";
+import { isDoctor } from "@/features/users/types/doctors.types";
+import UserProfileClient from "@/features/users/profile/UserProfile/UserProfileClient";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -42,5 +44,6 @@ export default async function UserProfilePage({ params }: Props) {
   const { id } = await params;
   const user = await fetchUserServer(id);
   if (!user) notFound();
-  return <UserProfileClient user={user} />;
+  const doctorProfile = isDoctor(user?.role);
+  return <>{doctorProfile ? <DoctorProfileClient user={user} /> : <UserProfileClient user={user} />}</>;
 }

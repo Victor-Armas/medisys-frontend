@@ -3,7 +3,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import type { SepomexPostalCodeResult } from "../types/patient.types";
-import { sepomexService } from "../services/patients.service";
+import { sepomexService } from "../services/sepomex.service";
 
 interface UseSepomexReturn {
   result: SepomexPostalCodeResult | null;

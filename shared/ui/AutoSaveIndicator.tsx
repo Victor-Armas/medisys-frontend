@@ -15,8 +15,8 @@ export function AutoSaveIndicator({ status, lastSavedAt }: Props) {
     <div className="flex items-center gap-1.5 text-[11px] font-medium transition-all duration-300">
       {status === "saving" && (
         <>
-          <Loader2 size={12} className="animate-spin text-text-secondary" />
-          <span className="text-text-secondary">Guardando borrador…</span>
+          <Loader2 size={12} className="animate-spin text-subtitulo" />
+          <span className="text-subtitulo">Guardando borrador…</span>
         </>
       )}
       {status === "saved" && (
@@ -25,7 +25,7 @@ export function AutoSaveIndicator({ status, lastSavedAt }: Props) {
           <span className="text-emerald-600 dark:text-emerald-400">
             Borrador guardado
             {lastSavedAt && (
-              <span className="ml-1 text-text-disabled">
+              <span className="ml-1 text-subtitulo">
                 {lastSavedAt.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" })}
               </span>
             )}

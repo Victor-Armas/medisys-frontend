@@ -1,5 +1,5 @@
 // app/(dashboard)/users/page.tsx
-import { UsersPanelClient } from "@/features/users/components/UsersPanelClient";
+import { UsersPanelClient } from "@/features/users/list/UsersPanelClient";
 import type { StaffRole, User } from "@/features/users/types/users.types";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";

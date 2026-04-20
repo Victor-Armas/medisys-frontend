@@ -1,6 +1,5 @@
-// features/patients/index.ts
-export { PatientsListClient } from "./components/PatientsListClient";
-export { PatientProfilePage } from "./components/PatientProfilePage";
-export { PatientFormPage } from "./components/PatientFormPage";
+export { PatientsListClient } from "./list/PatientsListClient";
+export { PatientProfilePage } from "./profile/PatientProfilePage";
+export { PatientFormPage } from "./create/PatientFormPage";
 export type * from "./types/patient.types";
 export { patientKeys } from "./hooks/usePatients";

@@ -66,7 +66,7 @@ export function ConfirmDialog({
           <div className="text-sm text-charcoal/70 dark:text-white/50 mt-2">{message}</div>
         </DialogHeader>
         <DialogFooter className="flex gap-5 mt-4">
-          <Button variant="outline" className="flex-1 py-4" onClick={() => onOpenChange(false)}>
+          <Button variant="primary" className="flex-1 py-4" onClick={() => onOpenChange(false)}>
             {cancelText}
           </Button>
           <Button

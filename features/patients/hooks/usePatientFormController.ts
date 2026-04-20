@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { useAutoSave } from "@/shared/hooks/useAutoSave";
 import { notify } from "@/shared/ui/toaster";
-import type { PatientFormData } from "../validations/patient.schema";
+import type { PatientFormData } from "../schemas/patient.schema";
 
 interface Params {
   form: UseFormReturn<PatientFormData>;
@@ -35,7 +35,10 @@ export function usePatientFormController({ form, storageKey, isEdit }: Params) {
     draftOffered.current = true;
 
     setTimeout(() => {
-      notify.success("Borrador recuperado", "Se restauró el formulario donde lo dejaste");
+      notify.success(
+        "Borrador recuperado",
+        "Se restauró el formulario donde lo dejaste",
+      );
       reset(draft as PatientFormData);
     }, 300);
   }, [isEdit, reset, autoSave]);

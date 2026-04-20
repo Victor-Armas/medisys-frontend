@@ -1,1 +1,0 @@
-export { UserProfileClient } from "../UserProfileClient";

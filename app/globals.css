@@ -5,124 +5,135 @@
 @custom-variant dark (&:where(.dark, .dark *));
 @source "../node_modules/@ilamy/calendar/dist";
 
+@layer base {
+  button {
+    cursor: pointer;
+  }
+}
+
+@layer components {
+  .bg-principal-gradient {
+    @apply bg-linear-to-br;
+    background-image: linear-gradient(
+      to bottom right,
+      var(--color-principal),
+      color-mix(in srgb, var(--color-principal) 60%, transparent)
+    );
+  }
+}
+
 @theme {
-  /* todo tu @theme anterior se queda igual... */
-  --color-surface-page: #fef7fe;
-  --color-surface-input: #fef7fe;
-  --color-surface-subtle: #eadef7;
-  --color-border-input: #afa9ec;
-  --color-border-subtle: #e2d9f3;
-  --color-text-base: #564e63;
-  --color-text-muted: #8b7fa0;
+  /* NUEVOS */
+  --color-principal: #7405a6; /* Botones iconos principales */
+  --color-inner-principal: #e2c5ff; /* Botones iconos principales */
+  --color-principal-text: #ffffff; /* Botones iconos principales */
+  --color-principal-select: #efe0ff;
+  --color-principal-hover: #54037a;
+  --color-principal-hover2: #b367ff;
+  --color-principal-select-text: #7e22ce;
+  --color-secundario: #0236c9; /* Botones iconos */
+  --color-inner-secundario: #dbeafe; /* Botones iconos */
+  --color-secundario-hover: #afcaf0; /* Botones iconos */
+  --color-fondo-alternativo: #eaddff; /* para cards, u otros que ocupen un alternativo en modo oscuro */
+  --color-encabezado: #2b3438;
+  --color-subtitulo: #596064;
+  --color-external: #f8f9fb; /*fondo de los page*/
+  --color-interior: #ffffff; /*color para los fondos de los cards*/
+  --color-card-header: #fbfcfd; /*color parte superior de los cards*/
+  --color-disable: #ebedf0; /*color para disable*/
 
-  --color-brand: #7405a3;
-  --color-brand-hover: #4a3fa0;
-  --color-brand-gradient-from: #7c6ab5;
-  --color-brand-gradient-to: #4a3fa0;
+  --color-positive: #dcfce7; /*fondo para chips active*/
+  --color-positive-text: #22c55e; /*texto para chips active*/
+  --color-positive-hover: #bbf7d0;
+  --color-positive-text-hover: #16a34a;
 
-  --color-bg-base: #fef7fe;
-  --color-bg-surface: #ffffff;
-  --color-bg-elevated: #ffffff;
-  --color-bg-subtle: #eadef7;
+  --color-negative: #fee2e2; /*fondo para chips negativo*/
+  --color-negative-text: #ef4444; /*texto para chips negativo*/
+  --color-negative-hover: #fecaca;
 
-  --color-border-default: #e2d9f3;
-  --color-border-strong: #afa9ec;
+  --color-wairning: #ffedd5; /*fondo para chips wairning*/
+  --color-wairning-text: #f97315; /*texto para chips wairning*/
+  --color-wairning-hover: #fed7aa;
+  --color-wairning-text-hover: #ea580c;
 
-  --color-text-primary: #564e63;
-  --color-text-secondary: #8b7fa0;
-  --color-text-disabled: #b8adc8;
-  --color-text-on-brand: #ffffff;
-  --color-text-accent: #7f77dd;
+  --color-wairning-soft: #fff7ed;
+  --color-wairning-soft-text: #fb923c;
+
+  --color-wairning-soft-hover: #ffedd5;
+  --color-wairning-soft-text-hover: #f97316;
+
+  --color-fondo-inputs: #f1f4f7; /*Para innputs, selects text area etc*/
+  --color-dropdown: #f1f4f7;
 }
 
 .dark {
-  --color-bg-base: #0a0a0a;
-  --color-bg-surface: #111111;
-  --color-bg-elevated: #1a1a1a;
-  --color-bg-subtle: #27272a;
+  --color-external: #0b0914; /* Fondo principal de la página (Paredes de la app) */
+  --color-interior: #161224; /* Fondo de los cards (Ligeramente más claro para "salir" del fondo) */
+  --color-card-header: #1d182e; /* Parte superior de los cards */
+  --color-fondo-inputs: #251e3b; /* Inputs, selects (Aún más claro para invitar al clic) */
+  --color-fondo-alternativo: #7e728e; /* para cards, u otros que ocupen un alternativo en modo oscuro */
+  --color-dropdown: #2e2546;
+  /* --- TEXTOS --- */
+  --color-encabezado: #f3f0f7; /* Blanco con un levísimo toque de color para no cansar la vista */
+  --color-subtitulo: #9e94b3; /* Gris violeta para datos secundarios */
 
-  --color-border-default: #27272a;
-  --color-border-strong: #3f3f46;
+  /* --- COLOR PRINCIPAL --- */
+  /* En dark mode, el #7405a6 original se pierde un poco en el fondo. 
+     Se aclara ligeramente para botones, y los fondos interiores se oscurecen */
+  --color-principal: #5d2295;
+  --color-principal-text: #ffffff;
+  --color-principal-hover: #a14bf5;
+  --color-principal-hover2: #613392;
+  --color-inner-principal: #3a205e; /* Chips o fondos tenues con el color principal */
+  --color-principal-select: #2a164a;
+  --color-principal-select-text: #dcb3ff;
 
-  --color-text-primary: #f4f0f8;
-  --color-text-secondary: #a89fbb;
-  --color-text-disabled: #52525b;
-  --color-text-accent: #9f97e8;
+  /* --- COLOR SECUNDARIO --- */
+  --color-secundario: #3b82f6;
+  --color-inner-secundario: #1e3a8a;
+  --color-secundario-hover: #1a59a6;
+
+  /* --- ESTADOS Y ALERTAS --- */
+  --color-disable: #2d2640; /* Color apagado que se mezcla con el fondo */
+
+  /* Para las alertas, en dark mode se invierte: fondo muy oscuro, texto brillante */
+  --color-positive: #064e3b;
+  --color-positive-text: #34d399;
+  --color-positive-hover: #065f46;
+  --color-positive-text-hover: #6ee7b7;
+
+  --color-negative: #b13434;
+  --color-negative-text: #ffffff;
+  --color-negative-hover: #991b1b;
+
+  --color-wairning: #78350f;
+  --color-wairning-text: #fb923c;
+  --color-wairning-hover: #92400e;
+  --color-wairning-text-hover: #fdba74;
+
+  --color-wairning-soft: #f0c020;
+  --color-wairning-soft-text: #ffffff;
+
+  --color-wairning-soft-hover: #4a240d;
+  --color-wairning-soft-text-hover: #fed7aa;
 }
 
-/* === PUENTE PARA SHADCN + BASE UI === */
-@theme inline {
-  --color-background: var(--color-bg-base);
-  --color-foreground: var(--color-text-primary);
+/* ============================================================
+   ILAMY CALENDAR - CLEAN DESIGN SYSTEM
+   ============================================================ */
 
-  --color-card: var(--color-bg-surface);
-  --color-card-foreground: var(--color-text-primary);
+/* 3. El Grid: Líneas ultra sutiles con tu color-disable */
 
-  --color-popover: var(--color-bg-elevated);
-  --color-popover-foreground: var(--color-text-primary);
-
-  --color-primary: var(--color-brand);
-  --color-primary-foreground: var(--color-text-on-brand);
-
-  --color-secondary: var(--color-bg-subtle);
-  --color-secondary-foreground: var(--color-text-primary);
-
-  --color-muted: var(--color-bg-subtle);
-  --color-muted-foreground: var(--color-text-secondary);
-
-  --color-accent: var(--color-text-accent);
-  --color-accent-foreground: var(--color-text-on-brand);
-
-  --color-border: var(--color-border-default);
-  --color-input: var(--color-border-default);
-  --color-ring: var(--color-brand);
-
-  --radius: 0.625rem;
+.clean-calendar-container div[class*="border"] {
+  border-color: color-mix(in srgb, var(--color-disable), transparent 92%) !important;
 }
 
-/* === PUENTE PARA SHADCN + TU TEMA === */
-@theme inline {
-  --font-heading: var(--font-sans);
-  --font-sans: var(--font-sans);
-
-  /* Radio global - AQUÍ CONTROLAS CUÁNTO REDONDEADO QUIERES */
-  --radius: 0.75rem; /* ← Cambia este valor */
-
-  /* Derivados recomendados para consistencia */
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-
-  /* Mapeo de colores (mantén lo que ya tenías) */
-  --color-background: var(--color-bg-base);
-  --color-foreground: var(--color-text-primary);
-  --color-card: var(--color-bg-surface);
-  --color-card-foreground: var(--color-text-primary);
-  --color-popover: var(--color-bg-elevated);
-  --color-popover-foreground: var(--color-text-primary);
-
-  --color-primary: var(--color-brand);
-  --color-primary-foreground: var(--color-text-on-brand);
-
-  --color-secondary: var(--color-bg-subtle);
-  --color-secondary-foreground: var(--color-text-primary);
-
-  --color-muted: var(--color-bg-subtle);
-  --color-muted-foreground: var(--color-text-secondary);
-
-  --color-border: var(--color-border-default);
-  --color-input: var(--color-border-default);
-  --color-ring: var(--color-brand);
+.clean-calendar-container div[data-radix-scroll-area-viewport] {
+  background-color: var(--color-exterior);
 }
-/* Layer base - Necesario para que shadcn funcione */
-@layer base {
-  * {
-    border-color: var(--color-border-default);
-  }
-  body {
-    background-color: var(--color-bg-base);
-    color: var(--color-text-primary);
-  }
+
+.clean-calendar-container [data-testid="calendar-body"] {
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
 }

@@ -8,6 +8,7 @@ import type {
   UpdateScheduleRangePayload,
   UpdateScheduleOverridePayload,
 } from "@features/clinics/types/clinic.types";
+import { User } from "@/features/users/types";
 
 export const clinicsService = {
   getAll: async (): Promise<Clinic[]> => {
@@ -17,6 +18,11 @@ export const clinicsService = {
 
   getOne: async (id: string): Promise<Clinic> => {
     const res = await api.get<Clinic>(`/clinics/${id}`);
+    return res.data;
+  },
+
+  getEligibleDoctors: async (clinicId: string): Promise<User[]> => {
+    const res = await api.get<User[]>(`/clinics/${clinicId}/eligible-doctors`);
     return res.data;
   },
 

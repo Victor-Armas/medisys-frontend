@@ -3,12 +3,16 @@ export {
   useCreateClinic,
   useUpdateClinic,
   useToggleClinic,
-  useAddSchedule,
-  useRemoveSchedule,
-  useAddScheduleOverride,
-  useRemoveScheduleOverride,
-  useUpdateSchedule,
-  useUpdateScheduleOverride,
   useAssignDoctorToClinic,
   clinicKeys,
 } from "./useClinics";
+export {
+  useAddSchedule,
+  useRemoveSchedule,
+  useUpdateSchedule,
+} from "./useSchedule";
+export {
+  useAddScheduleOverride,
+  useRemoveScheduleOverride,
+  useUpdateScheduleOverride,
+} from "./useScheduleOverride";

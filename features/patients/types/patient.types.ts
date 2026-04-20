@@ -15,7 +15,95 @@ export type MaritalStatus = "SINGLE" | "MARRIED" | "DIVORCED" | "WIDOWED" | "FRE
 export type EducationLevel = "NONE" | "PRIMARY" | "SECONDARY" | "HIGH_SCHOOL" | "TECHNICAL" | "BACHELOR" | "POSTGRADUATE";
 export type HabitStatus = "NEVER" | "FORMER" | "CURRENT" | "UNKNOWN";
 
-// ── Archivos médicos ──────────────────────────────────────────────────────────
+// ── Structured antecedents ────────────────────────────────────────────────────
+
+export type ConditionType = "PATHOLOGICAL" | "FAMILY";
+
+export type ConditionCategory = "DISEASE" | "SURGERY" | "HOSPITALIZATION" | "TRAUMA";
+
+export type FamilyMember = "FATHER" | "MOTHER" | "SIBLINGS" | "CHILDREN" | "OTHER";
+
+export type AllergySeverity = "MILD" | "MODERATE" | "SEVERE" | "UNKNOWN";
+
+export interface PatientCondition {
+  id: string;
+  icd10Code: string | null;
+  description: string;
+  category: ConditionCategory;
+  type: ConditionType;
+  familyMember: FamilyMember | null;
+  notes: string | null;
+  isNonCoded: boolean;
+  createdAt: string;
+}
+
+export interface PatientMedication {
+  id: string;
+  name: string;
+  dose: string | null;
+  frequency: string | null;
+  isNonCoded: boolean;
+  catalogId: string | null;
+  createdAt: string;
+}
+
+export interface PatientAllergy {
+  id: string;
+  substance: string;
+  reaction: string | null;
+  severity: AllergySeverity;
+  createdAt: string;
+}
+
+// ── Catalog search results ────────────────────────────────────────────────────
+
+export interface Icd10SearchResult {
+  id: string;
+  code: string;
+  description: string;
+  category: string | null;
+}
+
+export type Icd10SearchTraumaResult = Icd10SearchResult;
+
+export interface MedicationSearchResult {
+  id: string;
+  name: string;
+  description: string;
+  rxnormCode: string | null;
+}
+
+// ── Payloads ──────────────────────────────────────────────────────────────────
+
+export interface CreateConditionPayload {
+  icd10Code?: string;
+  description: string;
+  category: ConditionCategory;
+  type?: ConditionType;
+  familyMember?: FamilyMember;
+  notes?: string;
+}
+
+export interface CreateMedicationPayload {
+  catalogId?: string;
+  name: string;
+  dose?: string;
+  frequency?: string;
+  isNonCoded?: boolean;
+}
+
+export interface UpdateMedicationPayload {
+  dose?: string;
+  frequency?: string;
+}
+
+export interface CreateAllergyPayload {
+  substance: string;
+  reaction?: string;
+  severity?: AllergySeverity;
+}
+
+// ── Medical files ─────────────────────────────────────────────────────────────
 
 export type MedicalFileCategory =
   | "LAB_RESULTS"
@@ -39,55 +127,7 @@ export interface PatientMedicalFile {
   createdAt: string;
 }
 
-export const MEDICAL_FILE_CATEGORY_LABELS: Record<MedicalFileCategory, string> = {
-  LAB_RESULTS: "Laboratorio",
-  IMAGING: "Imagen / Radiología",
-  PRESCRIPTION: "Receta previa",
-  REFERRAL: "Interconsulta",
-  SURGERY_REPORT: "Informe quirúrgico",
-  PATHOLOGY: "Patología",
-  OTHER: "Otro",
-};
-
-export const MEDICAL_FILE_CATEGORY_COLORS: Record<MedicalFileCategory, { bg: string; text: string; border: string }> = {
-  LAB_RESULTS: {
-    bg: "bg-blue-500/10",
-    text: "text-blue-600",
-    border: "border-blue-500/20",
-  },
-  IMAGING: {
-    bg: "bg-purple-500/10",
-    text: "text-purple-600",
-    border: "border-purple-500/20",
-  },
-  PRESCRIPTION: {
-    bg: "bg-emerald-500/10",
-    text: "text-emerald-600",
-    border: "border-emerald-500/20",
-  },
-  REFERRAL: {
-    bg: "bg-amber-500/10",
-    text: "text-amber-600",
-    border: "border-amber-500/20",
-  },
-  SURGERY_REPORT: {
-    bg: "bg-red-500/10",
-    text: "text-red-600",
-    border: "border-red-500/20",
-  },
-  PATHOLOGY: {
-    bg: "bg-pink-500/10",
-    text: "text-pink-600",
-    border: "border-pink-500/20",
-  },
-  OTHER: {
-    bg: "bg-bg-subtle",
-    text: "text-text-secondary",
-    border: "border-border-default",
-  },
-};
-
-// ── Catálogo SEPOMEX ──────────────────────────────────────────────────────────
+// ── SEPOMEX ───────────────────────────────────────────────────────────────────
 
 export interface SepomexNeighborhood {
   id: string;
@@ -107,50 +147,42 @@ export interface SepomexPostalCodeResult {
   neighborhoods: SepomexNeighborhood[];
 }
 
-// ── Historia clínica ──────────────────────────────────────────────────────────
+// ── Medical history (habits + gynecological) ──────────────────────────────────
 
 export interface MedicalHistory {
   id: string;
-  diseases?: string | null;
-  surgeries?: string | null;
-  hospitalizations?: string | null;
+  // Remaining pathological fact
   bloodTransfusions: boolean;
-  traumaHistory?: string | null;
-  currentMedications?: string | null;
-  allergies?: string | null;
+  // Habits
   smoking: HabitStatus;
-  smokingDetail?: string | null;
+  smokingDetail: string | null;
   alcoholUse: HabitStatus;
-  alcoholDetail?: string | null;
+  alcoholDetail: string | null;
   drugUse: HabitStatus;
-  drugDetail?: string | null;
-  immunizations?: string | null;
-  physicalActivity?: string | null;
+  drugDetail: string | null;
+  immunizations: string | null;
+  physicalActivity: string | null;
   pets: boolean;
   tattoos: boolean;
   woodSmokeExposure: boolean;
-  fatherHistory?: string | null;
-  motherHistory?: string | null;
-  childrenHistory?: string | null;
-  siblingsHistory?: string | null;
-  otherFamilyHistory?: string | null;
-  menarche?: number | null;
-  menstrualCycle?: string | null;
-  lastMenstrualPeriod?: string | null;
-  sexualActivityStart?: number | null;
-  gestations?: number | null;
-  deliveries?: number | null;
-  abortions?: number | null;
-  caesareans?: number | null;
-  contraceptiveMethod?: string | null;
-  menopause?: boolean | null;
-  mammography?: string | null;
-  cervicalCytology?: string | null;
+  // Gynecological
+  menarche: number | null;
+  menstrualCycle: string | null;
+  lastMenstrualPeriod: string | null;
+  sexualActivityStart: number | null;
+  gestations: number | null;
+  deliveries: number | null;
+  abortions: number | null;
+  caesareans: number | null;
+  contraceptiveMethod: string | null;
+  menopause: boolean | null;
+  mammography: string | null;
+  cervicalCytology: string | null;
   createdAt: string;
   updatedAt: string;
 }
 
-// ── Dirección ─────────────────────────────────────────────────────────────────
+// ── Address ───────────────────────────────────────────────────────────────────
 
 export interface PatientAddress {
   id: string;
@@ -170,7 +202,7 @@ export interface PatientAddress {
   foreignAddressLine?: string | null;
 }
 
-// ── Paciente (lista) ──────────────────────────────────────────────────────────
+// ── Patient list item (lightweight) ──────────────────────────────────────────
 
 export interface PatientListItem {
   id: string;
@@ -189,7 +221,7 @@ export interface PatientListItem {
   clinics: { clinic: { id: string; name: string } }[];
 }
 
-// ── Paciente (detalle completo) ───────────────────────────────────────────────
+// ── Patient detail (full clinical record) ─────────────────────────────────────
 
 export interface Patient extends PatientListItem {
   maritalStatus: MaritalStatus | null;
@@ -200,6 +232,9 @@ export interface Patient extends PatientListItem {
   emergencyContactRelation: string | null;
   addresses: PatientAddress[];
   medicalHistory: MedicalHistory | null;
+  conditions: PatientCondition[];
+  medications: PatientMedication[];
+  allergies: PatientAllergy[];
 }
 
 // ── Pagination ────────────────────────────────────────────────────────────────
@@ -211,7 +246,7 @@ export interface PatientsPage {
   limit: number;
 }
 
-// ── Payloads ──────────────────────────────────────────────────────────────────
+// ── Patient CRUD payloads ─────────────────────────────────────────────────────
 
 export type CreatePatientPayload = {
   firstName: string;
@@ -250,72 +285,3 @@ export type CreatePatientAddressPayload = {
   foreignPostalCode?: string;
   foreignAddressLine?: string;
 };
-
-// ── UI Helpers ────────────────────────────────────────────────────────────────
-
-export const BLOOD_TYPE_LABELS: Record<BloodType, string> = {
-  O_POSITIVE: "O+",
-  O_NEGATIVE: "O−",
-  A_POSITIVE: "A+",
-  A_NEGATIVE: "A−",
-  B_POSITIVE: "B+",
-  B_NEGATIVE: "B−",
-  AB_POSITIVE: "AB+",
-  AB_NEGATIVE: "AB−",
-  UNKNOWN: "?",
-};
-
-export const GENDER_LABELS: Record<Gender, string> = {
-  MALE: "Masculino",
-  FEMALE: "Femenino",
-  OTHER: "Otro",
-};
-
-export const MARITAL_STATUS_LABELS: Record<MaritalStatus, string> = {
-  SINGLE: "Soltero/a",
-  MARRIED: "Casado/a",
-  DIVORCED: "Divorciado/a",
-  WIDOWED: "Viudo/a",
-  FREE_UNION: "Unión libre",
-  OTHER: "Otro",
-};
-
-export const EDUCATION_LABELS: Record<EducationLevel, string> = {
-  NONE: "Sin estudios",
-  PRIMARY: "Primaria",
-  SECONDARY: "Secundaria",
-  HIGH_SCHOOL: "Preparatoria",
-  TECHNICAL: "Técnico",
-  BACHELOR: "Licenciatura",
-  POSTGRADUATE: "Posgrado",
-};
-
-export const HABIT_LABELS: Record<HabitStatus, string> = {
-  NEVER: "Nunca",
-  FORMER: "Exfumador/a",
-  CURRENT: "Activo",
-  UNKNOWN: "Desconocido",
-};
-
-export function getPatientFullName(
-  p: Pick<Patient, "firstName" | "middleName" | "lastNamePaternal" | "lastNameMaternal">,
-): string {
-  return [p.firstName, p.middleName, p.lastNamePaternal, p.lastNameMaternal].filter(Boolean).join(" ");
-}
-
-export function getPatientInitials(p: Pick<Patient, "firstName" | "lastNamePaternal">): string {
-  return `${p.firstName[0] ?? ""}${p.lastNamePaternal[0] ?? ""}`.toUpperCase();
-}
-
-export function getPatientAge(birthDate: string): number {
-  const today = new Date();
-  const birth = new Date(birthDate);
-  let age = today.getFullYear() - birth.getFullYear();
-  const m = today.getMonth() - birth.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
-  return age;
-}
-
-export function formatPhone(phone: string) {
-  return phone.replace(/(\d{2})(\d{4})(\d{4})/, "$1 $2 $3");
-}

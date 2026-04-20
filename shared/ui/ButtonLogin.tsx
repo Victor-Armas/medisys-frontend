@@ -19,23 +19,17 @@ export function ButtonLogin({
   ...props
 }: ButtonProps) {
   const base =
-    "h-12 rounded-full text-sm font-medium flex items-center justify-center gap-2 transition-opacity cursor-pointer disabled:opacity-60";
+    "h-12 rounded-full text-sm font-medium flex items-center justify-center gap-2 transition-opacity  disabled:opacity-60";
 
   const variants = {
-    primary:
-      "bg-gradient-to-r from-brand-gradient-from to-brand-gradient-to text-text-on-brand hover:opacity-90",
-    ghost:
-      "bg-transparent hover:bg-surface-subtle text-brand border border-border-input",
+    primary: "bg-principal-gradient text-white hover:opacity-90",
+    ghost: "bg-transparent hover:bg-surface-subtle text-principal border border-border-input",
   };
 
   const width = fullWidth ? "w-full" : "px-6";
 
   return (
-    <button
-      disabled={disabled || loading}
-      className={`${base} ${variants[variant]} ${width} ${className}`}
-      {...props}
-    >
+    <button disabled={disabled || loading} className={`${base} ${variants[variant]} ${width} ${className}`} {...props}>
       {loading ? (
         <Loader2 size={16} className="animate-spin" />
       ) : (

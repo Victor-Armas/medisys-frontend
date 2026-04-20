@@ -4,9 +4,8 @@ import { Bell } from "lucide-react";
 export function TopbarActions() {
   return (
     <div className="flex items-center gap-2">
-      <button className="relative w-8 h-8 rounded-lg bg-bg-base border border-border-default flex items-center justify-center text-text-secondary hover:bg-bg-subtle hover:text-brand transition-colors cursor-pointer">
+      <button className="relative w-8 h-8 rounded-full bg-inner-principal hover:bg-principal-hover2 text-principal flex items-center justify-center transition-colors ">
         <Bell size={14} />
-        <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-brand rounded-full" />
       </button>
       <ThemeToggle />
     </div>

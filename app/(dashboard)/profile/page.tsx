@@ -1,7 +1,9 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { UserProfileClient } from "@/features/users/components/UserProfileClient";
 import type { User } from "@/features/users/types/users.types";
+import DoctorProfileClient from "@/features/users/profile/DoctorProfile/DoctorProfileClient";
+import UserProfileClient from "@/features/users/profile/UserProfile/UserProfileClient";
+import { isDoctor } from "@/features/users/types/doctors.types";
 
 async function fetchOwnProfile(token: string): Promise<User | null> {
   const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api";
@@ -45,5 +47,7 @@ export default async function ProfilePage() {
   const user = await fetchOwnProfile(token);
   if (!user) redirect("/login");
 
-  return <UserProfileClient user={user} isOwnProfile />;
+  const doctorProfile = isDoctor(user?.role);
+
+  return <>{doctorProfile ? <DoctorProfileClient user={user} /> : <UserProfileClient user={user} />}</>;
 }

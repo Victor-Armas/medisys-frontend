@@ -16,11 +16,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const sidebarCollapsed = cookieStore.get("sidebarCollapsed")?.value === "true";
 
   return (
-    <div className="flex h-screen bg-bg-base overflow-hidden relative">
+    <div className="flex h-screen overflow-hidden bg-external relative">
       <Sidebar initialCollapsed={sidebarCollapsed} role={user?.role ?? ""} />
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         <Topbar initialUser={user} />
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto bg-external">{children}</main>
       </div>
     </div>
   );

@@ -39,28 +39,31 @@ export function UserDropdown({ user }: Props) {
   }
 
   return (
-    <div className="relative pl-2 border-l border-border-default" ref={menuRef}>
+    <div className="relative pl-2" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 hover:bg-bg-subtle p-1 pr-2 rounded-xl transition-colors cursor-pointer text-left"
+        className="flex items-center gap-2 p-1 pr-2 transition-colors text-left rounded-lg hover:bg-inner/60"
       >
-        <div className="w-8 h-8 rounded-full bg-linear-to-br from-brand-gradient-from to-brand-gradient-to flex items-center justify-center text-white text-xs font-semibold">
+        <div className="w-8 h-8 rounded-full bg-principal-gradient flex items-center justify-center text-white text-xs font-semibold">
           {initials}
         </div>
-        <div className="hidden md:block min-w-[100px]">
-          <p className="text-xs font-medium text-text-primary leading-tight">
-            {`${user?.firstName} ${user?.lastNamePaternal}` || "Usuario"}
-          </p>
-          <p className="text-[11px] text-text-secondary leading-tight">{getRoleConfig(user?.role as Role).label}</p>
+
+        <div className="hidden md:block min-w-[100px] leading-tight">
+          <p className="text-xs font-medium text-encabezado">{`${user?.firstName} ${user?.lastNamePaternal}` || "Usuario"}</p>
+          <p className="text-[11px] text-subtitulo">{getRoleConfig(user?.role as Role).label}</p>
         </div>
-        <ChevronDown size={14} className="text-text-secondary ml-1 hidden md:block" />
+
+        <ChevronDown
+          size={14}
+          className={`text-subtitulo ml-1 hidden md:block transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+        />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-bg-elevated border border-border-default rounded-xl shadow-lg py-1 overflow-hidden">
+        <div className="absolute right-0 mt-2 w-52 bg-interior shadow-xl rounded-xl border border-black/5 py-1 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-150">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-bg-subtle transition-colors text-left cursor-pointer font-medium"
+            className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-subtitulo/10 transition-colors text-left font-medium"
           >
             <LogOut size={16} />
             Cerrar sesión

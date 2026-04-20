@@ -9,8 +9,8 @@ import {
   medicalHistorySchema,
   medicalHistoryDefaultValues,
   type MedicalHistoryFormData,
-} from "../components/profile/medical-history/schema";
-import { useMedicalHistory, useCreateMedicalHistory, useUpdateMedicalHistory } from "./usePatients";
+} from "../schemas/medical-history.schema";
+import { useMedicalHistory, useCreateMedicalHistory, useUpdateMedicalHistory } from "./useMedicalHistory";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

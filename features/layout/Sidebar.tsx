@@ -35,18 +35,18 @@ export function Sidebar({ initialCollapsed = false, role }: { initialCollapsed?:
 
   return (
     <aside
-      className={`${isCollapsed ? "w-20" : "w-[230px]"} bg-bg-surface dark:bg-bg-surface border-r border-border-default flex flex-col h-screen shrink-0 transition-all duration-300`}
+      className={`${isCollapsed ? "w-20" : "w-[230px]"} bg-interior flex flex-col h-screen shrink-0 transition-all duration-300`}
     >
       {/* Logo + Toggle unificados */}
       <div className="pt-8 pb-4 flex items-center justify-between px-5 shrink-0">
         {isCollapsed ? (
           <div className="flex flex-col items-center gap-4 w-full">
-            <div className="w-10 h-10 rounded-xl bg-brand flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-sm bg-principal flex items-center justify-center shrink-0">
               <BriefcaseMedical size={20} color="white" />
             </div>
             <button
               onClick={toggleSidebar}
-              className="w-8 h-8 flex items-center justify-center rounded-lg text-text-secondary hover:bg-bg-subtle hover:text-brand transition-colors cursor-pointer"
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-principal hover:bg-inner-principal transition-colors "
             >
               <ChevronRight size={16} />
             </button>
@@ -54,17 +54,17 @@ export function Sidebar({ initialCollapsed = false, role }: { initialCollapsed?:
         ) : (
           <>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-brand flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-sm bg-principal flex items-center justify-center shrink-0">
                 <BriefcaseMedical size={18} color="white" />
               </div>
               <div className="flex flex-col">
-                <span className="text-[15px] font-bold text-brand dark:text-text-accent leading-tight">MediSys</span>
-                <span className="text-[9px] font-bold text-text-secondary tracking-widest mt-0.5">CLINICAL SYSTEM</span>
+                <span className="text-[15px] font-bold text-principal leading-tight">MediSys</span>
+                <span className="text-[9px] font-bold text-subtitulo tracking-widest mt-0.5">CLINICAL SYSTEM</span>
               </div>
             </div>
             <button
               onClick={toggleSidebar}
-              className="w-6 h-6 flex items-center justify-center rounded-md text-text-secondary hover:bg-bg-subtle hover:text-brand transition-colors cursor-pointer"
+              className="w-6 h-6 flex items-center justify-center rounded-md text-principal hover:bg-inner-principal transition-colors "
             >
               <ChevronLeft size={16} />
             </button>

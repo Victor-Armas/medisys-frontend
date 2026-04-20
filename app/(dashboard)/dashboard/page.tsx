@@ -1,5 +1,6 @@
 "use client";
 
+import { ECGLoader } from "@/shared/ui/ECGLoader";
 import { notify } from "@/shared/ui/toaster";
 import React from "react";
 // ajusta si cambia la ruta
@@ -41,6 +42,7 @@ export default function Page() {
           Loading → dismiss automático 🚀
         </button>
       </div>
+      <ECGLoader />
     </div>
   );
 }

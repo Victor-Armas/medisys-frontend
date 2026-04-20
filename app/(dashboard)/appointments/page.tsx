@@ -29,9 +29,9 @@ const mockSchedule = [
         type: "Presencial",
         doctor: "Dr. Arturo Ramos",
         status: "Atendiendo",
-        bgColor: "bg-brand/15",
-        borderColor: "border-brand/30",
-        textColor: "text-brand",
+        bgColor: "bg-principal",
+        borderColor: "",
+        textColor: "text-principal",
       },
     ],
   },
@@ -111,11 +111,11 @@ export default function AppointmentsPage() {
       {/* 1. Encabezado */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-text-primary tracking-tight">Agenda Médica</h2>
-          <p className="text-sm text-text-secondary mt-1">Gestión de citas, horarios y disponibilidad de la clínica.</p>
+          <h2 className="text-2xl font-bold text-encabezado tracking-tight">Agenda Médica</h2>
+          <p className="text-sm text-subtitulo mt-1">Gestión de citas, horarios y disponibilidad de la clínica.</p>
         </div>
         <div className="flex items-center gap-3 w-full sm:w-auto">
-          <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-brand text-white rounded-xl text-sm font-medium hover:bg-brand-hover transition-colors shadow-sm">
+          <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-principal text-white rounded-xl text-sm font-medium hover:bg-principal-hover transition-colors shadow-sm">
             <Plus size={16} />
             Programar Cita
           </button>
@@ -124,59 +124,59 @@ export default function AppointmentsPage() {
 
       {/* 2. KPIs Rápidos (Mismo estilo que pacientes para consistencia) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="p-5 rounded-2xl bg-bg-surface border border-border-default flex items-center justify-between group">
+        <div className="p-5 rounded-2xl  border  flex items-center justify-between group">
           <div>
-            <p className="text-sm font-medium text-text-secondary mb-1">Citas Hoy</p>
+            <p className="text-sm font-medium text-subtitulo mb-1">Citas Hoy</p>
             <div className="flex items-baseline gap-2">
-              <h3 className="text-2xl font-bold text-text-primary">18</h3>
-              <span className="text-xs font-semibold text-brand bg-bg-subtle px-2 py-0.5 rounded-full">4 completadas</span>
+              <h3 className="text-2xl font-bold text-encabezado">18</h3>
+              <span className="text-xs font-semibold text-principal bg-subtitulo px-2 py-0.5 rounded-full">4 completadas</span>
             </div>
           </div>
-          <div className="w-12 h-12 rounded-xl bg-bg-subtle flex items-center justify-center text-brand">
+          <div className="w-12 h-12 rounded-xl bg-subtitulo flex items-center justify-center text-principal">
             <CalendarIcon size={24} />
           </div>
         </div>
-        <div className="p-5 rounded-2xl bg-bg-surface border border-border-default flex items-center justify-between group">
+        <div className="p-5 rounded-2xl  border  flex items-center justify-between group">
           <div>
-            <p className="text-sm font-medium text-text-secondary mb-1">En Consultorio</p>
+            <p className="text-sm font-medium text-subtitulo mb-1">En Consultorio</p>
             <div className="flex items-baseline gap-2">
-              <h3 className="text-2xl font-bold text-text-primary">3</h3>
+              <h3 className="text-2xl font-bold text-encabezado">3</h3>
               <span className="text-xs font-medium text-amber-600 bg-amber-500/10 px-2 py-0.5 rounded-full dark:text-amber-400">
                 Espera: 12m
               </span>
             </div>
           </div>
-          <div className="w-12 h-12 rounded-xl bg-bg-subtle flex items-center justify-center text-brand">
+          <div className="w-12 h-12 rounded-xl bg-subtitulo flex items-center justify-center text-principal">
             <Clock size={24} />
           </div>
         </div>
-        <div className="p-5 rounded-2xl bg-bg-surface border border-border-default flex items-center justify-between group">
+        <div className="p-5 rounded-2xl  border  flex items-center justify-between group">
           <div>
-            <p className="text-sm font-medium text-text-secondary mb-1">Confirmaciones</p>
+            <p className="text-sm font-medium text-subtitulo mb-1">Confirmaciones</p>
             <div className="flex items-baseline gap-2">
-              <h3 className="text-2xl font-bold text-text-primary">92%</h3>
+              <h3 className="text-2xl font-bold text-encabezado">92%</h3>
               <span className="text-xs font-medium text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">Óptimo</span>
             </div>
           </div>
-          <div className="w-12 h-12 rounded-xl bg-bg-subtle flex items-center justify-center text-brand">
+          <div className="w-12 h-12 rounded-xl bg-subtitulo flex items-center justify-center text-principal">
             <CheckCircle2 size={24} />
           </div>
         </div>
       </div>
 
       {/* 3. Área del Calendario Principal */}
-      <div className="bg-bg-surface border border-border-default rounded-2xl overflow-hidden shadow-sm flex flex-col md:flex-row min-h-[600px]">
+      <div className=" border  rounded-2xl overflow-hidden shadow-sm flex flex-col md:flex-row min-h-[600px]">
         {/* Panel Izquierdo: Mini-Calendario y Filtros */}
-        <div className="w-full md:w-80 border-b md:border-b-0 md:border-r border-border-default p-5 bg-bg-base/30 flex flex-col gap-6">
+        <div className="w-full md:w-80 border-b md:border-b-0 md:border-r  p-5 bg-bg-base/30 flex flex-col gap-6">
           {/* Mock de Mini Calendario Mes */}
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h4 className="font-semibold text-text-primary">Marzo 2026</h4>
+              <h4 className="font-semibold text-encabezado">Marzo 2026</h4>
               <div className="flex gap-1">
-                <button className="p-1 hover:bg-bg-subtle rounded-lg text-text-secondary">
+                <button className="p-1 hover:bg-subtitulo rounded-lg text-subtitulo">
                   <ChevronLeft size={16} />
                 </button>
-                <button className="p-1 hover:bg-bg-subtle rounded-lg text-text-secondary">
+                <button className="p-1 hover:bg-subtitulo rounded-lg text-subtitulo">
                   <ChevronRight size={16} />
                 </button>
               </div>
@@ -184,7 +184,7 @@ export default function AppointmentsPage() {
             {/* Grid simple del mes */}
             <div className="grid grid-cols-7 gap-1 text-center text-xs mb-2">
               {["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sá"].map((d) => (
-                <span key={d} className="text-text-secondary font-medium">
+                <span key={d} className="text-subtitulo font-medium">
                   {d}
                 </span>
               ))}
@@ -197,7 +197,7 @@ export default function AppointmentsPage() {
               {[...Array(24)].map((_, i) => (
                 <button
                   key={i}
-                  className={`p-1.5 rounded-lg flex items-center justify-center ${i + 1 === 24 ? "bg-brand text-white font-bold" : "text-text-primary hover:bg-bg-subtle"}`}
+                  className={`p-1.5 rounded-lg flex items-center justify-center ${i + 1 === 24 ? "bg-principal text-white font-bold" : "text-encabezado hover:bg-subtitulo"}`}
                 >
                   {i + 1}
                 </button>
@@ -209,37 +209,31 @@ export default function AppointmentsPage() {
 
           {/* Filtros de Doctores */}
           <div>
-            <h4 className="font-semibold text-text-primary text-sm mb-3">Doctores</h4>
+            <h4 className="font-semibold text-encabezado text-sm mb-3">Doctores</h4>
             <div className="space-y-2">
-              <label className="flex items-center gap-3 cursor-pointer group">
+              <label className="flex items-center gap-3  group">
                 <input
                   type="checkbox"
                   defaultChecked
-                  className="w-4 h-4 rounded-sm text-brand border-border-strong focus:ring-brand outline-none"
+                  className="w-4 h-4 rounded-sm text-principal border-border-strong focus:ring-brand outline-none"
                 />
-                <span className="text-sm text-text-secondary group-hover:text-text-primary transition-colors">
-                  Dr. Arturo Ramos
-                </span>
+                <span className="text-sm text-subtitulo group-hover:text-encabezado transition-colors">Dr. Arturo Ramos</span>
               </label>
-              <label className="flex items-center gap-3 cursor-pointer group">
+              <label className="flex items-center gap-3  group">
                 <input
                   type="checkbox"
                   defaultChecked
-                  className="w-4 h-4 rounded-sm text-brand border-border-strong focus:ring-brand outline-none"
+                  className="w-4 h-4 rounded-sm text-principal border-border-strong focus:ring-brand outline-none"
                 />
-                <span className="text-sm text-text-secondary group-hover:text-text-primary transition-colors">
-                  Dra. Silvia López
-                </span>
+                <span className="text-sm text-subtitulo group-hover:text-encabezado transition-colors">Dra. Silvia López</span>
               </label>
-              <label className="flex items-center gap-3 cursor-pointer group">
+              <label className="flex items-center gap-3  group">
                 <input
                   type="checkbox"
                   defaultChecked
-                  className="w-4 h-4 rounded-sm text-brand border-border-strong focus:ring-brand outline-none"
+                  className="w-4 h-4 rounded-sm text-principal border-border-strong focus:ring-brand outline-none"
                 />
-                <span className="text-sm text-text-secondary group-hover:text-text-primary transition-colors">
-                  Dr. Marcos Reyes
-                </span>
+                <span className="text-sm text-subtitulo group-hover:text-encabezado transition-colors">Dr. Marcos Reyes</span>
               </label>
             </div>
           </div>
@@ -248,25 +242,21 @@ export default function AppointmentsPage() {
         {/* Panel Derecho: Línea de Tiempo del Día */}
         <div className="flex-1 flex flex-col relative w-full overflow-x-auto">
           {/* Header del timeline */}
-          <div className="p-4 border-b border-border-default flex flex-col sm:flex-row items-center justify-between gap-4 sticky top-0 bg-bg-surface z-10">
+          <div className="p-4 border-b  flex flex-col sm:flex-row items-center justify-between gap-4 sticky top-0  z-10">
             <div className="flex items-center gap-3">
-              <h3 className="text-lg font-bold text-text-primary">24 Marzo, 2026</h3>
-              <span className="px-2 py-1 bg-bg-subtle text-text-secondary rounded-md text-xs font-medium">Hoy</span>
+              <h3 className="text-lg font-bold text-encabezado">24 Marzo, 2026</h3>
+              <span className="px-2 py-1 bg-subtitulo text-subtitulo rounded-md text-xs font-medium">Hoy</span>
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="bg-bg-base border border-border-default flex p-1 rounded-xl">
-                <button className="px-4 py-1.5 text-xs font-semibold bg-bg-surface shadow-sm rounded-lg text-text-primary">
-                  Día
-                </button>
-                <button className="px-4 py-1.5 text-xs font-medium text-text-secondary hover:text-text-primary rounded-lg">
+              <div className="bg-bg-base border  flex p-1 rounded-xl">
+                <button className="px-4 py-1.5 text-xs font-semibold  shadow-sm rounded-lg text-encabezado">Día</button>
+                <button className="px-4 py-1.5 text-xs font-medium text-subtitulo hover:text-encabezado rounded-lg">
                   Semana
                 </button>
-                <button className="px-4 py-1.5 text-xs font-medium text-text-secondary hover:text-text-primary rounded-lg">
-                  Mes
-                </button>
+                <button className="px-4 py-1.5 text-xs font-medium text-subtitulo hover:text-encabezado rounded-lg">Mes</button>
               </div>
-              <button className="p-2 border border-border-default rounded-xl text-text-secondary hover:text-brand hover:bg-bg-subtle transition-colors">
+              <button className="p-2 border  rounded-xl text-subtitulo hover:text-principal hover:bg-subtitulo transition-colors">
                 <Filter size={16} />
               </button>
             </div>
@@ -284,17 +274,17 @@ export default function AppointmentsPage() {
                 <div key={block.hour} className="flex group min-h-[100px]">
                   {/* Etiqueta de Hora */}
                   <div className="w-16 shrink-0 text-right pr-4 pt-2">
-                    <span className="text-xs font-medium text-text-secondary group-hover:text-text-primary transition-colors">
+                    <span className="text-xs font-medium text-subtitulo group-hover:text-encabezado transition-colors">
                       {block.hour}
                     </span>
                   </div>
 
                   {/* Bloque de Contenido / Citas */}
-                  <div className="flex-1 border-t border-border-default relative pt-2 pb-2 mr-4">
+                  <div className="flex-1 border-t  relative pt-2 pb-2 mr-4">
                     <div className="flex flex-col gap-2 relative z-10">
                       {block.appointments.length === 0 && (
                         <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute top-2 w-full">
-                          <button className="w-full border border-dashed border-border-strong rounded-xl h-12 flex items-center justify-center text-text-disabled hover:text-brand hover:border-brand hover:bg-brand/5 text-xs font-medium transition-all">
+                          <button className="w-full border border-dashed border-border-strong rounded-xl h-12 flex items-center justify-center text-subtitulo hover:text-principal hover:border-brand hover:bg-principal text-xs font-medium transition-all">
                             + Añadir cita a las {block.hour}
                           </button>
                         </div>
@@ -303,7 +293,7 @@ export default function AppointmentsPage() {
                       {block.appointments.map((apt) => (
                         <div
                           key={apt.id}
-                          className={`p-3 border rounded-xl flex items-start gap-3 hover:shadow-md transition-shadow cursor-pointer ${apt.bgColor} ${apt.borderColor}`}
+                          className={`p-3 border rounded-xl flex items-start gap-3 hover:shadow-md transition-shadow  ${apt.bgColor} ${apt.borderColor}`}
                         >
                           <div className={`w-1 shrink-0 h-full rounded-full bg-current ${apt.textColor}`} />
 
@@ -316,25 +306,25 @@ export default function AppointmentsPage() {
                                 {apt.status}
                               </span>
                             </div>
-                            <p className="text-xs text-text-primary font-medium mt-1">{apt.title}</p>
+                            <p className="text-xs text-encabezado font-medium mt-1">{apt.title}</p>
 
                             <div className="flex items-center gap-4 mt-2">
-                              <div className="flex items-center gap-1.5 text-xs text-text-secondary">
+                              <div className="flex items-center gap-1.5 text-xs text-subtitulo">
                                 <Clock size={12} />
                                 {block.hour} <span className="opacity-70">({apt.duration})</span>
                               </div>
-                              <div className="flex items-center gap-1.5 text-xs text-text-secondary">
+                              <div className="flex items-center gap-1.5 text-xs text-subtitulo">
                                 <User size={12} />
                                 {apt.doctor}
                               </div>
-                              <div className="flex items-center gap-1.5 text-xs text-text-secondary">
+                              <div className="flex items-center gap-1.5 text-xs text-subtitulo">
                                 {apt.type === "Video" ? <Video size={12} className={apt.textColor} /> : <MapPin size={12} />}
                                 {apt.type}
                               </div>
                             </div>
                           </div>
 
-                          <button className="text-text-secondary hover:text-text-primary p-1">
+                          <button className="text-subtitulo hover:text-encabezado p-1">
                             <MoreHorizontal size={16} />
                           </button>
                         </div>
@@ -347,10 +337,10 @@ export default function AppointmentsPage() {
 
             {/* Fin del día de trabajo */}
             <div className="flex">
-              <div className="w-16 shrink-0 text-right pr-4 border-t border-border-default pt-2">
-                <span className="text-xs font-medium text-text-disabled">18:00</span>
+              <div className="w-16 shrink-0 text-right pr-4 border-t  pt-2">
+                <span className="text-xs font-medium text-subtitulo">18:00</span>
               </div>
-              <div className="flex-1 border-t border-border-default mr-4"></div>
+              <div className="flex-1 border-t  mr-4"></div>
             </div>
           </div>
         </div>

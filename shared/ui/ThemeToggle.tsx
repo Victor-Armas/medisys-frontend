@@ -12,7 +12,7 @@ function useIsMounted() {
   return useSyncExternalStore(
     subscribe,
     () => true,
-    () => false
+    () => false,
   );
 }
 
@@ -25,7 +25,7 @@ export function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-      className="w-8 h-8 rounded-lg bg-bg-base dark:bg-bg-elevated border border-border-default flex items-center justify-center text-text-secondary hover:text-brand transition-colors cursor-pointer"
+      className={`w-8 h-8 ${resolvedTheme === "light" ? "bg-inner-secundario hover:bg-secundario-hover text-secundario" : "bg-yellow-200 hover:bg-amber-300 text-yellow-800"}  rounded-full flex items-center justify-center transition-colors`}
       title={resolvedTheme === "dark" ? "Modo claro" : "Modo oscuro"}
     >
       {resolvedTheme === "dark" ? <Sun size={14} /> : <Moon size={14} />}

@@ -16,7 +16,7 @@ export default function LoginPage() {
             priority
             sizes="(max-width: 768px) 100vw, 50vw"
           />
-          <div className="absolute inset-0 bg-brand opacity-50" />
+          <div className="absolute inset-0 bg-principal opacity-50" />
 
           <div className="relative z-10 flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center">
@@ -32,8 +32,7 @@ export default function LoginPage() {
               por la salud
             </h2>
             <p className="text-white/70 text-sm leading-relaxed">
-              Acceso seguro para el personal médico y administrativo. Solo para
-              empleados.
+              Acceso seguro para el personal médico y administrativo. Solo para empleados.
             </p>
           </div>
         </div>
@@ -42,9 +41,7 @@ export default function LoginPage() {
         <LoginForm />
       </div>
 
-      <p className="mt-6 text-xs text-gray-400">
-        © 2026 MediSys — Sistema de gestión médica
-      </p>
+      <p className="mt-6 text-xs text-gray-400">© 2026 MediSys — Sistema de gestión médica</p>
     </main>
   );
 }

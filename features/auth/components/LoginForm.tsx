@@ -8,10 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { authService } from "@/features/auth/services/auth.service";
 import { useAuthStore } from "@/features/auth/store/auth.store";
-import {
-  loginSchema,
-  LoginFormData,
-} from "@/features/auth/validations/auth.validations";
+import { loginSchema, LoginFormData } from "@/features/auth/validations/auth.validations";
 import { Input } from "@/shared/ui/input";
 import { ButtonLogin } from "@/shared/ui/ButtonLogin";
 
@@ -48,17 +45,13 @@ export function LoginForm() {
     <div className="w-full md:w-1/2 flex flex-col justify-center px-6 sm:px-10 py-12">
       {/* Badge */}
       <div className="mb-6">
-        <span className="text-xs font-semibold tracking-widest px-3 py-1 rounded-md bg-surface-subtle text-brand">
+        <span className="text-xs font-semibold tracking-widest px-3 py-1 rounded-md bg-surface-subtle text-principal">
           STAFF LOGIN
         </span>
       </div>
 
-      <h1 className="text-2xl font-semibold text-text-base mb-1">
-        Bienvenido de nuevo
-      </h1>
-      <p className="text-sm text-text-muted mb-8">
-        Ingresa con tus credenciales
-      </p>
+      <h1 className="text-2xl font-semibold text-text-base mb-1">Bienvenido de nuevo</h1>
+      <p className="text-sm text-text-muted mb-8">Ingresa con tus credenciales</p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <Input
@@ -72,13 +65,8 @@ export function LoginForm() {
 
         <div className="flex flex-col gap-1.5">
           <div className="flex justify-between items-center">
-            <span className="text-sm font-medium text-text-base">
-              Contraseña
-            </span>
-            <button
-              type="button"
-              className="text-xs font-medium text-brand cursor-pointer hover:underline"
-            >
+            <span className="text-sm font-medium text-text-base">Contraseña</span>
+            <button type="button" className="text-xs font-medium text-principal  hover:underline">
               ¿Olvidaste tu contraseña?
             </button>
           </div>
@@ -88,11 +76,7 @@ export function LoginForm() {
             icon={Lock}
             error={errors.password?.message}
             rightElement={
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="text-text-accent cursor-pointer"
-              >
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="text-text-accent ">
                 {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
               </button>
             }
@@ -102,12 +86,7 @@ export function LoginForm() {
 
         {serverError && <p className="text-sm text-red-500">{serverError}</p>}
 
-        <ButtonLogin
-          type="submit"
-          fullWidth
-          loading={isSubmitting}
-          icon={ArrowRight}
-        >
+        <ButtonLogin type="submit" fullWidth loading={isSubmitting} icon={ArrowRight}>
           Iniciar sesión
         </ButtonLogin>
       </form>

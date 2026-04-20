@@ -3,7 +3,7 @@
 
 import { cn } from "@/shared/lib/utils";
 import type { BloodType } from "@/features/patients/types/patient.types";
-import { BLOOD_TYPE_LABELS } from "@/features/patients/types/patient.types";
+import { BLOOD_TYPE_LABELS } from "@/features/patients/constants/patient.constants";
 
 const BLOOD_TYPES = Object.keys(BLOOD_TYPE_LABELS) as BloodType[];
 
@@ -23,7 +23,8 @@ export function BloodTypePicker({ value, onChange, error, disabled }: Props) {
 
   return (
     <div>
-      <p className="text-[11px] text-red-600 font-medium leading-relaxed mb-3">Tipo de sangre</p>
+      <p className="text-[11px] font-bold uppercase tracking-wider mb-3 text-red-600 dark:text-red-400">Tipo de sangre</p>
+
       {/* Grid compacto y elegante */}
       <div className="grid grid-cols-4 gap-3">
         {BLOOD_TYPES.filter((bt) => bt !== "UNKNOWN").map((bt) => {
@@ -38,35 +39,38 @@ export function BloodTypePicker({ value, onChange, error, disabled }: Props) {
               disabled={disabled}
               onClick={() => handleSelect(bt)}
               className={cn(
-                "h-10 w-full rounded-sm cursor-pointer text-sm font-semibold transition-all duration-200 shadow",
-                "focus:outline-none focus:ring-2 focus:ring-slate-200 focus:ring-offset-1",
+                "h-10 w-full rounded-md text-sm font-bold transition-all duration-200 shadow-sm border",
+                "focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:ring-offset-1 dark:focus:ring-offset-slate-900",
                 "disabled:opacity-40 disabled:cursor-not-allowed",
                 selected
-                  ? "bg-red-600 border-red-600 text-white shadow-md"
-                  : "bg-white border-red-200 text-red-600 hover:bg-red-50",
+                  ? "bg-red-600 border-red-600 text-white shadow-md dark:bg-red-500 dark:border-red-500"
+                  : "bg-white border-red-200 text-red-600 hover:bg-red-50 dark:bg-white/5 dark:border-red-900/30 dark:text-red-300 dark:hover:bg-red-950/40",
               )}
             >
-              <span className="flex items-center justify-center gap-0.5">
+              <span className="flex items-center justify-center gap-1.5">
                 {group}
-                <span className={cn("text-[10px]", selected ? "text-red-300" : "text-red-700")}>{isPositive ? "+" : "−"}</span>
+                <span className={cn("text-[10px]", selected ? "text-red-200" : "text-red-700 dark:text-red-400/80")}>
+                  {isPositive ? "+" : "−"}
+                </span>
               </span>
             </button>
           );
         })}
 
         <div className="col-span-4">
-          <p className="text-[11px] text-red-600 font-medium leading-relaxed mt-2 mb-1">En caso de desconocer</p>
+          <p className="text-[11px] font-bold uppercase tracking-wider mt-4 mb-2 text-red-600 dark:text-red-400">
+            En caso de desconocer
+          </p>
           <button
             type="button"
             disabled={disabled}
             onClick={() => handleSelect("UNKNOWN")}
             className={cn(
-              "h-10 w-full rounded-md cursor-pointer border text-xs font-medium transition-all duration-200",
-              "focus:outline-none focus:ring-2 focus:ring-slate-200 focus:ring-offset-1",
-              "disabled:opacity-40 disabled:cursor-not-allowed",
+              "h-10 w-full rounded-md border text-xs font-bold transition-all duration-200 shadow-sm",
+              "focus:outline-none focus:ring-2 focus:ring-slate-500/20",
               isSelected("UNKNOWN")
-                ? "bg-slate-500 border-slate-500 text-white"
-                : "bg-white border-red-200 text-red-400 hover:bg-red-50",
+                ? "bg-slate-600 border-slate-600 text-white dark:bg-slate-500 dark:border-slate-500"
+                : "bg-white border-red-200 text-red-400 hover:bg-red-50 dark:bg-white/5 dark:border-red-900/30 dark:text-red-400/60 dark:hover:bg-red-950/40",
             )}
           >
             Desconocido
@@ -76,8 +80,8 @@ export function BloodTypePicker({ value, onChange, error, disabled }: Props) {
 
       {/* Error message elegante */}
       {error && (
-        <p className="text-xs font-medium text-rose-500 flex items-center gap-1.5">
-          <span className="w-1 h-1 rounded-full bg-rose-400" />
+        <p className="text-xs font-medium text-rose-500 dark:text-rose-400 flex items-center gap-1.5 mt-3">
+          <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
           {error}
         </p>
       )}

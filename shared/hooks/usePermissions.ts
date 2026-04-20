@@ -17,12 +17,14 @@ const ADMIN_ROLES = ["ADMIN_SYSTEM", "MAIN_DOCTOR"] as const;
  * degrades gracefully before the API ever rejects a request.
  */
 export function usePermissions(roleOverride?: string) {
+  const user = useAuthStore((s) => s.user);
   const storeRole = useAuthStore((s) => s.user?.role ?? "");
 
   const role = roleOverride ?? storeRole;
   const isAdminOrMain = (ADMIN_ROLES as readonly string[]).includes(role);
 
   return {
+    userId: user?.id,
     role,
 
     // ── Users module ──────────────────────────────────────────────────────────
