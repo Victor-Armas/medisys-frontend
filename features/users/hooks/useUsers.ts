@@ -119,8 +119,60 @@ export function useUploadDoctorSignature() {
   return useMutation({
     mutationFn: ({ doctorProfileId, file }: { doctorProfileId: string; file: File }) =>
       uploadDoctorSignature(doctorProfileId, file),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: userKeys.all });
+    onMutate: async ({ doctorProfileId, file }) => {
+      await qc.cancelQueries({ queryKey: userKeys.lists() });
+
+      const previousUsers = qc.getQueryData<User[]>(userKeys.lists());
+      const tempUrl = URL.createObjectURL(file);
+
+      // Find user id to optimistically update detail query
+      const matchedUser = previousUsers?.find((u) => u.doctorProfile?.id === doctorProfileId);
+      const matchedUserId = matchedUser?.id;
+
+      if (matchedUserId) {
+        await qc.cancelQueries({ queryKey: userKeys.detail(matchedUserId) });
+      }
+      const previousDetail = matchedUserId ? qc.getQueryData<User>(userKeys.detail(matchedUserId)) : undefined;
+
+      // Update lists cache
+      qc.setQueryData<User[]>(userKeys.lists(), (old) =>
+        old?.map((user) =>
+          user.doctorProfile?.id === doctorProfileId
+            ? {
+                ...user,
+                doctorProfile: {
+                  ...user.doctorProfile,
+                  signatureUrl: tempUrl,
+                },
+              }
+            : user,
+        ),
+      );
+
+      // Update detail cache
+      if (previousDetail && matchedUserId) {
+        qc.setQueryData<User>(userKeys.detail(matchedUserId), {
+          ...previousDetail,
+          doctorProfile: {
+            ...previousDetail.doctorProfile!,
+            signatureUrl: tempUrl,
+          },
+        });
+      }
+
+      return { previousUsers, previousDetail, matchedUserId };
+    },
+    onError: (_err, _variables, context) => {
+      if (context?.previousUsers) qc.setQueryData(userKeys.lists(), context.previousUsers);
+      if (context?.previousDetail && context.matchedUserId) {
+        qc.setQueryData(userKeys.detail(context.matchedUserId), context.previousDetail);
+      }
+    },
+    onSettled: (_data, _error, _variables, context) => {
+      qc.invalidateQueries({ queryKey: userKeys.lists() });
+      if (context?.matchedUserId) {
+        qc.invalidateQueries({ queryKey: userKeys.detail(context.matchedUserId) });
+      }
     },
   });
 }

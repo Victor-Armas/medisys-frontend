@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { HistorySection } from "@/features/patients/shared/HistorySection";
-import { User } from "../../types";
+import { StaffRole, User } from "../../types";
 import HeaderProfile from "./HeaderProfile";
 import { usePermissions } from "@/shared/hooks/usePermissions";
 import AccountProfileCard from "./AccountProfileCard";
@@ -16,19 +16,22 @@ import { EditUserModal } from "../../modals/EditUserModal";
 interface Props {
   user: User;
   isOwnProfile?: boolean;
+  canEditOtherProfilesServer?: boolean;
+  role: StaffRole;
 }
 
 export type ViewMode = "week" | "month";
 
-export default function DoctorProfileClient({ user, isOwnProfile = false }: Props) {
+export default function DoctorProfileClient({ user, isOwnProfile = false, role }: Props) {
   const [editOpen, setEditOpen] = useState(false);
   //ESTADO GLOBAL DEL CALENDARIO
   const [viewMode, setViewMode] = useState<ViewMode>("week");
   const [baseDate, setBaseDate] = useState(new Date());
 
-  const { canEditOtherProfiles } = usePermissions(user.role);
-  const showEditButton = canEditOtherProfiles || isOwnProfile;
-  const backHref = isOwnProfile ? "/dashboard" : "/users";
+  const { canEditOtherProfiles, userId } = usePermissions(role); // No sobreescribir con el rol del usuario visto
+  const actualIsOwnProfile = isOwnProfile || userId === user.id;
+  const showEditButton = canEditOtherProfiles || actualIsOwnProfile;
+  const backHref = actualIsOwnProfile ? "/dashboard" : "/users";
 
   // LÓGICA DE NAVEGACIÓN (Solo renderiza lo que ves)
   const handlePrev = () =>
@@ -96,7 +99,16 @@ export default function DoctorProfileClient({ user, isOwnProfile = false }: Prop
         </div>
         <div className="col-span-3 col-start-4 flex flex-col h-full">
           <HistorySection title="Firma Medica" icon="signature" className="h-full">
-            {user.doctorProfile && (isOwnProfile || canEditOtherProfiles) && <DoctorSignatureCard profile={user.doctorProfile} />}
+            {user.doctorProfile ? (
+              <DoctorSignatureCard profile={user.doctorProfile} canEdit={actualIsOwnProfile || canEditOtherProfiles} />
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full text-center p-6 mt-4">
+                <p className="text-sm font-medium text-gray-400">Sin perfil médico</p>
+                <p className="text-xs text-gray-400 border-t items-center justify-center">
+                  Para subir una firma registrate como médico.
+                </p>
+              </div>
+            )}
           </HistorySection>
         </div>
       </div>
