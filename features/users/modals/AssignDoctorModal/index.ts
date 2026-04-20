@@ -1,1 +1,0 @@
-export { AssignDoctorModal } from "./AssignDoctorModal";
