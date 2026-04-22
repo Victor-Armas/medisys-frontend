@@ -69,4 +69,8 @@ export const clinicsService = {
   assignDoctorToClinic: async (clinicId: string, payload: { doctorProfileId: string; isPrimary?: boolean }): Promise<void> => {
     await api.post(`/clinics/${clinicId}/assign-doctor`, payload);
   },
+
+  deactivateDoctor: async (clinicId: string, doctorProfileId: string): Promise<void> => {
+    await api.patch(`/clinics/${clinicId}/doctors/${doctorProfileId}/deactivate`);
+  },
 };

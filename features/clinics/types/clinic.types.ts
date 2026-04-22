@@ -89,3 +89,13 @@ export interface ActiveModalContext {
   doctorProfileId: string;
   prefillDate?: string;
 }
+
+export interface AssignDoctorPayload {
+  doctorProfileId: string;
+  isPrimary?: boolean;
+}
+
+export interface DeactivateDoctorArgs {
+  clinicId: string;
+  doctorProfileId: string;
+}

@@ -9,7 +9,6 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // EXCEPCIÓN CRÍTICA: Ignorar cualquier archivo con extensión o rutas internas de Next.js
-  // Esto elimina el error "Unexpected token '<'" de raíz.
   if (
     pathname.startsWith("/_next") ||
     pathname.includes("/api/") ||

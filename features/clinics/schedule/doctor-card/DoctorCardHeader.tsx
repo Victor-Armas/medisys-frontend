@@ -2,9 +2,14 @@
 
 import { cn } from "@shared/lib/utils";
 import type { DoctorInClinic } from "@features/clinics/types/clinic.types";
-// import { MoreVertical } from "lucide-react";
+import { MoreVertical, UserMinus } from "lucide-react";
 import { useToggleDoctorAvailability, useToggleSchedulePermission } from "@/features/users/hooks/useUsers";
 import { usePermissions } from "@/shared/hooks/usePermissions";
+import { useState } from "react";
+import { ConfirmDialog } from "@/shared/providers/ConfirmDialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
+import { useDeactivateDoctorFromClinic } from "@features/clinics/hooks/useClinics";
+import { notify } from "@/shared/ui/toaster";
 
 interface Props {
   doctorClinic: DoctorInClinic;
@@ -20,6 +25,23 @@ export function DoctorCardHeader({ doctorClinic, fullName, initials, isPaused }:
   const { canGrantSchedulePermission } = usePermissions();
   const isAvailabilityPending = toggleAvailability.isPending;
   const isSchedulePermPending = toggleSchedulePerm.isPending;
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const deactivateDoctor = useDeactivateDoctorFromClinic();
+
+  const handleDeactivate = () => {
+    const loadId = notify.loading("Desvinculando al médico...");
+    deactivateDoctor.mutate(
+      { clinicId: doctorClinic.clinicId, doctorProfileId: doctorProfile.id },
+      {
+        onSuccess: () => {
+          notify.success("Médico desvinculado exitosamente.", undefined, { id: loadId });
+        },
+        onError: () => {
+          notify.error("Ocurrió un error al intentar desvincular.", undefined, { id: loadId });
+        },
+      },
+    );
+  };
 
   return (
     <div className="flex items-center gap-4 px-6 py-2  ">
@@ -121,10 +143,34 @@ export function DoctorCardHeader({ doctorClinic, fullName, initials, isPaused }:
 
         <div className="w-px h-8 bg-border-default" />
 
-        {/* ── Menú acciones (placeholder Fase 2+) ─────────────────── */}
-        {/* <button className="p-2 rounded-lg text-subtitulo hover:text-encabezado hover:bg-subtitulo transition-colors ">
-          <MoreVertical size={16} />
-        </button> */}
+        {/* ── Menú acciones ─────────────────── */}
+        <DropdownMenu>
+          <DropdownMenuTrigger className="p-2 rounded-lg text-subtitulo hover:text-encabezado hover:bg-subtitulo transition-colors outline-none">
+            <MoreVertical size={16} />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            className="w-56 bg-fondo-inputs border border-border-default shadow-lg text-subtitulo rounded-lg"
+          >
+            <DropdownMenuItem
+              onClick={() => setIsConfirmOpen(true)}
+              className="text-wairning-text hover:bg-wairning-bg transition-colors font-medium flex items-center cursor-pointer p-2 m-1 rounded-md"
+            >
+              <UserMinus size={14} className="mr-2" /> Desvincular médico
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <ConfirmDialog
+          open={isConfirmOpen}
+          onOpenChange={setIsConfirmOpen}
+          title="Desvincular médico"
+          message={`¿Estás seguro que deseas desvincular a ${fullName} de esta clínica? Sus citas pasadas y expedientes permanecerán intactos.`}
+          confirmText="Sí, desvincular"
+          cancelText="Cancelar"
+          variant="warning"
+          onConfirm={handleDeactivate}
+        />
       </div>
     </div>
   );
