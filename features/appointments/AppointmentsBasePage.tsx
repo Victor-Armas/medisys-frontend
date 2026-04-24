@@ -3,6 +3,8 @@
 
 import { useState, useCallback, useEffect } from "react";
 import dayjs from "dayjs";
+import { Menu } from "lucide-react";
+import { cn } from "@/shared/lib/utils";
 import { AppointmentCalendar } from "./calendario/AppointmentCalendar";
 import { AppointmentsSidebar } from "./sidebar/AppointmentsSidebar";
 import { CreateAppointmentModal } from "./modales/CreateAppointmentModal";
@@ -34,6 +36,7 @@ export function AppointmentsBasePage({ initialData, initialResources, role }: Pr
   const [selectedSlot, setSelectedSlot] = useState<SlotInfo | null>(null);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null);
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
 
   const initVisibleDoctors = useAppointmentsFilterStore((s) => s.initVisibleDoctors);
   const initColors = useDoctorColorsStore((s) => s.initForUser);
@@ -76,15 +79,40 @@ export function AppointmentsBasePage({ initialData, initialResources, role }: Pr
   const handleNewAppointment = useCallback(() => {
     setSelectedSlot(null);
     setCreateModalOpen(true);
+    setShowMobileSidebar(false);
   }, []);
 
   return (
-    <div className="flex h-full w-full px-6 bg-external overflow-hidden">
-      <AppointmentsSidebar resources={initialResources} onNewAppointment={handleNewAppointment} />
-      <main className="flex-1 min-w-0 flex flex-col p-4 gap-3 overflow-hidden">
-        <div className="flex items-center justify-between shrink-0">
+    <div className="flex h-full w-full bg-external overflow-hidden relative">
+      {/* Overlay para móvil */}
+      {showMobileSidebar && (
+        <div className="absolute inset-0 bg-black/50 z-40 md:hidden" onClick={() => setShowMobileSidebar(false)} />
+      )}
+
+      {/* Sidebar - Drawer en móvil, normal en desktop */}
+      <div
+        className={cn(
+          "absolute inset-y-0 left-0 z-50 transform transition-transform duration-300 md:relative md:translate-x-0 h-full",
+          showMobileSidebar ? "translate-x-0" : "-translate-x-full",
+        )}
+      >
+        <AppointmentsSidebar
+          resources={initialResources}
+          onNewAppointment={handleNewAppointment}
+          onCloseMobile={() => setShowMobileSidebar(false)}
+        />
+      </div>
+
+      <main className="flex-1 min-w-0 flex flex-col px-4 md:px-6 pt-4 gap-3 overflow-hidden">
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            onClick={() => setShowMobileSidebar(true)}
+            className="md:hidden p-1.5 -ml-1.5 rounded-md hover:bg-black/5 text-subtitulo transition-colors"
+          >
+            <Menu size={24} />
+          </button>
           <div>
-            <h1 className="text-2xl font-bold text-encabezado">Agendar Citas</h1>
+            <h1 className="text-xl md:text-2xl font-bold text-encabezado leading-tight">Agendar Citas</h1>
             {loadingEvents && <p className="text-xs text-subtitulo">Actualizando...</p>}
           </div>
         </div>

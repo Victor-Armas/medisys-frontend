@@ -65,7 +65,7 @@ function DialogContent({ children, className }: DialogContentProps) {
 
       {/* Modal - Eliminamos el p-4 y añadimos overflow-hidden */}
       <div
-        className={cn("relative z-10 w-full max-w-3xl rounded-md bg-interior shadow-xl overflow-hidden flex flex-col", className)}
+        className={cn("relative z-10 w-full max-w-3xl max-h-[90vh] md:max-h-[85vh] rounded-md bg-interior shadow-xl overflow-hidden flex flex-col", className)}
       >
         {children}
       </div>
@@ -104,10 +104,9 @@ function DialogHeader({ className, showClose = true, children, ...props }: Dialo
 }
 
 // --- NUEVO: DialogBody (SRP) ---
-// Como quitamos el padding del contenedor, creamos un body para envolver el contenido
 function DialogBody({ className, children, ...props }: React.ComponentProps<"div">) {
   return (
-    <div className={cn("p-6 pt-0", className)} {...props}>
+    <div className={cn("flex-1 p-6 pt-0 overflow-y-auto custom-scrollbar", className)} {...props}>
       {children}
     </div>
   );

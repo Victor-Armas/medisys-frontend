@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/shared/ui/button";
+import { X } from "lucide-react";
 import { DoctorToggleFilter } from "./filtros/DoctorToggleFilter";
 import { StatusFilter } from "./filtros/StatusFilter";
 import { useAppointmentsFilterStore } from "../store/appointmentsFilter.store";
@@ -10,16 +11,28 @@ import ClinicToggleFilter from "./filtros/ClinicToggleFilter";
 interface Props {
   resources: DoctorResource[];
   onNewAppointment: () => void;
+  onCloseMobile?: () => void;
 }
 
-export function AppointmentsSidebar({ resources, onNewAppointment }: Props) {
+export function AppointmentsSidebar({ resources, onNewAppointment, onCloseMobile }: Props) {
   const resetFilters = useAppointmentsFilterStore((s) => s.resetFilters);
 
   return (
-    <aside className="w-56 shrink-0 bg-interior flex flex-col gap-4 p-3 border-r border-disable/40 overflow-y-auto">
-      <Button variant="primary2" icon="agregar" className="w-full px-3 py-2 text-sm" onClick={onNewAppointment}>
-        Nueva cita
-      </Button>
+    <aside className="w-64 md:w-56 h-full shrink-0 bg-interior flex flex-col gap-4 p-4 border-r border-disable/40 overflow-y-auto shadow-xl md:shadow-none relative">
+      {onCloseMobile && (
+        <button
+          onClick={onCloseMobile}
+          className="absolute top-2 right-2 p-1.5 rounded-md text-subtitulo hover:bg-black/5 md:hidden"
+        >
+          <X size={20} />
+        </button>
+      )}
+
+      <div className="pt-8 md:pt-0">
+        <Button variant="primary2" icon="agregar" className="w-full px-3 py-2 text-sm" onClick={onNewAppointment}>
+          Nueva cita
+        </Button>
+      </div>
 
       <ClinicToggleFilter resources={resources} />
 

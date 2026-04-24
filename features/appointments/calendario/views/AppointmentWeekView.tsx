@@ -43,7 +43,7 @@ export function AppointmentWeekView({ events }: Props) {
             return (
               <div
                 key={day.format("YYYY-MM-DD")}
-                className={`flex-1 text-center py-1.5 text-xs font-semibold capitalize rounded-sm ${
+                className={`flex-1 min-w-[110px] md:min-w-0 text-center py-1.5 text-xs font-semibold capitalize rounded-sm ${
                   isToday ? "text-principal bg-principal/10" : "text-subtitulo bg-interior"
                 }`}
               >
@@ -75,7 +75,7 @@ export function AppointmentWeekView({ events }: Props) {
             const dayEvents = events.filter((e) => dayjs(e.start).format("YYYY-MM-DD") === dateStr);
 
             return (
-              <div key={dateStr} className="flex-1 relative border-l border-disable/30">
+              <div key={dateStr} className="flex-1 min-w-[110px] md:min-w-0 relative border-l border-disable/30">
                 {/* Celdas de hora (fondo + click) */}
                 {hours.map((h) => (
                   <div

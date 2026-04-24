@@ -21,12 +21,12 @@ export function UsersToolbar({ tab, setTab, search, setSearch }: Props) {
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 w-full">
       {/* Selector de Tabs */}
-      <div className="flex items-center bg-fondo-inputs p-1 rounded-sm">
+      <div className="flex items-center bg-fondo-inputs p-1 rounded-sm overflow-x-auto custom-scrollbar max-w-full">
         {TABS.map((t) => (
           <button
             key={t.value}
             onClick={() => setTab(t.value)}
-            className={`px-6 py-1.5 text-[14px] font-medium transition-all rounded-sm ${
+            className={`px-6 py-1.5 text-[14px] font-medium transition-all rounded-sm whitespace-nowrap shrink-0 ${
               tab === t.value ? "bg-principal text-white shadow-sm" : "text-gray-500 hover:text-gray-800"
             }`}
           >

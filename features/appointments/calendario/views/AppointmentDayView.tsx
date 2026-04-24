@@ -12,7 +12,7 @@ import { useClinicColorsStore } from "../../store/clinicColors.store";
 
 const HOUR_HEIGHT = 64;
 const START_HOUR = 7;
-const MIN_COLUMN_WIDTH = 180; // px — mínimo antes de scroll horizontal
+const MIN_COLUMN_WIDTH = 140; // px — mínimo antes de scroll horizontal
 
 interface Props {
   events: AppointmentCalendarEvent[];

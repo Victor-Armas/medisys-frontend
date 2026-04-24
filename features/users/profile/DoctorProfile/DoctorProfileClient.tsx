@@ -80,24 +80,24 @@ export default function DoctorProfileClient({ user, isOwnProfile = false, role }
     <div className="max-w-[1400px] mx-auto pb-10 p-6 space-y-4">
       <HeaderProfile backHref={backHref} showEditButton={showEditButton} setEditOpen={setEditOpen} />
 
-      <div className="grid grid-cols-6 gap-6">
-        <div className="col-span-4 flex flex-col h-full">
+      <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
+        <div className="col-span-1 lg:col-span-4 flex flex-col h-full">
           <HistorySection title="Datos de la cuenta" icon="clipuser" className="h-full">
             <AccountProfileCard user={user} />
           </HistorySection>
         </div>
-        <div className="col-span-2 col-start-5 flex flex-col h-full">
+        <div className="col-span-1 lg:col-span-2 lg:col-start-5 flex flex-col h-full">
           {/* Datos Profesionales */}
           <HistorySection title="Datos Profesionales" icon="professional" className="h-full">
             <ProfessionalProfileCard doctor={user.doctorProfile} />
           </HistorySection>
         </div>
-        <div className="col-span-3 flex flex-col h-full">
+        <div className="col-span-1 lg:col-span-3 flex flex-col h-full">
           <HistorySection title="Datos Profesionales" icon="address" className="h-full">
             {user.doctorProfile && <AddressProfileCard address={user.doctorProfile} />}
           </HistorySection>
         </div>
-        <div className="col-span-3 col-start-4 flex flex-col h-full">
+        <div className="col-span-1 lg:col-span-3 lg:col-start-4 flex flex-col h-full">
           <HistorySection title="Firma Medica" icon="signature" className="h-full">
             {user.doctorProfile ? (
               <DoctorSignatureCard profile={user.doctorProfile} canEdit={actualIsOwnProfile || canEditOtherProfiles} />

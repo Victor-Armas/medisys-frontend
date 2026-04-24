@@ -215,7 +215,7 @@ export function CreateAppointmentForm({
             </div>
 
             {contactMode === "guest" ? (
-              <div className="flex flex-col gap-3">
+              <div key="guest-view" className="flex flex-col gap-3">
                 <Input label="Nombre completo" {...register("guestName")} error={errors.guestName?.message} />
                 <div className="grid grid-cols-2 gap-3">
                   <Input label="Teléfono" type="tel" {...register("guestPhone")} error={errors.guestPhone?.message} />
@@ -223,7 +223,7 @@ export function CreateAppointmentForm({
                 </div>
               </div>
             ) : (
-              <div className="relative flex flex-col gap-1">
+              <div key="patient-view" className="relative flex flex-col gap-1">
                 <Input
                   label="Buscar paciente (Nombre o Teléfono)"
                   value={patientQuery}

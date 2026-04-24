@@ -53,12 +53,11 @@ export function UsersPanelClient({ initialUsers, serverRole }: Props) {
         </div>
 
         {canManageUsers && (
-          <div className="flex items-center gap-3">
-            <Button variant="secundario" icon="userPlus" onClick={() => setModal("assign-doctor")} className="p-2">
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto mt-2 sm:mt-0">
+            <Button variant="secundario" icon="userPlus" onClick={() => setModal("assign-doctor")} className="w-full sm:w-auto p-2">
               Asignar perfil médico
             </Button>
-
-            <Button className="p-2" variant="primary2" icon="agregar" onClick={() => setModal("create-user-unified")}>
+            <Button className="w-full sm:w-auto p-2" variant="primary2" icon="agregar" onClick={() => setModal("create-user-unified")}>
               Nuevo usuario
             </Button>
           </div>

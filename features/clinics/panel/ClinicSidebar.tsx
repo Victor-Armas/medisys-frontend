@@ -14,7 +14,7 @@ interface Props {
 
 export function ClinicSidebar({ clinics, activeClinicId, onSelect, onAddClinic, onToggleClinic }: Props) {
   return (
-    <aside className="w-60 shrink-0 flex flex-col">
+    <aside className="w-full md:w-60 h-full flex flex-col shrink-0">
       <div className="flex items-center justify-between pb-5">
         <div>
           <h2 className="text-xs font-semibold text-subtitulo uppercase">Consultorios</h2>

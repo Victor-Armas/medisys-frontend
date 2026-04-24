@@ -13,10 +13,10 @@ interface Props {
 
 export function ClinicDetailHeader({ clinic, canManage, onEdit, onToggleActive }: Props) {
   return (
-    <div className=" bg-fondo-inputs shadow-lg rounded-md px-8 py-3.5 sticky top-0 z-40">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <Hospital className="bg-inner-principal text-principal rounded-sm p-2" size={35} />
+    <div className="bg-fondo-inputs shadow-lg rounded-md px-4 md:px-8 py-3.5 sticky top-0 z-40">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-start md:items-center gap-3">
+          <Hospital className="bg-inner-principal text-principal rounded-sm p-2 shrink-0" size={35} />
           <div>
             <h1 className="text-lg font-bold text-encabezado tracking-tight">{clinic.name}</h1>
             {clinic.address ? (
@@ -32,15 +32,15 @@ export function ClinicDetailHeader({ clinic, canManage, onEdit, onToggleActive }
         </div>
 
         {canManage && (
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-3 shrink-0 self-end md:self-auto w-full md:w-auto justify-end border-t md:border-t-0 pt-3 md:pt-0 border-subtitulo/10">
             <button
               onClick={() => onEdit(clinic)}
-              className="flex item-center gap-2 text-xs text-wairning-text  shadow-lg bg-wairning py-1 px-3 rounded-md transition-colors "
+              className="flex items-center gap-2 text-xs text-wairning-text shadow-lg bg-wairning py-1 px-3 rounded-md transition-colors"
             >
               <Edit size={13} strokeWidth={2} />
               Editar
             </button>
-            <div className="border border-subtitulo/30 py-3 mx-2" />
+            <div className="hidden md:block border border-subtitulo/30 py-3 mx-2" />
             <button
               onClick={() => onToggleActive(clinic.id)}
               className={cn(

@@ -68,7 +68,7 @@ export function ClinicDoctorsList({
     return (
       <div className="px-4 py-5">
         <h2 className=" text-subtitulo uppercase font-semibold text-[14px] ">Lista de doctores</h2>
-        <div className="grid grid-cols-3 justify-items-center items-center mt-5 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 justify-items-center items-center mt-5 gap-6 lg:gap-10">
           {doctors.map((doctor) => (
             <ListDoctor key={doctor.id} doctor={doctor} onSelect={() => setSelectedDoctorId(doctor.id)} />
           ))}

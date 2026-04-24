@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { useClinics, useToggleClinic } from "@features/clinics/hooks";
 import type { Clinic } from "@features/clinics/types/clinic.types";
+import { cn } from "@/shared/lib/utils";
 import { ClinicSidebar } from "./ClinicSidebar";
 import { ClinicDetail } from "../detail/ClinicDetail";
 import { ClinicFormModal } from "../schedule/modals/clinic-form/ClinicFormModal";
@@ -19,6 +21,7 @@ interface Props {
 }
 
 export function ClinicsPanelClient({ initialClinics, initialRole }: Props) {
+  const [showMobileList, setShowMobileList] = useState(true);
   const { data: clinics = initialClinics, isLoading } = useClinics();
   const toggleClinic = useToggleClinic();
   const { canManageClinics, canAssignDoctorToClinic, userId } = usePermissions(initialRole);
@@ -44,19 +47,26 @@ export function ClinicsPanelClient({ initialClinics, initialRole }: Props) {
     return <ECGLoader />;
   }
 
+  const handleSelectClinic = (clinic: Clinic) => {
+    setSelected(clinic);
+    setShowMobileList(false);
+  };
+
   return (
-    <div className="flex h-full gap-0 overflow-hidden px-6 pt-4">
+    <div className="flex h-full overflow-hidden flex-col md:flex-row px-4 md:px-6 pt-4">
       {/* ── Panel izquierdo ── */}
-      <ClinicSidebar
-        clinics={clinics}
-        activeClinicId={selectedClinic?.id}
-        onSelect={setSelected}
-        onAddClinic={handleAddClinic}
-        onToggleClinic={handleToggleClinic}
-      />
+      <div className={cn("h-full md:block", showMobileList ? "block w-full md:w-auto" : "hidden")}>
+        <ClinicSidebar
+          clinics={clinics}
+          activeClinicId={selectedClinic?.id}
+          onSelect={handleSelectClinic}
+          onAddClinic={handleAddClinic}
+          onToggleClinic={handleToggleClinic}
+        />
+      </div>
 
       {/* ── Panel derecho ── */}
-      <main className="flex-1 overflow-y-auto pl-4">
+      <main className={cn("flex-1 overflow-y-auto md:pl-4", !showMobileList ? "block" : "hidden md:block")}>
         {!selectedClinic ? (
           <div className="flex h-full items-center justify-center">
             <p className="text-sm text-subtitulo">Selecciona un consultorio</p>
@@ -66,6 +76,7 @@ export function ClinicsPanelClient({ initialClinics, initialRole }: Props) {
             clinic={selectedClinic}
             canManage={canManageClinics}
             loggedUserId={userId}
+            onBack={() => setShowMobileList(true)}
             onEdit={handleEditClinic}
             onToggleActive={(id) => toggleClinic.mutate(id)}
             onAssignDoctor={() => setModal("assign-doctor")}
