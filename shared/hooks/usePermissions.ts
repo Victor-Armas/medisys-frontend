@@ -5,6 +5,7 @@ import { useAuthStore } from "@/features/auth/store/auth.store";
 // ─── Role sets ────────────────────────────────────────────────────────────────
 
 const ADMIN_ROLES = ["ADMIN_SYSTEM", "MAIN_DOCTOR"] as const;
+const DOCTOR_ROLES = ["ADMIN_SYSTEM", "MAIN_DOCTOR", "DOCTOR"] as const;
 // const STAFF_ROLES = ["ADMIN_SYSTEM", "MAIN_DOCTOR", "RECEPTIONIST"] as const;
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
@@ -22,6 +23,7 @@ export function usePermissions(roleOverride?: string) {
 
   const role = roleOverride ?? storeRole;
   const isAdminOrMain = (ADMIN_ROLES as readonly string[]).includes(role);
+  const isDoctorOrMain = (DOCTOR_ROLES as readonly string[]).includes(role);
 
   return {
     userId: user?.id,
@@ -48,6 +50,12 @@ export function usePermissions(roleOverride?: string) {
     // ── Profile ───────────────────────────────────────────────────────────────
     /** Can edit another user's profile */
     canEditOtherProfiles: isAdminOrMain,
+
+    // ── Expedientes ───────────────────────────────────────────────────────────────
+    canViewPatients: isDoctorOrMain,
+
+    // ── Appointments ───────────────────────────────────────────────────────────────
+    canCreateAppointments: isAdminOrMain,
 
     // ── Convenience ───────────────────────────────────────────────────────────
     isAdminOrMain,

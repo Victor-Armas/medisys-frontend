@@ -1,4 +1,4 @@
-// src/shared/ui/loaders/ECGLoader.tsx
+"use client";
 export function ECGLoader() {
   return (
     <div className="flex flex-col items-center justify-center py-10">

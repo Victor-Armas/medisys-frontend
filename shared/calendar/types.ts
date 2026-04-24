@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import React from "react";
 
-export type ViewType = "month" | "week";
+export type ViewType = "month" | "week" | "day";
 
 export interface CalendarEvent {
   id: string | number;
@@ -11,6 +11,15 @@ export interface CalendarEvent {
   type?: "range" | "override" | "appointment" | "blocked";
   color?: string;
   backgroundColor?: string;
+  resourceId?: string; // columna de doctor en day view
+}
+
+// Columna de recurso (médico) para la vista día
+export interface CalendarResource {
+  id: string;
+  title: string;
+  color?: string;
+  subtitle?: string;
 }
 
 export interface VisibleRange {
@@ -21,7 +30,7 @@ export interface VisibleRange {
 export interface CalendarProps {
   events: CalendarEvent[];
   views?: ViewType[];
-  onCellClick?: (info: { start: dayjs.Dayjs }, e?: React.MouseEvent) => void;
+  onCellClick?: (info: { start: dayjs.Dayjs; resourceId?: string }, e?: React.MouseEvent) => void;
   onEventClick?: (event: CalendarEvent, e?: React.MouseEvent) => void;
   onVisibleRangeChange?: (range: VisibleRange) => void;
   onViewChange?: (view: ViewType) => void;
@@ -36,6 +45,6 @@ export interface CalendarContextValue {
   prevPeriod: () => void;
   today: () => void;
   setView: (view: ViewType) => void;
-  onCellClick?: (info: { start: dayjs.Dayjs }, e?: React.MouseEvent) => void;
+  onCellClick?: (info: { start: dayjs.Dayjs; resourceId?: string }, e?: React.MouseEvent) => void;
   onEventClick?: (event: CalendarEvent, e?: React.MouseEvent) => void;
 }

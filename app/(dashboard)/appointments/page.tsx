@@ -1,350 +1,67 @@
-import {
-  Plus,
-  Filter,
-  Calendar as CalendarIcon,
-  Clock,
-  CheckCircle2,
-  ChevronLeft,
-  ChevronRight,
-  Video,
-  MapPin,
-  MoreHorizontal,
-  User,
-} from "lucide-react";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import type { StaffRole } from "@/features/users/types";
+import dayjs from "dayjs";
+import { AppointmentsBasePage, AppointmentsListResponse, transformClinicsToDoctorResources } from "@/features/appointments";
 
-// Datos simulados (Mock) para el calendario
-const mockSchedule = [
-  {
-    hour: "08:00",
-    appointments: [],
-  },
-  {
-    hour: "09:00",
-    appointments: [
-      {
-        id: "APT-1",
-        patient: "Elena Rodríguez Sánchez",
-        title: "Revisión Cardiología",
-        duration: "45 min",
-        type: "Presencial",
-        doctor: "Dr. Arturo Ramos",
-        status: "Atendiendo",
-        bgColor: "bg-principal",
-        borderColor: "",
-        textColor: "text-principal",
-      },
-    ],
-  },
-  {
-    hour: "10:00",
-    appointments: [
-      {
-        id: "APT-2",
-        patient: "Carlos Mendoza Ruiz",
-        title: "Consulta General",
-        duration: "30 min",
-        type: "Video",
-        doctor: "Dra. Silvia López",
-        status: "Confirmada",
-        bgColor: "bg-emerald-500/15",
-        borderColor: "border-emerald-500/30",
-        textColor: "text-emerald-700 dark:text-emerald-400",
-      },
-      {
-        id: "APT-3",
-        patient: "Roberto Castillo H.",
-        title: "Dermatología",
-        duration: "30 min",
-        type: "Presencial",
-        doctor: "Dr. Marcos Reyes",
-        status: "En sala",
-        bgColor: "bg-amber-500/15",
-        borderColor: "border-amber-500/30",
-        textColor: "text-amber-700 dark:text-amber-500",
-      },
-    ],
-  },
-  { hour: "11:00", appointments: [] },
-  {
-    hour: "12:00",
-    appointments: [
-      {
-        id: "APT-4",
-        patient: "Sofía Arango",
-        title: "Resultados de Laboratorio",
-        duration: "60 min",
-        type: "Video",
-        doctor: "Dr. Arturo Ramos",
-        status: "Confirmada",
-        bgColor: "bg-emerald-500/15",
-        borderColor: "border-emerald-500/30",
-        textColor: "text-emerald-700 dark:text-emerald-400",
-      },
-    ],
-  },
-  { hour: "13:00", appointments: [] },
-  { hour: "14:00", appointments: [] },
-  {
-    hour: "15:00",
-    appointments: [
-      {
-        id: "APT-5",
-        patient: "Luis Fernández",
-        title: "Terapia Física",
-        duration: "45 min",
-        type: "Presencial",
-        doctor: "Lic. Ana Gómez",
-        status: "Cancelada",
-        bgColor: "bg-red-500/10",
-        borderColor: "border-red-500/20",
-        textColor: "text-red-600 dark:text-red-400",
-      },
-    ],
-  },
-  { hour: "16:00", appointments: [] },
-  { hour: "17:00", appointments: [] },
-];
+async function getServerAuthContext(): Promise<{ token: string; role: StaffRole }> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+  const userCookie = cookieStore.get("user")?.value;
 
-export default function AppointmentsPage() {
-  return (
-    <div className="space-y-6 max-w-[1400px] mx-auto pb-10">
-      {/* 1. Encabezado */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-encabezado tracking-tight">Agenda Médica</h2>
-          <p className="text-sm text-subtitulo mt-1">Gestión de citas, horarios y disponibilidad de la clínica.</p>
-        </div>
-        <div className="flex items-center gap-3 w-full sm:w-auto">
-          <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-principal text-white rounded-xl text-sm font-medium hover:bg-principal-hover transition-colors shadow-sm">
-            <Plus size={16} />
-            Programar Cita
-          </button>
-        </div>
-      </div>
+  if (!token || !userCookie) redirect("/login");
 
-      {/* 2. KPIs Rápidos (Mismo estilo que pacientes para consistencia) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="p-5 rounded-2xl  border  flex items-center justify-between group">
-          <div>
-            <p className="text-sm font-medium text-subtitulo mb-1">Citas Hoy</p>
-            <div className="flex items-baseline gap-2">
-              <h3 className="text-2xl font-bold text-encabezado">18</h3>
-              <span className="text-xs font-semibold text-principal bg-subtitulo px-2 py-0.5 rounded-full">4 completadas</span>
-            </div>
-          </div>
-          <div className="w-12 h-12 rounded-xl bg-subtitulo flex items-center justify-center text-principal">
-            <CalendarIcon size={24} />
-          </div>
-        </div>
-        <div className="p-5 rounded-2xl  border  flex items-center justify-between group">
-          <div>
-            <p className="text-sm font-medium text-subtitulo mb-1">En Consultorio</p>
-            <div className="flex items-baseline gap-2">
-              <h3 className="text-2xl font-bold text-encabezado">3</h3>
-              <span className="text-xs font-medium text-amber-600 bg-amber-500/10 px-2 py-0.5 rounded-full dark:text-amber-400">
-                Espera: 12m
-              </span>
-            </div>
-          </div>
-          <div className="w-12 h-12 rounded-xl bg-subtitulo flex items-center justify-center text-principal">
-            <Clock size={24} />
-          </div>
-        </div>
-        <div className="p-5 rounded-2xl  border  flex items-center justify-between group">
-          <div>
-            <p className="text-sm font-medium text-subtitulo mb-1">Confirmaciones</p>
-            <div className="flex items-baseline gap-2">
-              <h3 className="text-2xl font-bold text-encabezado">92%</h3>
-              <span className="text-xs font-medium text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">Óptimo</span>
-            </div>
-          </div>
-          <div className="w-12 h-12 rounded-xl bg-subtitulo flex items-center justify-center text-principal">
-            <CheckCircle2 size={24} />
-          </div>
-        </div>
-      </div>
+  try {
+    const userData = JSON.parse(userCookie);
+    if (!userData.role) throw new Error("No role");
+    return { token, role: userData.role as StaffRole };
+  } catch {
+    redirect("/login");
+  }
+}
 
-      {/* 3. Área del Calendario Principal */}
-      <div className=" border  rounded-2xl overflow-hidden shadow-sm flex flex-col md:flex-row min-h-[600px]">
-        {/* Panel Izquierdo: Mini-Calendario y Filtros */}
-        <div className="w-full md:w-80 border-b md:border-b-0 md:border-r  p-5 bg-bg-base/30 flex flex-col gap-6">
-          {/* Mock de Mini Calendario Mes */}
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="font-semibold text-encabezado">Marzo 2026</h4>
-              <div className="flex gap-1">
-                <button className="p-1 hover:bg-subtitulo rounded-lg text-subtitulo">
-                  <ChevronLeft size={16} />
-                </button>
-                <button className="p-1 hover:bg-subtitulo rounded-lg text-subtitulo">
-                  <ChevronRight size={16} />
-                </button>
-              </div>
-            </div>
-            {/* Grid simple del mes */}
-            <div className="grid grid-cols-7 gap-1 text-center text-xs mb-2">
-              {["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sá"].map((d) => (
-                <span key={d} className="text-subtitulo font-medium">
-                  {d}
-                </span>
-              ))}
-            </div>
-            <div className="grid grid-cols-7 gap-1 text-center text-sm">
-              {/* Días vacíos al inicio */}
-              <div className="p-2"></div>
-              <div className="p-2"></div>
-              {/* Días del mes (mock truncado para ui visual) */}
-              {[...Array(24)].map((_, i) => (
-                <button
-                  key={i}
-                  className={`p-1.5 rounded-lg flex items-center justify-center ${i + 1 === 24 ? "bg-principal text-white font-bold" : "text-encabezado hover:bg-subtitulo"}`}
-                >
-                  {i + 1}
-                </button>
-              ))}
-            </div>
-          </div>
+async function fetchInitialAppointments(token: string, dateFrom: string, dateTo: string): Promise<AppointmentsListResponse> {
+  const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api";
+  try {
+    const res = await fetch(`${base}/appointments?dateFrom=${dateFrom}&dateTo=${dateTo}&limit=100`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+    if (!res.ok) return { appointments: [], total: 0, page: 1, limit: 100 };
+    return res.json() as Promise<AppointmentsListResponse>;
+  } catch {
+    return { appointments: [], total: 0, page: 1, limit: 100 };
+  }
+}
 
-          <div className="h-px bg-border-default w-full"></div>
+async function fetchInitialClinics(token: string) {
+  const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api";
+  try {
+    const res = await fetch(`${base}/clinics`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+    if (!res.ok) return [];
+    return res.json();
+  } catch {
+    return [];
+  }
+}
 
-          {/* Filtros de Doctores */}
-          <div>
-            <h4 className="font-semibold text-encabezado text-sm mb-3">Doctores</h4>
-            <div className="space-y-2">
-              <label className="flex items-center gap-3  group">
-                <input
-                  type="checkbox"
-                  defaultChecked
-                  className="w-4 h-4 rounded-sm text-principal border-border-strong focus:ring-brand outline-none"
-                />
-                <span className="text-sm text-subtitulo group-hover:text-encabezado transition-colors">Dr. Arturo Ramos</span>
-              </label>
-              <label className="flex items-center gap-3  group">
-                <input
-                  type="checkbox"
-                  defaultChecked
-                  className="w-4 h-4 rounded-sm text-principal border-border-strong focus:ring-brand outline-none"
-                />
-                <span className="text-sm text-subtitulo group-hover:text-encabezado transition-colors">Dra. Silvia López</span>
-              </label>
-              <label className="flex items-center gap-3  group">
-                <input
-                  type="checkbox"
-                  defaultChecked
-                  className="w-4 h-4 rounded-sm text-principal border-border-strong focus:ring-brand outline-none"
-                />
-                <span className="text-sm text-subtitulo group-hover:text-encabezado transition-colors">Dr. Marcos Reyes</span>
-              </label>
-            </div>
-          </div>
-        </div>
+export default async function AppointmentsPage() {
+  const auth = await getServerAuthContext();
 
-        {/* Panel Derecho: Línea de Tiempo del Día */}
-        <div className="flex-1 flex flex-col relative w-full overflow-x-auto">
-          {/* Header del timeline */}
-          <div className="p-4 border-b  flex flex-col sm:flex-row items-center justify-between gap-4 sticky top-0  z-10">
-            <div className="flex items-center gap-3">
-              <h3 className="text-lg font-bold text-encabezado">24 Marzo, 2026</h3>
-              <span className="px-2 py-1 bg-subtitulo text-subtitulo rounded-md text-xs font-medium">Hoy</span>
-            </div>
+  // Rango inicial: semana actual (lunes → domingo)
+  const monday = dayjs().day(1);
+  const dateFrom = monday.format("YYYY-MM-DD");
+  const dateTo = monday.add(6, "day").format("YYYY-MM-DD");
 
-            <div className="flex items-center gap-2">
-              <div className="bg-bg-base border  flex p-1 rounded-xl">
-                <button className="px-4 py-1.5 text-xs font-semibold  shadow-sm rounded-lg text-encabezado">Día</button>
-                <button className="px-4 py-1.5 text-xs font-medium text-subtitulo hover:text-encabezado rounded-lg">
-                  Semana
-                </button>
-                <button className="px-4 py-1.5 text-xs font-medium text-subtitulo hover:text-encabezado rounded-lg">Mes</button>
-              </div>
-              <button className="p-2 border  rounded-xl text-subtitulo hover:text-principal hover:bg-subtitulo transition-colors">
-                <Filter size={16} />
-              </button>
-            </div>
-          </div>
+  const [initialData, clinics] = await Promise.all([
+    fetchInitialAppointments(auth.token, dateFrom, dateTo),
+    fetchInitialClinics(auth.token)
+  ]);
 
-          {/* Grid de Horas (Timeline) */}
-          <div className="p-4 min-w-[600px]">
-            <div className="relative">
-              {/* Línea roja de "Hora Actual" (Mock) */}
-              <div className="absolute left-16 right-0 border-t-2 border-red-500 z-0 top-[180px] flex items-center">
-                <div className="w-2 h-2 rounded-full bg-red-500 absolute -left-1"></div>
-              </div>
+  const initialResources = transformClinicsToDoctorResources(clinics);
 
-              {mockSchedule.map((block) => (
-                <div key={block.hour} className="flex group min-h-[100px]">
-                  {/* Etiqueta de Hora */}
-                  <div className="w-16 shrink-0 text-right pr-4 pt-2">
-                    <span className="text-xs font-medium text-subtitulo group-hover:text-encabezado transition-colors">
-                      {block.hour}
-                    </span>
-                  </div>
-
-                  {/* Bloque de Contenido / Citas */}
-                  <div className="flex-1 border-t  relative pt-2 pb-2 mr-4">
-                    <div className="flex flex-col gap-2 relative z-10">
-                      {block.appointments.length === 0 && (
-                        <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute top-2 w-full">
-                          <button className="w-full border border-dashed border-border-strong rounded-xl h-12 flex items-center justify-center text-subtitulo hover:text-principal hover:border-brand hover:bg-principal text-xs font-medium transition-all">
-                            + Añadir cita a las {block.hour}
-                          </button>
-                        </div>
-                      )}
-
-                      {block.appointments.map((apt) => (
-                        <div
-                          key={apt.id}
-                          className={`p-3 border rounded-xl flex items-start gap-3 hover:shadow-md transition-shadow  ${apt.bgColor} ${apt.borderColor}`}
-                        >
-                          <div className={`w-1 shrink-0 h-full rounded-full bg-current ${apt.textColor}`} />
-
-                          <div className="flex-1">
-                            <div className="flex justify-between items-start">
-                              <h4 className={`text-sm font-bold ${apt.textColor}`}>{apt.patient}</h4>
-                              <span
-                                className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-white/50 dark:bg-black/20 ${apt.textColor}`}
-                              >
-                                {apt.status}
-                              </span>
-                            </div>
-                            <p className="text-xs text-encabezado font-medium mt-1">{apt.title}</p>
-
-                            <div className="flex items-center gap-4 mt-2">
-                              <div className="flex items-center gap-1.5 text-xs text-subtitulo">
-                                <Clock size={12} />
-                                {block.hour} <span className="opacity-70">({apt.duration})</span>
-                              </div>
-                              <div className="flex items-center gap-1.5 text-xs text-subtitulo">
-                                <User size={12} />
-                                {apt.doctor}
-                              </div>
-                              <div className="flex items-center gap-1.5 text-xs text-subtitulo">
-                                {apt.type === "Video" ? <Video size={12} className={apt.textColor} /> : <MapPin size={12} />}
-                                {apt.type}
-                              </div>
-                            </div>
-                          </div>
-
-                          <button className="text-subtitulo hover:text-encabezado p-1">
-                            <MoreHorizontal size={16} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Fin del día de trabajo */}
-            <div className="flex">
-              <div className="w-16 shrink-0 text-right pr-4 border-t  pt-2">
-                <span className="text-xs font-medium text-subtitulo">18:00</span>
-              </div>
-              <div className="flex-1 border-t  mr-4"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  return <AppointmentsBasePage initialData={initialData} initialResources={initialResources} role={auth.role} />;
 }

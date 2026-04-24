@@ -6,7 +6,6 @@ import {
   Users,
   Calendar,
   FileText,
-  ClipboardList,
   UserCog,
   Settings,
   ChevronLeft,
@@ -22,7 +21,7 @@ import { usePermissions } from "@/shared/hooks/usePermissions";
 
 export function Sidebar({ initialCollapsed = false, role }: { initialCollapsed?: boolean; role: string }) {
   const [isCollapsed, setIsCollapsed] = useState(initialCollapsed);
-  const { canAccessUsers } = usePermissions(role);
+  const { canAccessUsers, canViewPatients } = usePermissions(role);
 
   function toggleSidebar() {
     const newVal = !isCollapsed;
@@ -75,9 +74,9 @@ export function Sidebar({ initialCollapsed = false, role }: { initialCollapsed?:
       {/* Nav */}
       <div className="flex-1 overflow-y-auto pt-4 pb-4 px-3 space-y-1">
         <NavItem href="/dashboard" icon={LayoutDashboard} label="Dashboard" collapsed={isCollapsed} />
-        <NavItem href="/admin/patients" icon={Users} label="Pacientes" collapsed={isCollapsed} />
+
         <NavItem href="/appointments" icon={Calendar} label="Citas" badge={8} collapsed={isCollapsed} />
-        <NavItem href="/records" icon={ClipboardList} label="Expedientes" collapsed={isCollapsed} />
+        {canViewPatients && <NavItem href="/admin/patients" icon={Users} label="Pacientes" collapsed={isCollapsed} />}
         <NavItem href="/prescriptions" icon={FileText} label="Recetas" collapsed={isCollapsed} />
         <NavItem href="/clinics" icon={Hospital} label="Consultorios" collapsed={isCollapsed} />
         {canAccessUsers && <NavItem href="/users" icon={UserCog} label="Usuarios" collapsed={isCollapsed} />}

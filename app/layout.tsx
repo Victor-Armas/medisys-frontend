@@ -18,12 +18,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="es" suppressHydrationWarning className={cn("font-sans", inter.variable)}>
       <body>
-        <QueryProvider>
-          <ThemeProvider>
+        <ThemeProvider>
+          <QueryProvider>
             {children}
             <Toaster closeButton richColors expand={false} />
-          </ThemeProvider>
-        </QueryProvider>
+          </QueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
