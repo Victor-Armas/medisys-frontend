@@ -71,6 +71,8 @@ export interface MedicationSearchResult {
   name: string;
   description: string;
   rxnormCode: string | null;
+  form: string | null;
+  concentration: string | null;
 }
 
 // ── Payloads ──────────────────────────────────────────────────────────────────

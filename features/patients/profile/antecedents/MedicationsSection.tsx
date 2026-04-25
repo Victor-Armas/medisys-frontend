@@ -85,7 +85,7 @@ export function MedicationsSection({ patientId, medications, canEdit }: Props) {
                       onClick={() => handleSelect(item)}
                       className="w-full text-left px-3 py-3 hover:bg-inner-principal transition-colors text-xs text-encabezado last:border-0"
                     >
-                      {item.name + " - " + item.description}
+                      {item.name + " - " + item.form + " - " + item.concentration}
                     </button>
                   ))}
                   <button
