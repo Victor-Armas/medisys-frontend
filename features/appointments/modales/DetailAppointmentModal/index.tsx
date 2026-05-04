@@ -6,16 +6,23 @@ import { useAppointmentDetail } from "../../hooks/useAppointments";
 import { AppointmentStatusActions } from "./AppointmentStatusActions";
 import { STATUS_CONFIG } from "../../utils/appointment.colors";
 import { getAppointmentTypeLabel, isImmutableStatus, toClinicTime } from "../../utils/appointment.utils";
+import { useRouter } from "next/navigation";
+import { Stethoscope } from "lucide-react";
 
 interface Props {
+  userId: string | undefined;
+  canManagerDoctor: boolean;
   appointmentId: string | null;
   onOpenChange: (open: boolean) => void;
 }
 
-export function DetailAppointmentModal({ appointmentId, onOpenChange }: Props) {
+export function DetailAppointmentModal({ appointmentId, onOpenChange, canManagerDoctor, userId }: Props) {
   const open = !!appointmentId;
   const { appointment, isLoading } = useAppointmentDetail(appointmentId);
   const statusConfig = appointment ? STATUS_CONFIG[appointment.status] : null;
+  const router = useRouter();
+
+  const isOwnerDoctor = appointment?.doctorClinic?.doctorProfile?.user?.id === userId;
 
   const isPast = appointment ? dayjs(appointment.startTime).isBefore(dayjs()) : false;
 
@@ -96,9 +103,25 @@ export function DetailAppointmentModal({ appointmentId, onOpenChange }: Props) {
                   <p className="text-xs text-encabezado">{appointment.internalNotes}</p>
                 </div>
               )}
+              {(canManagerDoctor || isOwnerDoctor) && appointment && !isPast && (
+                <div className="border-t border-disable/40 pt-3 mt-1">
+                  <button
+                    onClick={() => {
+                      router.push(
+                        `/admin/consultations/new?appointmentId=${appointment.id}&patientId=${appointment.patient?.id ?? ""}`,
+                      );
+                      onOpenChange(false);
+                    }}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 bg-principal text-white text-sm font-semibold rounded-lg hover:bg-principal-hover transition-colors"
+                  >
+                    <Stethoscope size={16} />
+                    Iniciar consulta
+                  </button>
+                </div>
+              )}
 
               {/* Acciones de estado */}
-              {!isImmutableStatus(appointment.status) && isPast && (
+              {!isImmutableStatus(appointment.status) && !isPast && (
                 <div className="border-t border-disable/40 pt-3">
                   <p className="text-[10px] text-subtitulo uppercase tracking-wider mb-2">Cambiar estado</p>
                   <AppointmentStatusActions

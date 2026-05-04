@@ -11,18 +11,40 @@ export const createAppointmentSchema = z
     type: z.enum(["IN_PERSON", "HOME_VISIT", "VIRTUAL"], {
       message: "Selecciona el tipo de consulta",
     }),
-    // Contacto: paciente registrado o invitado
-    patientId: z.string().uuid().optional(),
+    contactMode: z.enum(["patient", "guest"]),
+    patientId: z.string().uuid("ID de paciente inválido").nullable().optional(),
     guestName: z.string().max(200).optional(),
     guestPhone: z.string().max(20).optional(),
-    guestEmail: z.union([z.string().email(), z.literal("")]).optional(),
+    guestEmail: z.union([z.string().email("Email inválido"), z.literal("")]).optional(),
     reason: z.string().max(500).optional(),
     internalNotes: z.string().max(1000).optional(),
     homeAddress: z.string().max(500).optional(),
   })
-  .refine((data) => data.patientId || (data.guestName && data.guestPhone), {
-    message: "Se requiere paciente registrado o nombre + teléfono de invitado",
-    path: ["guestName"],
+  .superRefine((data, ctx) => {
+    if (data.contactMode === "patient") {
+      if (!data.patientId) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Debes buscar y seleccionar un paciente",
+          path: ["patientId"],
+        });
+      }
+    } else {
+      if (!data.guestName || data.guestName.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "El nombre es obligatorio para invitados",
+          path: ["guestName"],
+        });
+      }
+      if (!data.guestPhone || data.guestPhone.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "El teléfono es obligatorio para invitados",
+          path: ["guestPhone"],
+        });
+      }
+    }
   })
   .refine(
     (data) => {
@@ -39,4 +61,5 @@ export const createAppointmentSchema = z
     { message: "El domicilio es obligatorio para consulta a domicilio", path: ["homeAddress"] },
   );
 
+// Usamos z.infer en lugar de z.input para que TypeScript lea el tipo final validado
 export type CreateAppointmentFormValues = z.infer<typeof createAppointmentSchema>;

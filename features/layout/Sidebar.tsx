@@ -5,13 +5,14 @@ import {
   LayoutDashboard,
   Users,
   Calendar,
-  FileText,
   UserCog,
   Settings,
   ChevronLeft,
   ChevronRight,
   Hospital,
   UserCircle,
+  Stethoscope,
+  ClipboardList,
 } from "lucide-react";
 
 import Cookies from "js-cookie";
@@ -21,7 +22,7 @@ import { usePermissions } from "@/shared/hooks/usePermissions";
 
 export function Sidebar({ initialCollapsed = false, role }: { initialCollapsed?: boolean; role: string }) {
   const [isCollapsed, setIsCollapsed] = useState(initialCollapsed);
-  const { canAccessUsers, canViewPatients } = usePermissions(role);
+  const { canAccessUsers, canDoctorMain } = usePermissions(role);
 
   function toggleSidebar() {
     const newVal = !isCollapsed;
@@ -73,14 +74,16 @@ export function Sidebar({ initialCollapsed = false, role }: { initialCollapsed?:
 
       {/* Nav */}
       <div className="flex-1 overflow-y-auto pt-4 pb-4 px-3 space-y-1">
-        <NavItem href="/dashboard" icon={LayoutDashboard} label="Dashboard" collapsed={isCollapsed} />
-
-        <NavItem href="/appointments" icon={Calendar} label="Citas" badge={8} collapsed={isCollapsed} />
-        {canViewPatients && <NavItem href="/admin/patients" icon={Users} label="Pacientes" collapsed={isCollapsed} />}
-        <NavItem href="/prescriptions" icon={FileText} label="Recetas" collapsed={isCollapsed} />
-        <NavItem href="/clinics" icon={Hospital} label="Consultorios" collapsed={isCollapsed} />
+        {canAccessUsers && <NavItem href="/dashboard" icon={LayoutDashboard} label="Dashboard" collapsed={isCollapsed} />}
+        {/* badge={8} se puede usar para colocar cantidad en el sidebar */}
+        <NavItem href="/appointments" icon={Calendar} label="Citas" collapsed={isCollapsed} />
+        <NavItem href="/admin/consultations" icon={ClipboardList} label="Consultas" collapsed={isCollapsed} />
+        {canDoctorMain && (
+          <NavItem href="/admin/consultations/new" icon={Stethoscope} label="Nueva Consulta" collapsed={isCollapsed} />
+        )}
+        {canDoctorMain && <NavItem href="/admin/patients" icon={Users} label="Pacientes" collapsed={isCollapsed} />}
+        {canDoctorMain && <NavItem href="/clinics" icon={Hospital} label="Consultorios" collapsed={isCollapsed} />}
         {canAccessUsers && <NavItem href="/users" icon={UserCog} label="Usuarios" collapsed={isCollapsed} />}
-        {/* /perfil — everyone */}
         <NavItem href="/profile" icon={UserCircle} label="Mi perfil" collapsed={isCollapsed} />
         <NavItem href="/settings" icon={Settings} label="Configuración" collapsed={isCollapsed} />
       </div>

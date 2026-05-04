@@ -94,9 +94,15 @@ export function PatientProfilePage({ patient, serverRole }: Props) {
 
           {/* Tab content */}
           <div className="pl-4">
-            {activeTab === "expediente" && <ExpedienteBaseTab patientId={patient.id} hasEditPermission={hasEditPermission} />}
+            {activeTab === "expediente" && (
+              <ExpedienteBaseTab
+                existHistoryPatient={patient.medicalHistory}
+                patientId={patient.id}
+                hasEditPermission={hasEditPermission}
+              />
+            )}
 
-            {activeTab === "ago" && showAgo && <AgoyCiclosTab patientId={patient.id} hasEditPermission={hasEditPermission} />}
+            {activeTab === "ago" && showAgo && <AgoyCiclosTab existHistoryPatient={patient.medicalHistory} patientId={patient.id} hasEditPermission={hasEditPermission} />}
 
             {activeTab === "historial" && <HistorialArchivoTab patientId={patient.id} hasEditPermission={hasEditPermission} />}
           </div>

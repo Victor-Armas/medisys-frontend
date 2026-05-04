@@ -14,7 +14,7 @@ export function ObstetricMetricField({ label, name, disabled }: Props) {
   return (
     <div
       className={cn(
-        "flex flex-col p-3.5 bg-[#F5F7FA] rounded-xl border border-transparent transition-all focus-within:border-brand focus-within:ring-1 focus-within:ring-brand",
+        "flex flex-col p-3.5 bg-fondo-inputs rounded-xl border border-transparent transition-all focus-within:border-brand focus-within:ring-1 focus-within:ring-brand",
         disabled && "opacity-60",
       )}
     >

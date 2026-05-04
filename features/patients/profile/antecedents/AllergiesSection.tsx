@@ -2,9 +2,8 @@ import { useMemo, useState } from "react";
 import { X, TriangleAlert, CloudUpload, AlertCircle } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { notify } from "@/shared/ui/toaster";
-import { searchAllergies } from "@/shared/utils/allergies.utils";
+import { ALLERGY_SEVERITY_COLORS, ALLERGY_SEVERITY_LABELS, searchAllergies } from "@/shared/utils/allergies.utils";
 import { useCreateAllergy, useRemoveAllergy } from "@/features/patients/hooks/useAllergies";
-import { ALLERGY_SEVERITY_COLORS, ALLERGY_SEVERITY_LABELS } from "@/features/patients/constants/patient.constants";
 import { AllergySeverity, PatientAllergy } from "../../types/patient.types";
 
 /* ───────────────────────────────────────────── */

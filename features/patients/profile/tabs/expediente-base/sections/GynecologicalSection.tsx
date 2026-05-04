@@ -14,7 +14,7 @@ export function GynecologicalSection({ canEdit }: Props) {
   return (
     <HistorySection title="Antecedentes gineco-obstétricos" icon="spark">
       {/* Container to give some breathing room for the groups */}
-      <div className="flex flex-col gap-8 rounded-xl bg-white">
+      <div className="flex flex-col gap-8 rounded-xl ">
         {/* ROW 1: Ciclo de desarrollo & Ciclo y FUM */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Grupo: Ciclo de Desarrollo */}

@@ -1,7 +1,7 @@
 // features/appointments/AppointmentsBasePage.tsx
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import dayjs from "dayjs";
 import { Menu } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
@@ -12,7 +12,6 @@ import { DetailAppointmentModal } from "./modales/DetailAppointmentModal";
 import { useAppointments } from "./hooks/useAppointments";
 import { useAppointmentsFilterStore } from "./store/appointmentsFilter.store";
 import { useDoctorColorsStore } from "./store/doctorColors.store";
-import { useAuthStore } from "@/features/auth/store/auth.store";
 import type { AppointmentsListResponse, DoctorResource, AppointmentCalendarEvent } from "./types/appointment.types";
 import type { VisibleRange } from "@/shared/calendar/types";
 import { StaffRole } from "@/features/users/types";
@@ -28,10 +27,11 @@ interface Props {
   initialData: AppointmentsListResponse;
   initialResources: DoctorResource[];
   role: StaffRole;
+  userId: string;
 }
 
-export function AppointmentsBasePage({ initialData, initialResources, role }: Props) {
-  const { canCreateAppointments } = usePermissions(role);
+export function AppointmentsBasePage({ initialData, initialResources, role, userId }: Props) {
+  const { canCreateAppointments, canManagerDoctor, isDoctor } = usePermissions(role);
   const [visibleRange, setVisibleRange] = useState<VisibleRange | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<SlotInfo | null>(null);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null);
@@ -41,25 +41,16 @@ export function AppointmentsBasePage({ initialData, initialResources, role }: Pr
   const initVisibleDoctors = useAppointmentsFilterStore((s) => s.initVisibleDoctors);
   const initColors = useDoctorColorsStore((s) => s.initForUser);
   const initClinicColors = useClinicColorsStore((s) => s.initForUser);
-  const user = useAuthStore((s) => s.user);
 
+  const isInitialized = useRef(false);
   useEffect(() => {
-    if (initialResources.length > 0) {
+    if (!isInitialized.current && initialResources.length > 0 && userId) {
       initVisibleDoctors(initialResources.map((r) => r.doctorClinicId));
+      initColors(userId);
+      initClinicColors(userId);
+      isInitialized.current = true;
     }
-  }, [initialResources.length]); // eslint-disable-line
-
-  useEffect(() => {
-    if (user?.id) {
-      initColors(user.id);
-    }
-  }, [user?.id]); // eslint-disable-line
-
-  useEffect(() => {
-    if (user?.id) {
-      initClinicColors(user.id);
-    }
-  }, [user?.id, initClinicColors]);
+  }, [initialResources, userId, initVisibleDoctors, initColors, initClinicColors]);
 
   const { events, isLoading: loadingEvents } = useAppointments({
     visibleRange,
@@ -83,7 +74,7 @@ export function AppointmentsBasePage({ initialData, initialResources, role }: Pr
   }, []);
 
   return (
-    <div className="flex h-full w-full bg-external overflow-hidden relative">
+    <div className="flex h-full w-full bg-external overflow-hidden relative space-x-4">
       {/* Overlay para móvil */}
       {showMobileSidebar && (
         <div className="absolute inset-0 bg-black/50 z-40 md:hidden" onClick={() => setShowMobileSidebar(false)} />
@@ -92,18 +83,20 @@ export function AppointmentsBasePage({ initialData, initialResources, role }: Pr
       {/* Sidebar - Drawer en móvil, normal en desktop */}
       <div
         className={cn(
-          "absolute inset-y-0 left-0 z-50 transform transition-transform duration-300 md:relative md:translate-x-0 h-full",
+          "absolute inset-y-0 left-0 z-50 transform transition-transform duration-300 md:relative md:translate-x-0 h-full pl-4",
           showMobileSidebar ? "translate-x-0" : "-translate-x-full",
         )}
       >
         <AppointmentsSidebar
           resources={initialResources}
+          isDoctor={isDoctor}
+          userId={userId}
           onNewAppointment={handleNewAppointment}
           onCloseMobile={() => setShowMobileSidebar(false)}
         />
       </div>
 
-      <main className="flex-1 min-w-0 flex flex-col px-4 md:px-6 pt-4 gap-3 overflow-hidden">
+      <main className="flex-1 min-w-0 flex flex-col px-4 pt-4 gap-3 overflow-hidden">
         <div className="flex items-center gap-3 shrink-0">
           <button
             onClick={() => setShowMobileSidebar(true)}
@@ -138,6 +131,8 @@ export function AppointmentsBasePage({ initialData, initialResources, role }: Pr
       )}
 
       <DetailAppointmentModal
+        userId={userId}
+        canManagerDoctor={canManagerDoctor}
         appointmentId={selectedAppointmentId}
         onOpenChange={(open) => {
           if (!open) setSelectedAppointmentId(null);

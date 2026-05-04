@@ -5,10 +5,11 @@ import { useAppointmentsFilterStore } from "../../store/appointmentsFilter.store
 import { useDoctorColorsStore } from "../../store/doctorColors.store";
 import { getDoctorColor } from "../../utils/appointment.colors";
 import type { DoctorResource } from "../../types/appointment.types";
-import { useAuthStore } from "@/features/auth/store/auth.store";
 
 interface Props {
   resources: DoctorResource[];
+  isDoctor: boolean;
+  userId: string;
 }
 
 // Estructura para agrupar las múltiples relaciones del médico
@@ -22,7 +23,7 @@ interface GroupedDoctor {
   mainDoctorClinicId: string; // Referencia para el color base
 }
 
-export function DoctorToggleFilter({ resources }: Props) {
+export function DoctorToggleFilter({ resources, isDoctor, userId }: Props) {
   // Leemos el nuevo arreglo clinicFilters
   const visibleDoctorIds = useAppointmentsFilterStore((s) => s.visibleDoctorIds);
   const toggleDoctorGroup = useAppointmentsFilterStore((s) => s.toggleDoctorGroup);
@@ -30,7 +31,6 @@ export function DoctorToggleFilter({ resources }: Props) {
 
   const colorOverrides = useDoctorColorsStore((s) => s.overrides);
   const setDoctorColor = useDoctorColorsStore((s) => s.setDoctorColor);
-  const user = useAuthStore((s) => s.user);
 
   // 1. Agrupar médicos por su ID de usuario real (userId)
   const groupedDoctors = useMemo(() => {
@@ -55,10 +55,16 @@ export function DoctorToggleFilter({ resources }: Props) {
       }
     });
 
-    return Array.from(map.values());
-  }, [resources]);
+    let groups = Array.from(map.values());
 
-  if (groupedDoctors.length === 0) return null;
+    if (isDoctor && userId) {
+      groups = groups.filter((g) => g.userId === userId);
+    }
+
+    return groups;
+  }, [resources, isDoctor, userId]);
+
+  if (groupedDoctors.length <= 1) return null;
 
   return (
     <div className="flex flex-col gap-1">
@@ -118,7 +124,7 @@ export function DoctorToggleFilter({ resources }: Props) {
                 disabled={isDisabled}
                 value={color}
                 onChange={(e) => {
-                  if (user?.id) setDoctorColor(doc.mainDoctorClinicId, e.target.value, user.id);
+                  if (userId) setDoctorColor(doc.mainDoctorClinicId, e.target.value, userId);
                 }}
                 className="w-0 h-0 opacity-0 absolute"
               />

@@ -183,3 +183,13 @@ export interface ClinicWithDoctors {
   isActive: boolean;
   doctorClinics: ClinicDoctorClinic[];
 }
+
+export interface AppointmentConsultation {
+  id: string;
+  doctorClinicId: string;
+  patientId: string;
+  reason: string | null;
+  guestName?: string | null;
+  guestPhone?: string | null;
+  internalNotes?: string | null;
+}

@@ -2,11 +2,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { medicalHistoryService } from "../services/medicalHistory.service";
 import { patientKeys } from "./usePatients";
 
-export function useMedicalHistory(patientId: string) {
+export function useMedicalHistory(patientId: string, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: patientKeys.history(patientId),
     queryFn: () => medicalHistoryService.getMedicalHistory(patientId),
-    enabled: !!patientId,
+    enabled: options?.enabled ?? !!patientId,
     retry: false,
   });
 }

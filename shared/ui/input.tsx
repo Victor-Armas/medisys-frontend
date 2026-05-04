@@ -1,77 +1,64 @@
 "use client";
 
 import * as React from "react";
-import { Input as InputPrimitive } from "@base-ui/react/input";
 import { cn } from "@/shared/lib/utils";
 import { type LucideIcon } from "lucide-react";
 
-// ─────────────────────────────────────────────────────────────
-// FloatingInput — Input con label flotante estilo Material Design
-// Soporta: ícono izquierdo, elemento derecho, estado de error,
-// placeholder, disabled, readonly, y todas las props nativas.
-// ─────────────────────────────────────────────────────────────
-
 export interface InputProps extends React.ComponentProps<"input"> {
-  /** Label que flota al hacer focus o cuando hay valor */
   label?: string;
-  /** Mensaje de error — activa estilos de error */
   error?: string;
-  /** Ícono a la izquierda (componente Lucide o cualquier ReactNode) */
   icon?: LucideIcon;
-  /** Elemento a la derecha (ej. botón de toggle password) */
   rightElement?: React.ReactNode;
-  /** Clases adicionales para el wrapper externo */
   wrapperClassName?: string;
 }
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, icon, rightElement, className, wrapperClassName, placeholder, id, ...props }, ref) => {
+export const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ label, error, icon, rightElement, className, wrapperClassName, id, placeholder, ...props }, ref) => {
     const generatedId = React.useId();
     const inputId = id ?? generatedId;
     const hasIcon = !!icon;
 
     return (
       <div className={cn("flex flex-col gap-1", wrapperClassName)}>
-        {/* Wrapper del input */}
+        {/* wrapper */}
         <div className="relative group">
-          {/* Ícono izquierdo */}
+          {/* icon */}
           {hasIcon && (
             <span
               className={cn(
-                "absolute left-3.5 top-1/2 -translate-y-1/2 z-10 pointer-events-none transition-colors duration-200",
-                error ? "text-red-500" : "text-subtitulo group-focus-within:text-principal",
+                "absolute left-3 top-1/2 -translate-y-1/2",
+                "text-subtitulo transition-colors",
+                "group-focus-within:text-principal",
+                error && "text-red-500",
               )}
             >
-              {React.createElement(icon, { size: 15 })}
+              {React.createElement(icon, { size: 16 })}
             </span>
           )}
 
-          {/* Input base */}
-          <InputPrimitive
+          {/* input */}
+          <input
             id={inputId}
             ref={ref}
-            placeholder={label ? " " : placeholder} // espacio para activar :placeholder-shown
+            placeholder={label ? " " : placeholder}
             className={cn(
-              // Base
-              "peer w-full rounded-md  bg-fondo-inputs text-sm text-encabezado",
+              "peer w-full rounded-sm bg-fondo-inputs text-sm text-encabezado shadow-xs",
               "transition-all duration-200 outline-none",
-              // Padding: top aumentado para label flotante, left si hay ícono
-              label ? "pt-5 pb-2" : "py-3",
+              "focus:ring-2 focus:ring-principal/40",
+
+              // padding
               hasIcon ? "pl-10" : "pl-4",
               rightElement ? "pr-10" : "pr-4",
-              // Border normal
-              "",
-              // Focus
-              "focus:ring-2 focus:ring-principal/40",
-              // Error
-              error && "border-destructive  focus:border-destructive focus:ring-destructive/15",
-              // Disabled
-              "disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-subtitulo",
-              // Readonly
-              "read-only:bg-base read-only:cursor-default",
-              // Autofill — evita el fondo azul del browser
-              "[&:-webkit-autofill]:shadow-[inset_0_0_0_1000px_var(--color-bg-surface)]",
-              "[&:-webkit-autofill]:[-webkit-text-fill-color:var(--color-text-primary)]",
+
+              // floating space
+              label ? "pt-4 pb-2" : "py-3",
+
+              // error
+              error && "focus:ring-red-400",
+
+              // disabled
+              "disabled:opacity-50 disabled:cursor-not-allowed",
+
               className,
             )}
             aria-invalid={!!error}
@@ -79,45 +66,52 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
 
-          {/* Label flotante */}
+          {/* floating label */}
           {label && (
             <label
               htmlFor={inputId}
               className={cn(
-                // Posición base: centrada verticalmente (cuando NO hay valor/focus)
-                "absolute pointer-events-none select-none transition-all duration-200",
-                "text-subtitulo",
-                // Posición y tamaño "flotando" (cuando hay focus o valor)
-                // peer-focus o cuando el placeholder NO se muestra (hay valor)
-                "peer-focus:top-2 peer-focus:text-[9px] peer-focus:text-subtitulo peer-focus:font-semibold peer-focus:tracking-wider peer-focus:uppercase",
-                "peer-not-placeholder-shown:top-2",
-                "peer-not-placeholder-shown:text-[9px]",
-                "peer-not-placeholder-shown:font-semibold",
-                "peer-not-placeholder-shown:tracking-wider",
-                "peer-not-placeholder-shown:uppercase",
-                // Posición "descansando" (sin focus, sin valor)
-                "top-1/2 -translate-y-1/2 text-sm",
-                "peer-focus:translate-y-0 peer-not-placeholder-shown:translate-y-0",
-                // Offset si hay ícono
-                hasIcon ? "left-10" : "left-4",
-                // Color según estado
-                error ? "text-negative-text peer-focus:text-negative-text" : "peer-focus:text-subtitulo/60",
+                "absolute left-4 pointer-events-none transition-all duration-200",
+
+                // base (idle)
+                "top-1/2 -translate-y-1/2 text-sm text-subtitulo",
+
+                // active (focus OR has value)
+                "peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-[7px]",
+                "peer-not-placeholder-shown:top-2 peer-not-placeholder-shown:translate-y-0",
+                "peer-not-placeholder-shown:text-[7px]",
+
+                // 🔥 estilo con más presencia (CONSISTENTE)
+                "peer-focus:font-semibold peer-not-placeholder-shown:font-semibold",
+                "peer-focus:tracking-wider peer-not-placeholder-shown:tracking-wider",
+                "peer-focus:uppercase peer-not-placeholder-shown:uppercase",
+
+                // color consistente
+                "peer-focus:text-subtitulo peer-not-placeholder-shown:text-subtitulo",
+
+                // icon offset
+                hasIcon && "left-10",
+
+                // error
+                error && "text-red-500 peer-focus:text-red-500",
               )}
             >
               {label}
             </label>
           )}
 
-          {/* Elemento derecho */}
-          {rightElement && (
-            <span className="absolute right-3.5 top-1/2 -translate-y-1/2 z-10 flex items-center">{rightElement}</span>
-          )}
+          {/* right element */}
+          {rightElement && <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center">{rightElement}</div>}
         </div>
 
-        {/* Mensaje de error */}
+        {/* error */}
         {error && (
-          <p id={`${inputId}-error`} className="text-[11px] font-medium ml-1 flex items-center gap-1" role="alert">
-            <span className="inline-block w-1 h-1 rounded-full bg-red-400  shrink-0" />
+          <p id={`${inputId}-error`} className="text-[11px] font-medium ml-1 flex items-center gap-2 text-red-500" role="alert">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+            </span>
+
             {error}
           </p>
         )}
@@ -127,5 +121,3 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 );
 
 Input.displayName = "Input";
-
-export { Input };

@@ -17,7 +17,7 @@ export function DateField({ label, name, disabled }: Props) {
       <input
         type="date"
         disabled={disabled}
-        className="w-full px-3 py-2.5 bg-[#F5F7FA] border border-transparent rounded-xl text-sm text-encabezado outline-none focus:border-brand focus:ring-2 focus:ring-principal/40 transition-all disabled:opacity-50"
+        className="w-full px-3 py-2.5 bg-fondo-inputs rounded-sm text-sm text-encabezado outline-none focus:border-brand focus:ring-2 focus:ring-principal/40 transition-all disabled:opacity-50"
         {...register(name)}
       />
     </div>

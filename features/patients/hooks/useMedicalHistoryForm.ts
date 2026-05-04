@@ -11,6 +11,7 @@ import {
   type MedicalHistoryFormData,
 } from "../schemas/medical-history.schema";
 import { useMedicalHistory, useCreateMedicalHistory, useUpdateMedicalHistory } from "./useMedicalHistory";
+import { MedicalHistory } from "../types/patient.types";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -18,6 +19,7 @@ interface Params {
   patientId: string;
   storageKey: string;
   hasEditPermission: boolean;
+  initialData?: MedicalHistory | null;
 }
 
 export interface UseMedicalHistoryFormReturn {
@@ -62,11 +64,22 @@ function normalizeFieldValue(key: string, value: unknown): unknown {
  *
  * Both tabs send PATCH requests, so partial saves are safe.
  */
-export function useMedicalHistoryForm({ patientId, storageKey, hasEditPermission }: Params): UseMedicalHistoryFormReturn {
+export function useMedicalHistoryForm({
+  patientId,
+  storageKey,
+  hasEditPermission,
+  initialData,
+}: Params): UseMedicalHistoryFormReturn {
   const [isEditing, setIsEditing] = useState(false);
   const [isCreatingDraft, setIsCreatingDraft] = useState(false);
 
-  const { data: history, isLoading, isError } = useMedicalHistory(patientId);
+  const {
+    data: history,
+    isLoading,
+    isError,
+  } = useMedicalHistory(patientId, {
+    enabled: !!patientId && !!initialData,
+  });
   const createHistory = useCreateMedicalHistory();
   const updateHistory = useUpdateMedicalHistory();
 

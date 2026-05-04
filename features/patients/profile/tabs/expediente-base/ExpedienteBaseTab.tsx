@@ -1,7 +1,6 @@
 // features/patients/components/profile/tabs/ExpedienteBaseTab.tsx
 "use client";
 
-import { AlertCircle, FileEdit } from "lucide-react";
 import { FormProvider } from "react-hook-form";
 import { PathologicalSection } from "./sections/PathologicalSection";
 import { NonPathologicalSection } from "./sections/NonPathologicalSection";
@@ -11,12 +10,15 @@ import { useConditions } from "@/features/patients/hooks/useConditions";
 import { useMedications } from "@/features/patients/hooks/useMedications";
 import { useAllergies } from "@/features/patients/hooks/useAllergies";
 import { useMedicalHistoryForm } from "@/features/patients/hooks/useMedicalHistoryForm";
+import EmptyState from "./EmptyState";
+import { MedicalHistory } from "@/features/patients/types/patient.types";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 interface Props {
   patientId: string;
   hasEditPermission: boolean;
+  existHistoryPatient: MedicalHistory | null;
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -33,7 +35,7 @@ interface Props {
  * mutation hooks; they do NOT go through the MedicalHistory form submit.
  * The form only manages: bloodTransfusions + habits + gynecological.
  */
-export function ExpedienteBaseTab({ patientId, hasEditPermission }: Props) {
+export function ExpedienteBaseTab({ patientId, hasEditPermission, existHistoryPatient }: Props) {
   const {
     formMethods,
     isLoading: historyLoading,
@@ -59,13 +61,12 @@ export function ExpedienteBaseTab({ patientId, hasEditPermission }: Props) {
   const { data: medications = [], isLoading: medLoading } = useMedications(patientId);
   const { data: allergies = [], isLoading: allergyLoading } = useAllergies(patientId);
 
+  if ((isError || !existHistoryPatient) && !isEditActive) {
+    return <EmptyState canCreate={hasEditPermission} onStart={startCreatingDraft} />;
+  }
   const isLoading = historyLoading || condLoading || medLoading || allergyLoading;
 
   if (isLoading) return <Skeleton />;
-
-  if ((isError || !hasHistory) && !isEditActive) {
-    return <EmptyState canCreate={hasEditPermission} onStart={startCreatingDraft} />;
-  }
 
   return (
     <FormProvider {...formMethods}>
@@ -102,32 +103,6 @@ export function ExpedienteBaseTab({ patientId, hasEditPermission }: Props) {
 }
 
 // ── Sub-components ────────────────────────────────────────────────────────────
-
-function EmptyState({ canCreate, onStart }: { canCreate: boolean; onStart: () => void }) {
-  return (
-    <div className="flex flex-col items-center justify-center py-16 text-center gap-4 /50 rounded-3xl border border-dashed ">
-      <div className="w-16 h-16 rounded-2xl bg-principal flex items-center justify-center text-principal">
-        <AlertCircle size={30} />
-      </div>
-      <div>
-        <h3 className="text-base font-bold text-encabezado mb-1">Historia clínica pendiente</h3>
-        <p className="text-sm text-subtitulo max-w-sm">
-          Este paciente aún no tiene antecedentes registrados. Es necesario completarlos antes de emitir recetas o notas de
-          evolución.
-        </p>
-      </div>
-      {canCreate && (
-        <button
-          onClick={onStart}
-          className="flex items-center gap-2 px-5 py-2.5 bg-principal text-white text-sm font-semibold rounded-xl hover:bg-principal-hover transition-colors shadow-sm"
-        >
-          <FileEdit size={15} />
-          Iniciar historia clínica
-        </button>
-      )}
-    </div>
-  );
-}
 
 function Skeleton() {
   return (

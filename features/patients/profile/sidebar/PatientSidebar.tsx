@@ -159,7 +159,7 @@ export function PatientSidebar({ patient, fullName, hasEditPermission }: Props) 
           </section>
 
           <div className="mt-auto space-y-2">
-            <button className="flex items-center justify-center gap-2 w-full py-2 rounded-sm border text-xs font-medium text-subtitulo hover:bg-subtitulo transition-colors">
+            <button className="flex items-center justify-center gap-2 w-full py-2 rounded-sm text-xs font-medium bg-disable hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors">
               <Printer size={12} />
               Imprimir expediente
             </button>

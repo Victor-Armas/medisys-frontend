@@ -89,7 +89,7 @@ export function PatientsListClient({ initialData, clinicId, serverRole }: Props)
       </div>
 
       {/* ── Toolbar ── */}
-      <div className="bg-interior border border-black/5 shadow-sm rounded-sm p-3 flex flex-col sm:flex-row gap-3 items-center justify-between">
+      <div className="bg-interior  shadow-sm rounded-sm p-3 flex flex-col sm:flex-row gap-3 items-center justify-between">
         <div className="relative flex-1 max-w-md w-full">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-subtitulo pointer-events-none" />
           <input
@@ -114,8 +114,8 @@ export function PatientsListClient({ initialData, clinicId, serverRole }: Props)
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap border-collapse">
             <thead>
-              <tr className="bg-principal/30 text-encabezado border-b ">
-                {["Paciente", "Edad / Género", "Contacto", "Tipo sanguíneo", "Consultorio", "Estado", ""].map((h, i) => (
+              <tr className="bg-principal/30 text-encabezado text-center">
+                {["Paciente", "Edad / Género", "Contacto", "Tipo sanguíneo", "Fecha de Registro", "Estado", ""].map((h, i) => (
                   <th key={i} className="px-5 py-3.5 text-[10.5px] font-bold text-text-muted uppercase tracking-[.07em]">
                     {h}
                   </th>

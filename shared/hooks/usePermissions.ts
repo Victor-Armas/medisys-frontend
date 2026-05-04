@@ -34,6 +34,8 @@ export function usePermissions(roleOverride?: string) {
     canAccessUsers: isAdminOrMain,
     /** Can create or assign users/doctors */
     canManageUsers: isAdminOrMain,
+    canDoctorMain: isDoctorOrMain,
+    canManagerDoctor: isDoctorOrMain,
 
     // ── Clinics module ────────────────────────────────────────────────────────
     /** Can create, edit, toggle or delete a clinic */
@@ -56,6 +58,10 @@ export function usePermissions(roleOverride?: string) {
 
     // ── Appointments ───────────────────────────────────────────────────────────────
     canCreateAppointments: isAdminOrMain,
+
+    //consultation
+    canCreateConsultationDoctor: isDoctorOrMain,
+    canPrintConsultation: isDoctorOrMain,
 
     // ── Convenience ───────────────────────────────────────────────────────────
     isAdminOrMain,

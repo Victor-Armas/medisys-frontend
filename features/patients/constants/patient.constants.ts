@@ -6,7 +6,6 @@ import type {
   HabitStatus,
   ConditionCategory,
   FamilyMember,
-  AllergySeverity,
   MedicalFileCategory,
 } from "../types/patient.types";
 
@@ -67,20 +66,6 @@ export const FAMILY_MEMBER_LABELS: Record<FamilyMember, string> = {
   SIBLINGS: "Hermanos",
   CHILDREN: "Hijos",
   OTHER: "Otro familiar",
-};
-
-export const ALLERGY_SEVERITY_LABELS: Record<AllergySeverity, string> = {
-  MILD: "Leve",
-  MODERATE: "Moderada",
-  SEVERE: "Severa",
-  UNKNOWN: "Desconocida",
-};
-
-export const ALLERGY_SEVERITY_COLORS: Record<AllergySeverity, { bg: string; text: string }> = {
-  MILD: { bg: "bg-wairning-soft", text: "text-wairning-soft-text" },
-  MODERATE: { bg: "bg-wairning", text: "text-wairning-text" },
-  SEVERE: { bg: "bg-negative", text: "text-negative-text" },
-  UNKNOWN: { bg: "bg-inner-principal", text: "text-principal" },
 };
 
 export const MEDICAL_FILE_CATEGORY_LABELS: Record<MedicalFileCategory, string> = {

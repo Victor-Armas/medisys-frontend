@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import dayjs from "dayjs";
@@ -8,7 +8,7 @@ import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
 import { createAppointmentSchema, type CreateAppointmentFormValues } from "../../schemas/appointment.schema";
 import { useCreateAppointment, useAvailableSlots, usePatientSearch } from "../../hooks/useAppointments";
-import type { DoctorResource, AppointmentType } from "../../types/appointment.types";
+import type { DoctorResource, AppointmentType, CreateAppointmentPayload } from "../../types/appointment.types";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 
@@ -35,15 +35,14 @@ export function CreateAppointmentForm({
   onSuccess,
   onCancel,
 }: Props) {
-  const [contactMode, setContactMode] = useState<"patient" | "guest">("guest");
   const [patientQuery, setPatientQuery] = useState("");
 
   const {
     register,
     handleSubmit,
-    watch,
     setValue,
     control,
+    trigger,
     formState: { errors },
   } = useForm<CreateAppointmentFormValues>({
     resolver: zodResolver(createAppointmentSchema),
@@ -52,19 +51,21 @@ export function CreateAppointmentForm({
       date: defaultDate ?? "",
       startTime: defaultStartTime ?? "",
       type: "IN_PERSON",
+      contactMode: "guest",
       guestName: "",
       guestPhone: "",
       guestEmail: "",
-      patientId: "",
+      patientId: null,
       homeAddress: "",
       reason: "",
       internalNotes: "",
     },
   });
 
-  const watchedDoctorClinicId = watch("doctorClinicId");
-  const watchedDate = watch("date");
-  const watchedType = watch("type");
+  const contactMode = useWatch({ control, name: "contactMode" });
+  const watchedDoctorClinicId = useWatch({ control, name: "doctorClinicId" });
+  const watchedDate = useWatch({ control, name: "date" });
+  const watchedType = useWatch({ control, name: "type" });
 
   const { availabilityMap, availableDates, isLoading: loadingAvailability } = useAvailableSlots(watchedDoctorClinicId || null);
 
@@ -78,35 +79,52 @@ export function CreateAppointmentForm({
 
   const { patients } = usePatientSearch(patientQuery);
 
+  const handleModeChange = (mode: "guest" | "patient") => {
+    setValue("contactMode", mode);
+
+    // Limpiamos los datos de la otra pestaña
+    if (mode === "guest") {
+      setValue("patientId", null);
+      setPatientQuery("");
+    } else {
+      setValue("guestName", "");
+      setValue("guestPhone", "");
+      setValue("guestEmail", "");
+    }
+
+    // Disparamos la validación para limpiar errores previos
+    trigger(["patientId", "guestName", "guestPhone"]);
+  };
+
   const { mutate, isPending } = useCreateAppointment(onSuccess);
+
   const onSubmit = (values: CreateAppointmentFormValues) => {
-    mutate({
+    const payload: CreateAppointmentPayload = {
       doctorClinicId: values.doctorClinicId,
       date: values.date,
       startTime: values.startTime,
       type: values.type,
-      ...(contactMode === "patient" && values.patientId
-        ? { patientId: values.patientId }
-        : {
-            guestName: values.guestName,
-            guestPhone: values.guestPhone,
-            guestEmail: values.guestEmail || undefined,
-          }),
       reason: values.reason || undefined,
       internalNotes: values.internalNotes || undefined,
       homeAddress: values.homeAddress || undefined,
-    });
+    };
+
+    if (values.contactMode === "patient" && values.patientId) {
+      payload.patientId = values.patientId;
+    } else if (values.contactMode === "guest") {
+      payload.guestName = values.guestName!;
+      payload.guestPhone = values.guestPhone!;
+      payload.guestEmail = values.guestEmail || undefined;
+    }
+
+    mutate(payload);
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
-      {/* Contenedor Principal a 2 Columnas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* ==========================================
-            COLUMNA IZQUIERDA: Logística y Fecha
-        ========================================== */}
+        {/* COLUMNA IZQUIERDA: Logística y Fecha */}
         <div className="flex flex-col gap-4">
-          {/* Médico */}
           <div className="flex flex-col gap-1">
             <label className="text-xs font-semibold text-subtitulo uppercase tracking-wider">Médico / Consultorio</label>
             <select
@@ -123,7 +141,6 @@ export function CreateAppointmentForm({
             {errors.doctorClinicId && <p className="text-[11px] text-negative-text">{errors.doctorClinicId.message}</p>}
           </div>
 
-          {/* Calendario React Day Picker (Ancho completo de su columna) */}
           <div className="flex flex-col gap-1">
             <label className="text-xs font-semibold text-subtitulo uppercase tracking-wider">Fecha de consulta</label>
             <Controller
@@ -136,7 +153,6 @@ export function CreateAppointmentForm({
                     selected={field.value ? dayjs(field.value).toDate() : undefined}
                     onSelect={(date) => field.onChange(date ? dayjs(date).format("YYYY-MM-DD") : "")}
                     disabled={isDateDisabled}
-                    // Pequeño ajuste para que no se vea gigantesco
                     className="m-0"
                   />
                 </div>
@@ -145,7 +161,6 @@ export function CreateAppointmentForm({
             {errors.date && <p className="text-[11px] text-negative-text">{errors.date.message}</p>}
           </div>
 
-          {/* Horario y Tipo en la misma fila para ahorrar espacio */}
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1">
               <label className="text-xs font-semibold text-subtitulo uppercase tracking-wider">Horario</label>
@@ -182,7 +197,6 @@ export function CreateAppointmentForm({
             </div>
           </div>
 
-          {/* Domicilio (solo HOME_VISIT) */}
           {watchedType === "HOME_VISIT" && (
             <div className="animate-in fade-in slide-in-from-top-1">
               <Input label="Dirección del Domicilio" {...register("homeAddress")} error={errors.homeAddress?.message} />
@@ -190,11 +204,8 @@ export function CreateAppointmentForm({
           )}
         </div>
 
-        {/* ==========================================
-            COLUMNA DERECHA: Paciente y Detalles
-        ========================================== */}
+        {/* COLUMNA DERECHA: Paciente y Detalles */}
         <div className="flex flex-col gap-4">
-          {/* Paciente */}
           <div className="flex flex-col gap-3 bg-fondo-inputs/50 p-3 border border-disable/10 rounded-md">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-encabezado">Datos del Paciente</label>
@@ -203,7 +214,7 @@ export function CreateAppointmentForm({
                   <button
                     key={mode}
                     type="button"
-                    onClick={() => setContactMode(mode)}
+                    onClick={() => handleModeChange(mode)}
                     className={`px-3 py-1 text-[11px] font-medium transition-colors ${
                       contactMode === mode ? "bg-principal text-white shadow-sm" : "text-subtitulo hover:bg-fondo-inputs"
                     }`}
@@ -238,6 +249,7 @@ export function CreateAppointmentForm({
                         onClick={() => {
                           setValue("patientId", p.id);
                           setPatientQuery(`${p.firstName} ${p.lastNamePaternal}`);
+                          trigger("patientId"); // Limpiamos error si seleccionan
                         }}
                         className="w-full text-left px-3 py-2.5 hover:bg-fondo-inputs transition-colors border-b border-disable/10 last:border-0"
                       >
@@ -254,7 +266,6 @@ export function CreateAppointmentForm({
             )}
           </div>
 
-          {/* Motivo y notas */}
           <div className="flex flex-col gap-3 flex-1">
             <div className="flex flex-col gap-1">
               <label className="text-xs font-semibold text-subtitulo uppercase tracking-wider">
@@ -281,9 +292,6 @@ export function CreateAppointmentForm({
         </div>
       </div>
 
-      {/* ==========================================
-          FOOTER: Acciones
-      ========================================== */}
       <div className="flex gap-3 pt-4 mt-2 border-t border-disable/20 justify-end">
         <Button variant="cancelar" className="px-6 py-2" onClick={onCancel} type="button">
           Cancelar

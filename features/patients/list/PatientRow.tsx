@@ -4,6 +4,7 @@ import { PatientListItem } from "../types/patient.types";
 import { getPatientAge, getPatientFullName, getPatientInitials } from "../utils/patient.utils";
 import { BLOOD_TYPE_LABELS, GENDER_LABELS } from "../constants/patient.constants";
 import { BT_BADGE } from "../constants/bloodType.constants";
+import { formatFullDate } from "@/shared/utils/date.utils";
 
 interface Props {
   patient: PatientListItem;
@@ -15,15 +16,16 @@ export function PatientRow({ patient, isLast, onClick }: Props) {
   const initials = getPatientInitials(patient);
   const fullName = getPatientFullName(patient);
   const age = getPatientAge(patient.birthDate);
-  const clinic = patient.clinics[0]?.clinic;
+
+  const createDate = formatFullDate(patient.createdAt);
 
   return (
     <tr
       onClick={onClick}
       className={cn(
-        "group cursor-pointer transition-colors duration-150",
+        "group cursor-pointer transition-colors duration-150 text-center",
         "hover:bg-secundario/5",
-        !isLast && "border-b ",
+        !isLast && "shadow-sm",
         !patient.isActive && "opacity-70",
       )}
     >
@@ -74,11 +76,11 @@ export function PatientRow({ patient, isLast, onClick }: Props) {
       </td>
 
       <td className="px-5 py-4">
-        <span className="text-[12.5px] text-encabezado">{clinic?.name ?? "—"}</span>
+        <span className="text-[12.5px] text-encabezado">{createDate ?? "—"}</span>
       </td>
 
-      <td className="px-5 py-4">
-        <div className="flex items-center gap-2">
+      <td className="px-5 py-4 ">
+        <div className="flex items-center justify-center gap-2">
           <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", patient.isActive ? "bg-emerald-500" : "bg-zinc-400")} />
           <span
             className={cn(

@@ -1,10 +1,10 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import type { StaffRole } from "@/features/users/types";
+import type { StaffRole, User } from "@/features/users/types";
 import dayjs from "dayjs";
 import { AppointmentsBasePage, AppointmentsListResponse, transformClinicsToDoctorResources } from "@/features/appointments";
 
-async function getServerAuthContext(): Promise<{ token: string; role: StaffRole }> {
+async function getServerAuthContext(): Promise<{ token: string; role: StaffRole; userId: User["id"] }> {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   const userCookie = cookieStore.get("user")?.value;
@@ -14,7 +14,7 @@ async function getServerAuthContext(): Promise<{ token: string; role: StaffRole 
   try {
     const userData = JSON.parse(userCookie);
     if (!userData.role) throw new Error("No role");
-    return { token, role: userData.role as StaffRole };
+    return { token, role: userData.role as StaffRole, userId: userData.id as User["id"] };
   } catch {
     redirect("/login");
   }
@@ -58,10 +58,12 @@ export default async function AppointmentsPage() {
 
   const [initialData, clinics] = await Promise.all([
     fetchInitialAppointments(auth.token, dateFrom, dateTo),
-    fetchInitialClinics(auth.token)
+    fetchInitialClinics(auth.token),
   ]);
 
   const initialResources = transformClinicsToDoctorResources(clinics);
 
-  return <AppointmentsBasePage initialData={initialData} initialResources={initialResources} role={auth.role} />;
+  return (
+    <AppointmentsBasePage initialData={initialData} initialResources={initialResources} role={auth.role} userId={auth.userId} />
+  );
 }

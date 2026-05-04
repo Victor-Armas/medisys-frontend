@@ -5,11 +5,14 @@ import { GynecologicalSection } from "../expediente-base/sections/GynecologicalS
 import { HistoryToolbar } from "../../../shared/HistoryToolbar";
 import { useMedicalHistoryForm } from "@/features/patients/hooks/useMedicalHistoryForm";
 
+import { MedicalHistory } from "@/features/patients/types/patient.types";
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 interface Props {
   patientId: string;
   hasEditPermission: boolean;
+  existHistoryPatient: MedicalHistory | null;
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -20,7 +23,7 @@ interface Props {
  * Uses a separate storage key and edit state from ExpedienteBaseTab,
  * but shares the same MedicalHistory record via PATCH.
  */
-export function AgoyCiclosTab({ patientId, hasEditPermission }: Props) {
+export function AgoyCiclosTab({ patientId, hasEditPermission, existHistoryPatient }: Props) {
   const {
     formMethods,
     isLoading,
@@ -38,6 +41,7 @@ export function AgoyCiclosTab({ patientId, hasEditPermission }: Props) {
     patientId,
     storageKey: `patient-history-ago-${patientId}`,
     hasEditPermission,
+    initialData: existHistoryPatient,
   });
 
   if (isLoading) return <Skeleton />;

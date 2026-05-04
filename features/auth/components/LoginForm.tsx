@@ -57,10 +57,9 @@ export function LoginForm() {
         <Input
           label="Email"
           type="email"
-          placeholder="dr.smith@clinica.mx"
           icon={Mail}
           error={errors.email?.message}
-          {...register("email")}
+          {...register("email", { setValueAs: (value) => value?.toLowerCase() ?? "" })}
         />
 
         <div className="flex flex-col gap-1.5">

@@ -52,7 +52,7 @@ export function HistoryToolbar({
         "flex items-center gap-3",
         isInline
           ? "flex-row justify-end"
-          : "flex-col sm:flex-row sm:items-center justify-between p-4  border rounded-2xl shadow-sm sticky top-0 z-10",
+          : "flex-col sm:flex-row sm:items-center justify-between p-4 shadow-sm sticky top-0 z-10",
       )}
     >
       {/* Título + AutoSave — ocultos en inline (el header del card ya tiene título) */}
@@ -72,7 +72,7 @@ export function HistoryToolbar({
           <button
             type="button"
             onClick={onEnableEditing}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl border  text-xs font-semibold text-subtitulo hover:text-principal hover:bg-principal hover: transition-all"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-sm bg-wairning hover:bg-wairning-hover text-wairning-text  text-xs font-semibold  hover: transition-all"
           >
             <FileEdit size={14} />
             Habilitar edición
@@ -86,7 +86,7 @@ export function HistoryToolbar({
               <button
                 type="button"
                 onClick={onCancel}
-                className="px-3 py-2 rounded-xl text-xs font-semibold text-subtitulo hover:text-encabezado transition-colors"
+                className="px-3 py-2 rounded-sm text-xs bg-disable hover:bg-gray-300 dark:hover:bg-gray-500 font-semibold transition-colors"
               >
                 Cancelar
               </button>
@@ -95,10 +95,10 @@ export function HistoryToolbar({
               type="submit"
               disabled={isPending || !isDirty}
               className={cn(
-                "flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-white transition-all shadow-sm",
+                "flex items-center gap-1.5 px-4 py-2 rounded-sm text-xs font-semibold text-white transition-all shadow-sm",
                 isDirty && !isPending
-                  ? "bg-principal hover:bg-principal-hover hover:shadow-md"
-                  : "bg-border-strong cursor-not-allowed opacity-60",
+                  ? "bg-positive hover:bg-positive-hover text-positive-text dark:text-white hover:shadow-md"
+                  : "bg-disable cursor-not-allowed opacity-60",
               )}
             >
               {isPending ? <Loader2 size={13} className="animate-spin" /> : <Check size={13} />}

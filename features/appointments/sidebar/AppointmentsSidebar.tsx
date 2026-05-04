@@ -10,11 +10,13 @@ import ClinicToggleFilter from "./filtros/ClinicToggleFilter";
 
 interface Props {
   resources: DoctorResource[];
+  isDoctor: boolean;
+  userId: string;
   onNewAppointment: () => void;
   onCloseMobile?: () => void;
 }
 
-export function AppointmentsSidebar({ resources, onNewAppointment, onCloseMobile }: Props) {
+export function AppointmentsSidebar({ resources, isDoctor, userId, onNewAppointment, onCloseMobile }: Props) {
   const resetFilters = useAppointmentsFilterStore((s) => s.resetFilters);
 
   return (
@@ -36,7 +38,7 @@ export function AppointmentsSidebar({ resources, onNewAppointment, onCloseMobile
 
       <ClinicToggleFilter resources={resources} />
 
-      <DoctorToggleFilter resources={resources} />
+      <DoctorToggleFilter resources={resources} isDoctor={isDoctor} userId={userId} />
 
       <div className="border-t border-disable/40 pt-3">
         <StatusFilter />
