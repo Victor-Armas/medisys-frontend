@@ -1,9 +1,6 @@
 // features/patients/adapters/patient.adapters.ts
 import type { Patient, PatientAddress } from "../types/patient.types";
-import type {
-  PatientFormData,
-  AddressFormData,
-} from "../schemas/patient.schema";
+import type { PatientFormData, AddressFormData } from "../schemas/patient.schema";
 
 /**
  * Transforma la entidad Patient (API) al formato PatientFormData (React Hook Form)
@@ -26,6 +23,7 @@ export const adaptPatientToForm = (p: Patient): PatientFormData => {
     emergencyContactName: p.emergencyContactName ?? "",
     emergencyContactPhone: p.emergencyContactPhone ?? "",
     emergencyContactRelation: p.emergencyContactRelation ?? "",
+    addresses: p.addresses?.length ? p.addresses.map(addressToForm) : [],
   };
 };
 
@@ -54,6 +52,7 @@ export const adaptFormToPayload = (data: PatientFormData) => {
     emergencyContactPhone: sanitize(data.emergencyContactPhone),
     emergencyContactRelation: sanitize(data.emergencyContactRelation),
     clinicId: data.clinicId || undefined,
+    addresses: data.addresses?.length ? data.addresses.map(buildAddressPayload) : [],
   };
 };
 
@@ -87,14 +86,14 @@ export function addressToForm(addr: PatientAddress): AddressFormData {
   return {
     country: addr.country ?? "MX",
     isPrimary: addr.isPrimary,
-    postalCodeId: undefined,
-    neighborhoodId: undefined,
+    postalCodeId: addr.postalCode?.id ?? undefined,
+    neighborhoodId: addr.neighborhood?.id ?? undefined,
     street: addr.street ?? "",
     extNumber: addr.extNumber ?? "",
     intNumber: addr.intNumber ?? "",
-    municipality: addr.postalCode?.municipality?.name ?? "",
-    state: addr.postalCode?.municipality?.state?.name ?? "",
-    postalCodeInput: addr.postalCode?.code ?? "",
+    municipality: addr.postalCode?.municipality?.name ?? addr.foreignCity ?? "",
+    state: addr.postalCode?.municipality?.state?.name ?? addr.foreignState ?? "",
+    postalCodeInput: addr.postalCode?.code ?? addr.foreignPostalCode ?? "",
     neighborhoodInput: addr.neighborhood?.name ?? "",
     foreignState: addr.foreignState ?? "",
     foreignCity: addr.foreignCity ?? "",
@@ -124,8 +123,7 @@ export function buildAddressPayload(data: AddressFormData) {
     isPrimary: data.isPrimary ?? false,
     foreignState: data.state || data.foreignState || undefined,
     foreignCity: data.municipality || data.foreignCity || undefined,
-    foreignPostalCode:
-      data.postalCodeInput || data.foreignPostalCode || undefined,
+    foreignPostalCode: data.postalCodeInput || data.foreignPostalCode || undefined,
     foreignAddressLine: data.street || data.foreignAddressLine || undefined,
   };
 }

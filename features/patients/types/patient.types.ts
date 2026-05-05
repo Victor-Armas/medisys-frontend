@@ -194,10 +194,11 @@ export interface PatientAddress {
   extNumber: string | null;
   intNumber: string | null;
   postalCode?: {
+    id: string;
     code: string;
     municipality: { name: string; state: { name: string } };
   } | null;
-  neighborhood?: { name: string; type: string } | null;
+  neighborhood?: { id: string; name: string; type: string } | null;
   foreignState?: string | null;
   foreignCity?: string | null;
   foreignPostalCode?: string | null;

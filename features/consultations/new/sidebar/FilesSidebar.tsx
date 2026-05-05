@@ -1,9 +1,10 @@
 "use client";
 import { useRef, useState } from "react";
-import { Paperclip, Upload, FileText, Image, ExternalLink } from "lucide-react";
+import { Paperclip, Upload, FileText, Image as ImageIcon, ExternalLink } from "lucide-react";
 import { usePatientFiles, useUploadPatientFile } from "../../hooks/useConsultation";
 import { formatFileSize } from "../../utils/consultation.utils";
 import { ECGLoader } from "@/shared/ui/ECGLoader";
+import { notify } from "@/shared/ui/toaster";
 
 interface Props {
   patientId: string | null;
@@ -46,6 +47,23 @@ export function FilesSidebar({ patientId }: Props) {
 
   const isImage = (mime: string) => mime.startsWith("image/");
 
+  const handleViewFile = async (url: string, mimeType: string) => {
+    const loadId = notify.loading("Abriendo archivo...");
+    try {
+      const res = await fetch(url);
+      const blob = await res.blob();
+
+      const fileURL = window.URL.createObjectURL(new Blob([blob], { type: mimeType }));
+      window.open(fileURL, "_blank");
+
+      setTimeout(() => window.URL.revokeObjectURL(fileURL), 10000);
+      notify.dismiss(loadId);
+    } catch (error) {
+      console.error("Error al abrir el archivo:", error);
+      notify.error("Error", "No se pudo abrir el archivo.", { id: loadId });
+    }
+  };
+
   return (
     <div className="bg-interior rounded-xl p-4 flex flex-col gap-3 shadow-sm">
       <div className="flex items-center justify-between">
@@ -64,7 +82,7 @@ export function FilesSidebar({ patientId }: Props) {
         )}
       </div>
 
-      {/* Upload panel */}
+      {/* Upload panel (se mantiene igual) */}
       {showUpload && patientId && (
         <div className="bg-fondo-inputs rounded-lg p-3 flex flex-col gap-2 border border-disable/20">
           <select
@@ -100,16 +118,15 @@ export function FilesSidebar({ patientId }: Props) {
       {!isLoading && files.length === 0 && <p className="text-xs text-subtitulo text-center py-3">No hay archivos cargados</p>}
       {!isLoading &&
         files.map((f) => (
-          <a
+          // 🚀 CAMBIO: Etiqueta <a> por <button>
+          <button
             key={f.id}
-            href={f.fileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 p-2 rounded-lg hover:bg-fondo-inputs transition-colors group"
+            type="button"
+            onClick={() => handleViewFile(f.fileUrl, f.mimeType)}
+            className="flex w-full items-center gap-2 p-2 rounded-lg hover:bg-fondo-inputs transition-colors group text-left"
           >
             {isImage(f.mimeType) ? (
-              // eslint-disable-next-line jsx-a11y/alt-text
-              <Image size={14} className="text-principal shrink-0" />
+              <ImageIcon size={14} className="text-principal shrink-0" />
             ) : (
               <FileText size={14} className="text-principal shrink-0" />
             )}
@@ -120,7 +137,7 @@ export function FilesSidebar({ patientId }: Props) {
               </p>
             </div>
             <ExternalLink size={12} className="text-subtitulo opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
-          </a>
+          </button>
         ))}
     </div>
   );

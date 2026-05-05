@@ -11,6 +11,7 @@ import { useUpdatePatientAddress } from "../../hooks/usePatientAddresses";
 import { notify } from "@/shared/ui/toaster";
 import Link from "next/link";
 import { formatDate } from "@/shared/utils/date.utils";
+import api from "@/shared/lib/api";
 
 interface Props {
   patient: Patient;
@@ -26,6 +27,7 @@ type DialogState = {
 
 export function PatientSidebar({ patient, fullName, hasEditPermission }: Props) {
   const [dialog, setDialog] = useState<DialogState>({ open: false, mode: "add" });
+  const [isPrinting, setIsPrinting] = useState(false);
   const updateAddress = useUpdatePatientAddress();
 
   const age = getPatientAge(patient.birthDate);
@@ -56,6 +58,20 @@ export function PatientSidebar({ patient, fullName, hasEditPermission }: Props) 
   function handleDialogOpenChange(open: boolean) {
     setDialog((current) => ({ ...current, open }));
   }
+
+  const handlePrintRecord = async () => {
+    try {
+      setIsPrinting(true);
+      const res = await api.get(`/patients/${patient.id}/record-pdf`, { responseType: "blob" });
+      const url = URL.createObjectURL(new Blob([res.data], { type: "application/pdf" }));
+      window.open(url, "_blank");
+      setTimeout(() => URL.revokeObjectURL(url), 10_000);
+    } catch {
+      notify.error("Error", "No se pudo generar el expediente.");
+    } finally {
+      setIsPrinting(false);
+    }
+  };
 
   return (
     <>
@@ -159,9 +175,13 @@ export function PatientSidebar({ patient, fullName, hasEditPermission }: Props) 
           </section>
 
           <div className="mt-auto space-y-2">
-            <button className="flex items-center justify-center gap-2 w-full py-2 rounded-sm text-xs font-medium bg-disable hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors">
+            <button
+              onClick={handlePrintRecord}
+              disabled={isPrinting}
+              className="flex items-center justify-center gap-2 w-full py-2 rounded-sm text-xs font-medium bg-disable hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors disabled:opacity-60"
+            >
               <Printer size={12} />
-              Imprimir expediente
+              {isPrinting ? "Generando PDF…" : "Imprimir expediente"}
             </button>
             {hasEditPermission && (
               <Link

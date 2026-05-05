@@ -90,7 +90,7 @@ export const patientSchema = z.object({
   // ── Clínica de registro ──────────────────────────────────────────────
   clinicId: z.string().uuid().optional(),
 
-  address: addressSchema.optional(),
+  addresses: z.array(addressSchema).optional().default([]),
 });
 
 export type PatientFormData = z.input<typeof patientSchema>;

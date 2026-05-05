@@ -157,3 +157,12 @@ export function useIssuePrescription(consultationId: string) {
     },
   });
 }
+
+export function usePatientPrescriptionsHistory(patientId: string | null) {
+  return useQuery({
+    queryKey: ["prescriptions", "patient", patientId],
+    queryFn: () => svc.getPatientPrescriptions(patientId!),
+    enabled: !!patientId,
+    staleTime: 60_000,
+  });
+}

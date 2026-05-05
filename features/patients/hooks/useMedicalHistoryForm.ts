@@ -41,29 +41,16 @@ export interface UseMedicalHistoryFormReturn {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-/**
- * Normalizes a value from DB/draft to a safe form default.
- * - null/undefined booleans → false
- * - null/undefined nullable numbers → null (their schema default)
- * - null/undefined strings → ""
- */
 function normalizeFieldValue(key: string, value: unknown): unknown {
   if (value !== null && value !== undefined) return value;
   const defaultValue = medicalHistoryDefaultValues[key as keyof MedicalHistoryFormData];
   if (typeof defaultValue === "boolean") return false;
-  if (defaultValue === null) return null; // nullable number fields (menarche, gestations, etc.)
+  if (defaultValue === null) return null;
   return "";
 }
 
 // ── Hook ──────────────────────────────────────────────────────────────────────
 
-/**
- * Encapsulates all state and logic for editing medical history sections.
- * Designed to be used independently by ExpedienteBaseTab and AgoyCiclosTab,
- * each with their own storage key and edit state.
- *
- * Both tabs send PATCH requests, so partial saves are safe.
- */
 export function useMedicalHistoryForm({
   patientId,
   storageKey,
@@ -73,13 +60,16 @@ export function useMedicalHistoryForm({
   const [isEditing, setIsEditing] = useState(false);
   const [isCreatingDraft, setIsCreatingDraft] = useState(false);
 
+  // FIXED: always enable the query so it refreshes after create/update
+  // retry: false in useMedicalHistory handles 404 gracefully for new patients
   const {
     data: history,
     isLoading,
     isError,
   } = useMedicalHistory(patientId, {
-    enabled: !!patientId && !!initialData,
+    enabled: !!patientId,
   });
+
   const createHistory = useCreateMedicalHistory();
   const updateHistory = useUpdateMedicalHistory();
 
@@ -113,10 +103,10 @@ export function useMedicalHistoryForm({
   // Sync form with DB data or draft on mount / when history loads
   useEffect(() => {
     const draft = getDraft();
-    const sourceData = history ?? draft ?? null;
+    // Prefer live DB data over draft; use initialData as fallback on first render
+    const sourceData = history ?? draft ?? initialData ?? null;
     if (!sourceData) return;
 
-    // If no DB history but we have a draft, open the form automatically
     if (!history && draft) {
       setIsCreatingDraft(true);
     }
@@ -126,7 +116,7 @@ export function useMedicalHistoryForm({
     ) as MedicalHistoryFormData;
 
     reset(cleanData, { keepDirty: !!draft });
-  }, [history, reset]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [history]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Submit ────────────────────────────────────────────────────────────────
 

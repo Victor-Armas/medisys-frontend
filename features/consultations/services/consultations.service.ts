@@ -102,3 +102,18 @@ export const handleIssuePrescription = async (prescriptionId: string, includeSig
   const res = await api.post(`/prescriptions/${prescriptionId}/issue`, { includeSignature });
   return res.data;
 };
+
+export const getPatientPrescriptions = async (patientId: string) => {
+  const res = await api.get(`/prescriptions/patient/${patientId}`);
+  return res.data as {
+    id: string;
+    folioNumber: string;
+    status: string;
+    doctorName: string;
+    clinicName: string;
+    pdfUrl: string | null;
+    issuedAt: string;
+    expiresAt: string;
+    items: { medicationName: string; dose: string; frequency: string }[];
+  }[];
+};

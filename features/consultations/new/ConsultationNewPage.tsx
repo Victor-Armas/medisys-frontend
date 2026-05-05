@@ -20,6 +20,10 @@ import ClinicSelect from "../ui/ClinicSelect";
 import { notify } from "@/shared/ui/toaster";
 import { useRouter } from "next/navigation";
 import { AppointmentConsultation } from "@/features/appointments/types/appointment.types";
+import { ConsultationHistorialTab } from "./tabs/ConsultationHistorialTab";
+import { ConsultationArchivosTab } from "./tabs/ConsultationArchivosTab";
+import { ConsultationRecetasTab } from "./tabs/ConsultationRecetasTab";
+import EmptyPatientMsg from "../ui/EmptyPatientMsg";
 
 interface Props {
   serverRole: StaffRole;
@@ -196,11 +200,12 @@ export default function ConsultationNewPage({ serverRole, initialPatient, doctor
                 initialPatient={initialPatient}
               />
             )}
-            {activeTab !== "resumen" && (
-              <div className="flex-1 flex items-center justify-center text-subtitulo text-sm bg-interior rounded-xl border border-disable/20">
-                <p>Esta sección estará disponible próximamente.</p>
-              </div>
-            )}
+            {activeTab === "historial" &&
+              (patientIdWatch ? <ConsultationHistorialTab patientId={patientIdWatch} /> : <EmptyPatientMsg tab="historial" />)}
+            {activeTab === "archivos" &&
+              (patientIdWatch ? <ConsultationArchivosTab patientId={patientIdWatch} /> : <EmptyPatientMsg tab="archivos" />)}
+            {activeTab === "recetas" &&
+              (patientIdWatch ? <ConsultationRecetasTab patientId={patientIdWatch} /> : <EmptyPatientMsg tab="recetas" />)}
           </div>
 
           {/* Right: sidebar */}
