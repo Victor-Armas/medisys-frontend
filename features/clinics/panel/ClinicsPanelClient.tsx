@@ -14,6 +14,7 @@ import { usePermissions } from "@/shared/hooks/usePermissions";
 import { AssignDoctorToClinicModal } from "../schedule/modals/assign-doctor/AssignDoctorToClinicModal";
 import { ECGLoader } from "@/shared/ui/ECGLoader";
 import { StaffRole } from "@/features/users/types";
+import ClinicEmpty from "@/shared/animations/ClinicEmpty";
 
 interface Props {
   initialClinics: Clinic[];
@@ -43,9 +44,10 @@ export function ClinicsPanelClient({ initialClinics, initialRole }: Props) {
   } = useClinicManagement(clinics);
 
   // 3. Early return protegido para el loader
-  if (!isLoading && clinics.length === 0) {
+  if (isLoading) {
     return <ECGLoader />;
   }
+  const isEmpty = clinics.length === 0;
 
   const handleSelectClinic = (clinic: Clinic) => {
     setSelected(clinic);
@@ -53,40 +55,45 @@ export function ClinicsPanelClient({ initialClinics, initialRole }: Props) {
   };
 
   return (
-    <div className="flex h-full overflow-hidden flex-col md:flex-row px-4 md:px-6 pt-4">
-      {/* ── Panel izquierdo ── */}
-      <div className={cn("h-full md:block", showMobileList ? "block w-full md:w-auto" : "hidden")}>
-        <ClinicSidebar
-          clinics={clinics}
-          activeClinicId={selectedClinic?.id}
-          onSelect={handleSelectClinic}
-          onAddClinic={handleAddClinic}
-          onToggleClinic={handleToggleClinic}
-        />
-      </div>
-
-      {/* ── Panel derecho ── */}
-      <main className={cn("flex-1 overflow-y-auto md:pl-4", !showMobileList ? "block" : "hidden md:block")}>
-        {!selectedClinic ? (
-          <div className="flex h-full items-center justify-center">
-            <p className="text-sm text-subtitulo">Selecciona un consultorio</p>
+    <>
+      {isEmpty ? (
+        <ClinicEmpty onAddClinic={handleAddClinic} />
+      ) : (
+        <div className="flex h-full overflow-hidden flex-col md:flex-row px-4 md:px-6 pt-4">
+          {/* ── Panel izquierdo ── */}
+          <div className={cn("h-full md:block", showMobileList ? "block w-full md:w-auto" : "hidden")}>
+            <ClinicSidebar
+              clinics={clinics}
+              activeClinicId={selectedClinic?.id}
+              onSelect={handleSelectClinic}
+              onAddClinic={handleAddClinic}
+              onToggleClinic={handleToggleClinic}
+            />
           </div>
-        ) : (
-          <ClinicDetail
-            clinic={selectedClinic}
-            canManage={canManageClinics}
-            loggedUserId={userId}
-            onBack={() => setShowMobileList(true)}
-            onEdit={handleEditClinic}
-            onToggleActive={(id) => toggleClinic.mutate(id)}
-            onAssignDoctor={() => setModal("assign-doctor")}
-            canAssignDoctor={canAssignDoctorToClinic}
-            onAddSchedule={openScheduleModal}
-            onAddOverride={openOverrideModal}
-          />
-        )}
-      </main>
 
+          {/* ── Panel derecho ── */}
+          <main className={cn("flex-1 overflow-y-auto md:pl-4", !showMobileList ? "block" : "hidden md:block")}>
+            {!selectedClinic ? (
+              <div className="flex h-full items-center justify-center">
+                <p className="text-sm text-subtitulo">Selecciona un consultorio</p>
+              </div>
+            ) : (
+              <ClinicDetail
+                clinic={selectedClinic}
+                canManage={canManageClinics}
+                loggedUserId={userId}
+                onBack={() => setShowMobileList(true)}
+                onEdit={handleEditClinic}
+                onToggleActive={(id) => toggleClinic.mutate(id)}
+                onAssignDoctor={() => setModal("assign-doctor")}
+                canAssignDoctor={canAssignDoctorToClinic}
+                onAddSchedule={openScheduleModal}
+                onAddOverride={openOverrideModal}
+              />
+            )}
+          </main>
+        </div>
+      )}
       {/* ── Modales ── */}
       {modal === "create-clinic" && canManageClinics && <ClinicFormModal onClose={closeModal} />}
       {modal === "edit-clinic" && editingClinic && canManageClinics && (
@@ -111,6 +118,6 @@ export function ClinicsPanelClient({ initialClinics, initialRole }: Props) {
       {modal === "assign-doctor" && selectedClinic && canAssignDoctorToClinic && (
         <AssignDoctorToClinicModal clinicId={selectedClinic.id} clinicName={selectedClinic.name} onClose={closeModal} />
       )}
-    </div>
+    </>
   );
 }

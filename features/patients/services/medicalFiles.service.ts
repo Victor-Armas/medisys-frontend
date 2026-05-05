@@ -1,9 +1,14 @@
 import api from "@/shared/lib/api";
-import type { PatientMedicalFile, MedicalFileCategory } from "../types/patient.types";
+import type {
+  PatientMedicalFile,
+  MedicalFileCategory,
+} from "../types/patient.types";
 
 export const medicalFilesService = {
   getAll: async (patientId: string): Promise<PatientMedicalFile[]> => {
-    const res = await api.get<PatientMedicalFile[]>(`/patients/${patientId}/medical-files`);
+    const res = await api.get<PatientMedicalFile[]>(
+      `/patients/${patientId}/medical-files`,
+    );
     return res.data;
   },
 
@@ -12,15 +17,21 @@ export const medicalFilesService = {
     file: File,
     category: MedicalFileCategory,
     description?: string,
+    consultationId?: string,
   ): Promise<PatientMedicalFile> => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("category", category);
     if (description?.trim()) formData.append("description", description.trim());
+    if (consultationId) formData.append("consultationId", consultationId);
 
-    const res = await api.post<PatientMedicalFile>(`/patients/${patientId}/medical-files`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    const res = await api.post<PatientMedicalFile>(
+      `/patients/${patientId}/medical-files`,
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      },
+    );
     return res.data;
   },
 

@@ -13,6 +13,8 @@ import { PageButton } from "./PageButton";
 import { PatientListItem } from "../types/patient.types";
 import { usePatients } from "../hooks/usePatients";
 import { PatientSkeletonRow } from "./PatientSkeletonRow";
+import { RouteSystemLoader } from "@/shared/animations/RouteSystemLoader";
+import PatientEmpty from "@/shared/animations/PatientEmpty";
 
 const PAGE_SIZE = 25;
 
@@ -49,6 +51,14 @@ export function PatientsListClient({ initialData, clinicId, serverRole }: Props)
     setSearchInput(e.target.value);
     setPage(1); // reset paginación al buscar
   }, []);
+
+  if (isLoading) {
+    return <RouteSystemLoader />;
+  }
+
+  if (patients.length === 0) {
+    return <PatientEmpty />;
+  }
 
   return (
     <div className="space-y-6 max-w-[1600px] mx-auto p-4">

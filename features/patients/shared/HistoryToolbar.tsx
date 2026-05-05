@@ -67,8 +67,8 @@ export function HistoryToolbar({
       {isInline && <AutoSaveIndicator status={saveStatus} lastSavedAt={lastSavedAt} />}
 
       <div className="flex items-center gap-2">
-        {/* Habilitar edición — only when viewing existing history */}
-        {hasHistory && !isEditActive && hasEditPermission && (
+        {/* Habilitar edición — muestra el botón también cuando no hay historial previo */}
+        {!isEditActive && hasEditPermission && (
           <button
             type="button"
             onClick={onEnableEditing}
@@ -82,28 +82,28 @@ export function HistoryToolbar({
         {/* Cancel + Save — when in edit mode */}
         {isEditActive && (
           <>
-            {hasHistory && (
+            <button
+              type="button"
+              onClick={onCancel}
+              className="px-3 py-2 rounded-sm text-xs bg-disable hover:bg-gray-300 dark:hover:bg-gray-500 font-semibold transition-colors"
+            >
+              Cancelar
+            </button>
+            {isDirty && (
               <button
-                type="button"
-                onClick={onCancel}
-                className="px-3 py-2 rounded-sm text-xs bg-disable hover:bg-gray-300 dark:hover:bg-gray-500 font-semibold transition-colors"
+                type="submit"
+                disabled={isPending}
+                className={cn(
+                  "flex items-center gap-1.5 px-4 py-2 rounded-sm text-xs font-semibold text-white transition-all shadow-sm",
+                  isPending
+                    ? "bg-disable cursor-not-allowed opacity-60"
+                    : "bg-positive hover:bg-positive-hover text-positive-text dark:text-white hover:shadow-md",
+                )}
               >
-                Cancelar
+                {isPending ? <Loader2 size={13} className="animate-spin" /> : <Check size={13} />}
+                Guardar cambios
               </button>
             )}
-            <button
-              type="submit"
-              disabled={isPending || !isDirty}
-              className={cn(
-                "flex items-center gap-1.5 px-4 py-2 rounded-sm text-xs font-semibold text-white transition-all shadow-sm",
-                isDirty && !isPending
-                  ? "bg-positive hover:bg-positive-hover text-positive-text dark:text-white hover:shadow-md"
-                  : "bg-disable cursor-not-allowed opacity-60",
-              )}
-            >
-              {isPending ? <Loader2 size={13} className="animate-spin" /> : <Check size={13} />}
-              Guardar cambios
-            </button>
           </>
         )}
       </div>

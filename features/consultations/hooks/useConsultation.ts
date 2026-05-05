@@ -7,6 +7,7 @@ import * as svc from "../services/consultations.service";
 import type {
   ConsultationResponse,
   ConsultationsListResponse,
+  ConsultationTimelineItem,
   CreateConsultationPayload,
   CreatePrescriptionPayload,
   ListConsultationsQuery,
@@ -15,10 +16,13 @@ import type {
 export const consultationKeys = {
   all: ["consultations"] as const,
   lists: () => [...consultationKeys.all, "list"] as const,
-  list: (filters: ListConsultationsQuery) => [...consultationKeys.lists(), filters] as const,
+  list: (filters: ListConsultationsQuery) =>
+    [...consultationKeys.lists(), filters] as const,
   details: () => [...consultationKeys.all, "detail"] as const,
   detail: (id: string) => [...consultationKeys.details(), id] as const,
   byPatient: (id: string) => ["consultations", "patient", id] as const,
+  timelineByPatient: (id: string) =>
+    ["consultations", "patient", id, "timeline"] as const,
   filesByPatient: (id: string) => ["medical-files", id] as const,
   suggestions: (codes: string[]) => ["med-suggestions", ...codes] as const,
   icd10: (q: string) => ["icd10", q] as const,
@@ -61,6 +65,15 @@ export function usePatientConsultations(patientId: string | null) {
   });
 }
 
+export function usePatientConsultationTimeline(patientId: string | null) {
+  return useQuery<ConsultationTimelineItem[]>({
+    queryKey: consultationKeys.timelineByPatient(patientId!),
+    queryFn: () => svc.getConsultationTimelineByPatient(patientId!),
+    enabled: !!patientId,
+    staleTime: 30_000,
+  });
+}
+
 export function usePatientFiles(patientId: string | null) {
   return useQuery({
     queryKey: consultationKeys.filesByPatient(patientId!),
@@ -70,7 +83,9 @@ export function usePatientFiles(patientId: string | null) {
   });
 }
 
-export function useCreateConsultationWithPrescription(onSuccess: (consultationId: string) => void) {
+export function useCreateConsultationWithPrescription(
+  onSuccess: (consultationId: string) => void,
+) {
   const qc = useQueryClient();
   // Guard persistente para evitar doble envío por React Strict Mode o doble clic
   const isSubmittingRef = useRef(false);
@@ -90,7 +105,10 @@ export function useCreateConsultationWithPrescription(onSuccess: (consultationId
       try {
         const created = await svc.createConsultation(consultation);
         if (prescriptionItems.length > 0) {
-          await svc.createPrescription({ consultationId: created.id, items: prescriptionItems });
+          await svc.createPrescription({
+            consultationId: created.id,
+            items: prescriptionItems,
+          });
         }
         return created;
       } finally {
@@ -99,28 +117,61 @@ export function useCreateConsultationWithPrescription(onSuccess: (consultationId
     },
     onSuccess: (data) => {
       if (!data) return; // petición duplicada ignorada
-      qc.invalidateQueries({ queryKey: consultationKeys.byPatient(data.patient.id) });
-      notify.success("Consulta guardada", `Folio ${data.folioNumber} registrado correctamente.`);
+      qc.invalidateQueries({
+        queryKey: consultationKeys.byPatient(data.patient.id),
+      });
+      notify.success(
+        "Consulta guardada",
+        `Folio ${data.folioNumber} registrado correctamente.`,
+      );
       onSuccess(data.id);
     },
-    onError: () => notify.error("Error al guardar la consulta", "Revisa los datos e intenta de nuevo."),
+    onError: () =>
+      notify.error(
+        "Error al guardar la consulta",
+        "Revisa los datos e intenta de nuevo.",
+      ),
   });
 }
 
 export function useUploadPatientFile(patientId: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ file, category, description }: { file: File; category: string; description?: string }) =>
-      svc.uploadPatientMedicalFile(patientId, file, category, description),
+    mutationFn: ({
+      file,
+      category,
+      description,
+      consultationId,
+    }: {
+      file: File;
+      category: string;
+      description?: string;
+      consultationId?: string;
+    }) =>
+      svc.uploadPatientMedicalFile(
+        patientId,
+        file,
+        category,
+        description,
+        consultationId,
+      ),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: consultationKeys.filesByPatient(patientId) });
+      qc.invalidateQueries({
+        queryKey: consultationKeys.filesByPatient(patientId),
+      });
+      qc.invalidateQueries({
+        queryKey: consultationKeys.timelineByPatient(patientId),
+      });
       notify.success("Archivo subido correctamente");
     },
     onError: () => notify.error("Error al subir el archivo"),
   });
 }
 
-export function useConsultationsList(query: ListConsultationsQuery, initialData?: ConsultationsListResponse) {
+export function useConsultationsList(
+  query: ListConsultationsQuery,
+  initialData?: ConsultationsListResponse,
+) {
   return useQuery({
     queryKey: consultationKeys.list(query),
     queryFn: () => svc.getConsultations(query),
@@ -131,7 +182,10 @@ export function useConsultationsList(query: ListConsultationsQuery, initialData?
   });
 }
 
-export function useConsultationDetail(id: ConsultationResponse["id"], initialData: ConsultationResponse) {
+export function useConsultationDetail(
+  id: ConsultationResponse["id"],
+  initialData: ConsultationResponse,
+) {
   return useQuery({
     queryKey: consultationKeys.detail(id!),
     queryFn: () => svc.getConsultationById(id!),
@@ -145,12 +199,22 @@ export function useIssuePrescription(consultationId: string) {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ prescriptionId, includeSignature }: { prescriptionId: string; includeSignature: boolean }) =>
-      svc.handleIssuePrescription(prescriptionId, includeSignature),
+    mutationFn: ({
+      prescriptionId,
+      includeSignature,
+    }: {
+      prescriptionId: string;
+      includeSignature: boolean;
+    }) => svc.handleIssuePrescription(prescriptionId, includeSignature),
     onSuccess: () => {
       // Invalidamos la consulta específica para que la UI se actualice
-      qc.invalidateQueries({ queryKey: consultationKeys.detail(consultationId) });
-      notify.success("Receta emitida", "La receta se ha generado correctamente.");
+      qc.invalidateQueries({
+        queryKey: consultationKeys.detail(consultationId),
+      });
+      notify.success(
+        "Receta emitida",
+        "La receta se ha generado correctamente.",
+      );
     },
     onError: () => {
       notify.error("Error al emitir", "Hubo un problema al generar la receta.");

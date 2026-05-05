@@ -28,15 +28,36 @@ interface UploadPayload {
   file: File;
   category: MedicalFileCategory;
   description?: string;
+  consultationId?: string;
 }
 
 export function useUploadMedicalFile() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ patientId, file, category, description }: UploadPayload) =>
-      medicalFilesService.upload(patientId, file, category, description),
+    mutationFn: ({
+      patientId,
+      file,
+      category,
+      description,
+      consultationId,
+    }: UploadPayload) =>
+      medicalFilesService.upload(
+        patientId,
+        file,
+        category,
+        description,
+        consultationId,
+      ),
     onSuccess: (_data, { patientId }) => {
       qc.invalidateQueries({ queryKey: medicalFileKeys.list(patientId) });
+      qc.invalidateQueries({
+        predicate: (query) =>
+          Array.isArray(query.queryKey) &&
+          query.queryKey[0] === "consultations" &&
+          query.queryKey[1] === "patient" &&
+          query.queryKey[2] === patientId &&
+          query.queryKey[3] === "timeline",
+      });
     },
   });
 }
@@ -49,7 +70,8 @@ interface DeletePayload {
 export function useDeleteMedicalFile() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ patientId, fileId }: DeletePayload) => medicalFilesService.delete(patientId, fileId),
+    mutationFn: ({ patientId, fileId }: DeletePayload) =>
+      medicalFilesService.delete(patientId, fileId),
     onSuccess: (_data, { patientId }) => {
       qc.invalidateQueries({ queryKey: medicalFileKeys.list(patientId) });
     },

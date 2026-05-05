@@ -18,6 +18,7 @@ import { UserCard } from "./UserCard";
 import type { ModalState, StaffRole, User } from "../types/users.types";
 import { cn } from "@/shared/lib/utils";
 import { ECGLoader } from "@/shared/ui/ECGLoader";
+import { RouteSystemLoader } from "@/shared/animations/RouteSystemLoader";
 
 interface Props {
   initialUsers: User[];
@@ -43,6 +44,8 @@ export function UsersPanelClient({ initialUsers, serverRole }: Props) {
     [users],
   );
 
+  if (isLoading) return <RouteSystemLoader />;
+
   return (
     <div className="space-y-6 max-w-[1400px] mx-auto p-6 min-h-screen ">
       {/* 1. Encabezado Original con Botones de Acción */}
@@ -54,10 +57,20 @@ export function UsersPanelClient({ initialUsers, serverRole }: Props) {
 
         {canManageUsers && (
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto mt-2 sm:mt-0">
-            <Button variant="secundario" icon="userPlus" onClick={() => setModal("assign-doctor")} className="w-full sm:w-auto p-2">
+            <Button
+              variant="secundario"
+              icon="userPlus"
+              onClick={() => setModal("assign-doctor")}
+              className="w-full sm:w-auto p-2"
+            >
               Asignar perfil médico
             </Button>
-            <Button className="w-full sm:w-auto p-2" variant="primary2" icon="agregar" onClick={() => setModal("create-user-unified")}>
+            <Button
+              className="w-full sm:w-auto p-2"
+              variant="primary2"
+              icon="agregar"
+              onClick={() => setModal("create-user-unified")}
+            >
               Nuevo usuario
             </Button>
           </div>

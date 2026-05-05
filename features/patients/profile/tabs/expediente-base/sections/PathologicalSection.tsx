@@ -1,6 +1,5 @@
+// features/patients/profile/tabs/expediente-base/sections/PathologicalSection.tsx
 "use client";
-
-import { TransfusionsField } from "../fields/TransfusionsField";
 
 import type { PatientCondition, PatientMedication, PatientAllergy } from "../../../../types/patient.types";
 import { useIcd10Search, useIcd10SearchTrauma } from "@/features/patients/hooks/useCatalogSearch";
@@ -8,6 +7,7 @@ import { HistorySection } from "@/features/patients/shared/HistorySection";
 import { ConditionsSection } from "../../../antecedents/ConditionsSection";
 import { MedicationsSection } from "../../../antecedents/MedicationsSection";
 import { AllergiesSection } from "../../../antecedents/AllergiesSection";
+import { TransfusionsField } from "../fields/TransfusionsField";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -19,74 +19,84 @@ interface Props {
   canEdit: boolean;
 }
 
+// ── Sub-components ────────────────────────────────────────────────────────────
+
+function Divider() {
+  return <div className="border-t border-disable/30 my-1" />;
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 /**
- * Pathological antecedents section.
+ * Antecedentes patológicos.
  *
- * Renders structured conditions (ICD-10 chips) for each category,
- * medications (with dose/frequency), and allergies (severity-coded).
- *
- * The only remaining field in MedicalHistoryForm is `bloodTransfusions` (boolean).
- * Everything else uses dedicated mutation hooks.
+ * Layout: 2 columnas balanceadas.
+ * Izquierda: Enfermedades + Medicamentos + Alergias + Transfusiones
+ * Derecha: Cirugías + Hospitalizaciones + Traumatismos
  */
 export function PathologicalSection({ patientId, conditions, medications, allergies, canEdit }: Props) {
+  // Pre-filter: only PATHOLOGICAL conditions for this section
+  const pathologicalConditions = conditions.filter((c) => c.type === "PATHOLOGICAL");
+
   return (
     <HistorySection title="Antecedentes patológicos" icon="clipuser">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-8 mt-2">
-        {/* ── LEFT COLUMN ── */}
-        <div className="space-y-8">
-          {/* Diseases */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-10 gap-y-6">
+        {/* ── LEFT COLUMN ────────────────────────────────────────────────── */}
+        <div className="space-y-5">
           <ConditionsSection
             patientId={patientId}
-            conditions={conditions}
+            conditions={pathologicalConditions}
             category="DISEASE"
             label="Enfermedades previas (CIE-10)"
             canEdit={canEdit}
             useSearchHook={useIcd10Search}
           />
 
-          {/* Medications */}
+          <Divider />
+
           <MedicationsSection patientId={patientId} medications={medications} canEdit={canEdit} />
 
-          {/* Allergies */}
-          <AllergiesSection patientId={patientId} allergies={allergies} canEdit={canEdit} />
+          <Divider />
 
-          {/* Blood transfusions (boolean — stays in MedicalHistory) */}
-          <TransfusionsField disabled={!canEdit} />
+          <AllergiesSection patientId={patientId} allergies={allergies} canEdit={canEdit} />
         </div>
 
-        {/* ── RIGHT COLUMN ── */}
-        <div className="space-y-8">
-          {/* Surgeries */}
+        {/* ── RIGHT COLUMN ───────────────────────────────────────────────── */}
+        <div className="space-y-5">
           <ConditionsSection
             patientId={patientId}
-            conditions={conditions}
+            conditions={pathologicalConditions}
             category="SURGERY"
             label="Cirugías"
             canEdit={canEdit}
             useSearchHook={useIcd10Search}
           />
 
-          {/* Hospitalizations */}
+          <Divider />
+
           <ConditionsSection
             patientId={patientId}
-            conditions={conditions}
+            conditions={pathologicalConditions}
             category="HOSPITALIZATION"
             label="Hospitalizaciones"
             canEdit={canEdit}
             useSearchHook={useIcd10Search}
           />
 
-          {/* Trauma */}
+          <Divider />
+
           <ConditionsSection
             patientId={patientId}
-            conditions={conditions}
+            conditions={pathologicalConditions}
             category="TRAUMA"
             label="Traumatismos"
             canEdit={canEdit}
             useSearchHook={useIcd10SearchTrauma}
           />
+
+          <Divider />
+
+          <TransfusionsField disabled={!canEdit} />
         </div>
       </div>
     </HistorySection>

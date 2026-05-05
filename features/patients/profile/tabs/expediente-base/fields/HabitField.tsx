@@ -24,7 +24,6 @@ export function HabitField({ label, name, detailName, disabled, icon }: Props) {
   const { register, watch, setValue } = useFormContext<MedicalHistoryFormData>();
   const OPTIONS: HabitStatus[] = ["NEVER", "FORMER", "CURRENT", "UNKNOWN"];
   const current = watch(name) as HabitStatus;
-  const activeIndex = OPTIONS.indexOf(current);
   const showDetail = current === "FORMER" || current === "CURRENT";
   const Icon = ICON_MAP[icon];
 
@@ -35,15 +34,6 @@ export function HabitField({ label, name, detailName, disabled, icon }: Props) {
         <label className="block text-[10.5px] font-bold text-encabezado uppercase tracking-wider">{label}</label>
       </div>
       <div className="relative flex gap-1 bg-fondo-inputs rounded-lg p-1">
-        {/* slider highlight */}
-        <div
-          className="absolute top-1 bottom-1 rounded-md bg-principal shadow-sm transition-all duration-300"
-          style={{
-            width: `calc((100% - 0.75rem) / 4)`,
-            transform: `translateX(${activeIndex * 100}%)`,
-          }}
-        />
-
         {OPTIONS.map((status) => (
           <button
             key={status}
@@ -57,8 +47,8 @@ export function HabitField({ label, name, detailName, disabled, icon }: Props) {
               }
             }}
             className={cn(
-              "relative z-10 flex-1 px-2 py-1.5 rounded-md text-[11px] font-semibold transition-colors duration-200",
-              current === status ? "text-white" : "text-subtitulo",
+              "flex-1 px-2 py-1.5 rounded-md text-[11px] font-semibold transition-colors duration-200",
+              current === status ? "bg-principal text-white shadow-sm" : "text-subtitulo hover:bg-interior/70",
               disabled && "cursor-not-allowed opacity-50",
             )}
           >

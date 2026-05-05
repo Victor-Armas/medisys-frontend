@@ -1,3 +1,4 @@
+// features/patients/profile/antecedents/ConditionsSection.tsx
 "use client";
 
 import { useRef, useState } from "react";
@@ -45,14 +46,21 @@ export function ConditionsSection({
   const [freeText, setFreeText] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // FIX: Filter by familyMember when provided; otherwise filter by type.
+  // This prevents family conditions from leaking into pathological sections
+  // and ensures each family member only sees their own conditions.
   const filtered = conditions.filter((c) => {
     const categoryMatch = c.category === category;
     if (familyMember) {
+      // Family mode: match by familyMember (conditions are already type=FAMILY)
       return categoryMatch && c.familyMember === familyMember;
     }
+    // Pathological mode: exclude any family conditions
     return categoryMatch && c.type === (type ?? "PATHOLOGICAL");
   });
 
+  // FIX: Show dropdown whenever query has 2+ chars, regardless of results count.
+  // This ensures the "add without code" option is always reachable via search.
   const showDropdown = query.length >= 2 && !freeTextMode;
 
   const TitleIcon = ICONS_MAP[category];
@@ -93,8 +101,7 @@ export function ConditionsSection({
           category,
           type,
           familyMember,
-          isNonCoded: true,
-        } as Parameters<typeof createCondition.mutateAsync>[0]["payload"],
+        },
       });
       notify.success("Agregado sin código", name, { id: loadId });
     } catch {
@@ -124,6 +131,7 @@ export function ConditionsSection({
           <TitleIcon className="text-principal" size={14} strokeWidth={2.5} />
           <p className="text-[11px] font-bold text-encabezado uppercase tracking-wide">{label}</p>
         </div>
+        {/* FIX: Always-visible "add without code" button in edit mode */}
         {canEdit && !freeTextMode && (
           <button
             type="button"

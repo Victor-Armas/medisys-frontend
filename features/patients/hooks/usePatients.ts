@@ -33,6 +33,15 @@ export function usePatient(id: string) {
   });
 }
 
+export function usePatientWithInitialData(id: string, initialData: Awaited<ReturnType<typeof patientsService.getOne>>) {
+  return useQuery({
+    queryKey: patientKeys.detail(id),
+    queryFn: () => patientsService.getOne(id),
+    enabled: !!id,
+    initialData,
+  });
+}
+
 // ── Patient mutations ─────────────────────────────────────────────────────────
 
 export function useCreatePatient() {

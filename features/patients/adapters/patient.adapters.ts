@@ -34,7 +34,7 @@ export const adaptPatientToForm = (p: Patient): PatientFormData => {
 export const adaptFormToPayload = (data: PatientFormData) => {
   const sanitize = (val?: string) => (val?.trim() === "" ? undefined : val);
 
-  return {
+  const basePayload = {
     firstName: data.firstName,
     middleName: sanitize(data.middleName),
     lastNamePaternal: data.lastNamePaternal,
@@ -52,8 +52,13 @@ export const adaptFormToPayload = (data: PatientFormData) => {
     emergencyContactPhone: sanitize(data.emergencyContactPhone),
     emergencyContactRelation: sanitize(data.emergencyContactRelation),
     clinicId: data.clinicId || undefined,
-    addresses: data.addresses?.length ? data.addresses.map(buildAddressPayload) : [],
   };
+
+  const payload = {
+    ...basePayload,
+  };
+
+  return payload;
 };
 
 /**

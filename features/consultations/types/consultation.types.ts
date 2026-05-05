@@ -276,6 +276,7 @@ export interface ConsultationDraft {
 
 export interface PatientMedicalFileBrief {
   id: string;
+  consultationId?: string | null;
   category: string;
   description: string | null;
   fileName: string;
@@ -283,6 +284,16 @@ export interface PatientMedicalFileBrief {
   mimeType: string;
   fileSize: number;
   createdAt: string;
+}
+
+export interface ConsultationTimelineItem {
+  id: string;
+  folioNumber: string;
+  consultationType: ConsultationType;
+  reasonForVisit: string;
+  consultedAt: string;
+  doctorClinic: ConsultationDoctorClinicContext;
+  medicalFiles: PatientMedicalFileBrief[];
 }
 
 // ── Doctor-clinic selector option (flattened from /clinics response) ──────────────────

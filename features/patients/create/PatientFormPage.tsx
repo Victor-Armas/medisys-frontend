@@ -1,22 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useForm, FormProvider, useFieldArray } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { isAxiosError } from "axios";
-import {
-  ArrowLeft,
-  CheckCircle2,
-  ClipboardList,
-  Loader2,
-  RotateCcw,
-  Briefcase,
-  ShieldAlert,
-  Phone,
-  Droplet,
-  User,
-  Plus,
-} from "lucide-react";
+import { ArrowLeft, CheckCircle2, ClipboardList, Loader2, RotateCcw, Briefcase, ShieldAlert, Droplet, User } from "lucide-react";
 import Link from "next/link";
 import { AutoSaveIndicator } from "@/shared/ui/AutoSaveIndicator";
 import { notify } from "@/shared/ui/toaster";
@@ -31,7 +19,6 @@ import { FormCard } from "./FormCard";
 import { SectionPersonalInfo } from "./sections/SectionPersonalInfo";
 import { SectionDemographics } from "./sections/SectionDemographics";
 import { SectionClinicalBasics } from "./sections/SectionClinicalBasics";
-import { SectionAddress } from "./sections/SectionAddress";
 import { SectionEmergencyContact } from "./sections/SectionEmergencyContact";
 import { SectionContactProfile } from "./sections/SectionContactProfile";
 
@@ -65,24 +52,6 @@ export function PatientFormPage({ patient, clinicId }: Props) {
     storageKey,
     isEdit,
   });
-
-  const { fields, append, remove } = useFieldArray({
-    control: methods.control,
-    name: "addresses",
-  });
-
-  const handleAddAddress = () => {
-    append({
-      country: "MX",
-      postalCodeInput: "",
-      municipality: "",
-      state: "",
-      neighborhoodInput: "",
-      street: "",
-      extNumber: "",
-      intNumber: "",
-    });
-  };
 
   // ── Submit ────────────────────────────────────────────────────────────────
   async function onSubmit(data: PatientFormData) {
@@ -188,24 +157,6 @@ export function PatientFormPage({ patient, clinicId }: Props) {
                 <SectionEmergencyContact />
               </FormCard>
             </div>
-
-            {/* ── Row 4: Ubicación y Domicilios (full-width) ── */}
-            <FormCard
-              title="Ubicación y Domicilios"
-              icon={<Phone size={18} />}
-              action={
-                <button
-                  type="button"
-                  onClick={handleAddAddress}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-inner-principal text-principal text-xs font-bold rounded-lg hover:bg-principal-hover2 transition-all"
-                >
-                  <Plus size={14} />
-                  Agregar dirección
-                </button>
-              }
-            >
-              <SectionAddress fields={fields} remove={remove} append={append} />
-            </FormCard>
           </div>
         </form>
       </FormProvider>

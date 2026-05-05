@@ -12,6 +12,7 @@ import { CATEGORIES } from "@/features/patients/constants/archivos.constants";
 import { UploadPanel } from "./UploadPanel";
 import { FileCard } from "./FileCard";
 import { FilesFilterChip } from "./FilesFilterChips";
+import { VisitHistoryPanel } from "./VisitHistoryPanel";
 
 interface Props {
   patientId: string;
@@ -53,7 +54,9 @@ export function HistorialArchivoTab({ patientId, hasEditPermission }: Props) {
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-5 gap-6 pb-10">
-      <div className="xl:col-span-2">{/* <VisitHistoryPlaceholder /> */}</div>
+      <div className="xl:col-span-2">
+        <VisitHistoryPanel patientId={patientId} />
+      </div>
 
       <div className="xl:col-span-3 space-y-4">
         <div className="flex items-center justify-between">

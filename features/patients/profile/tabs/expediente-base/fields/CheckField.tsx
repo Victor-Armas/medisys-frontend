@@ -27,7 +27,6 @@ export function CheckField({ label, name, disabled, icon }: Props) {
   ] as const;
 
   const current = watch(name);
-  const activeIndex = current === false ? 0 : current === true ? 1 : -1;
 
   return (
     <div
@@ -43,17 +42,7 @@ export function CheckField({ label, name, disabled, icon }: Props) {
       </div>
 
       {/* toggle pill */}
-      <div className="relative flex w-[88px] bg-interior rounded-full p-1">
-        {/* slider highlight */}
-        {activeIndex !== -1 && (
-          <div
-            className="absolute top-1 bottom-1 w-[40px] rounded-full bg-principal shadow-sm transition-all duration-300 ease-out"
-            style={{
-              transform: `translateX(${activeIndex * 40}px)`,
-            }}
-          />
-        )}
-
+      <div className="flex w-[88px] bg-interior rounded-full p-1 gap-1">
         {OPTIONS.map((option) => (
           <button
             key={option.label}
@@ -67,8 +56,8 @@ export function CheckField({ label, name, disabled, icon }: Props) {
               })
             }
             className={cn(
-              "relative z-10 flex-1 text-[11px] font-bold transition-colors",
-              current === option.value ? "text-white" : "text-subtitulo",
+              "flex-1 text-[11px] font-bold transition-colors rounded-full py-1",
+              current === option.value ? "bg-principal text-white shadow-sm" : "text-subtitulo hover:bg-fondo-inputs/60",
             )}
           >
             {option.label}

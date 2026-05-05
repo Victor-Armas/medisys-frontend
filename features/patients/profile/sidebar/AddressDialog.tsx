@@ -6,7 +6,7 @@ import { isAxiosError } from "axios";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { notify } from "@/shared/ui/toaster";
-import { SectionAddress } from "../../create/sections/SectionAddress";
+import { SectionAddress } from "../create/sections/SectionAddress";
 import { useAddPatientAddress, useUpdatePatientAddress } from "../../hooks/usePatientAddresses";
 import { addressToForm, buildAddressPayload, buildEmptyAddress } from "../../adapters/patient.adapters";
 import type { PatientAddress } from "../../types/patient.types";
@@ -64,26 +64,34 @@ export function AddressDialog({ open, mode, patientId, address, isFirstAddress, 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className="max-w-3xl p-0 overflow-hidden">
         <DialogHeader>
-          <DialogTitle>{mode === "add" ? "Agregar domicilio" : "Editar domicilio"}</DialogTitle>
+          <div className="px-6 pt-6">
+            <DialogTitle className="text-base font-bold text-encabezado">
+              {mode === "add" ? "Agregar domicilio" : "Editar domicilio"}
+            </DialogTitle>
+            <p className="text-xs text-subtitulo mt-1">Completa los datos mínimos para guardar el domicilio.</p>
+          </div>
         </DialogHeader>
 
         <FormProvider {...methods}>
-          <form id="address-dialog-form" className="space-y-6" onSubmit={methods.handleSubmit(onSubmit)}>
-            <SectionAddress />
-            <DialogFooter className="pt-4">
+          <form id="address-dialog-form" className="px-6 pb-6 pt-4 space-y-6" onSubmit={methods.handleSubmit(onSubmit)}>
+            <div className="rounded-2xl border border-disable/30 bg-interior p-5">
+              <SectionAddress />
+            </div>
+
+            <DialogFooter className="pt-2">
               <button
                 type="button"
                 onClick={() => onOpenChange(false)}
-                className="rounded-xl border px-4 py-2 text-sm font-semibold text-subtitulo hover:border-subtitulo hover:bg-subtitulo/10 transition-colors"
+                className="rounded-xl border border-disable/40 px-4 py-2 text-sm font-semibold text-subtitulo hover:border-disable/70 hover:bg-fondo-inputs transition-colors"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={addAddress.isPending || updateAddress.isPending}
-                className="rounded-xl bg-principal px-4 py-2 text-sm font-semibold text-white hover:bg-principal-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                className="rounded-xl bg-principal px-4 py-2 text-sm font-semibold text-white hover:bg-principal-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center gap-2"
               >
                 {addAddress.isPending || updateAddress.isPending ? (
                   <Loader2 size={16} className="animate-spin" />

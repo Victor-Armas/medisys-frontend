@@ -14,6 +14,8 @@ import { Input } from "@/shared/ui/input";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { Button } from "@/shared/ui/button";
 import { Select } from "@/shared/ui/Select";
+import ConsultationEmpty from "@/shared/animations/ConsultationEmpty";
+import { RouteSystemLoader } from "@/shared/animations/RouteSystemLoader";
 
 interface Props {
   initialData: ConsultationsListResponse | undefined;
@@ -65,6 +67,14 @@ export function ConsultationsListPage({ initialData, role }: Props) {
   const totalPages = Math.ceil(total / 15);
 
   const activeFilter = filters.dateFrom || filters.dateTo || filters.consultationType || filters.search;
+
+  if (isLoading) {
+    return <RouteSystemLoader />;
+  }
+
+  if (consultations.length === 0) {
+    return <ConsultationEmpty />;
+  }
 
   return (
     <div className="flex flex-col gap-4 px-6 pt-3 h-full overflow-hidden min-h-0">

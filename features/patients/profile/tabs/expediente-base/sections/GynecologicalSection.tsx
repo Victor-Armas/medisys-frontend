@@ -1,102 +1,115 @@
+// features/patients/profile/tabs/expediente-base/sections/GynecologicalSection.tsx
+"use client";
+
 import { NumberField } from "../fields/NumberField";
 import { TextareaField } from "../fields/TextareaField";
 import { CheckField } from "../fields/CheckField";
 import { DateField } from "../fields/DateField";
 import { ObstetricMetricField } from "../fields/ObstetricMetricField";
-import { Sparkles, CalendarDays, Network, ShieldCheck } from "lucide-react";
 import { HistorySection } from "@/features/patients/shared/HistorySection";
 
 interface Props {
   canEdit: boolean;
+  headerRight?: React.ReactNode;
 }
 
-export function GynecologicalSection({ canEdit }: Props) {
+// ── Sub-components ────────────────────────────────────────────────────────────
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return <p className="text-[10px] font-bold text-subtitulo uppercase tracking-widest mb-3">{children}</p>;
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
+
+/**
+ * Antecedentes gineco-obstétricos.
+ *
+ * Layout: 2 columnas.
+ * Izquierda: ciclo de desarrollo + ciclo menstrual + fórmula obstétrica
+ * Derecha: prevención (anticoncepción, menopause, mastografía, citología)
+ */
+export function GynecologicalSection({ canEdit, headerRight }: Props) {
   return (
-    <HistorySection title="Antecedentes gineco-obstétricos" icon="spark">
-      {/* Container to give some breathing room for the groups */}
-      <div className="flex flex-col gap-8 rounded-xl ">
-        {/* ROW 1: Ciclo de desarrollo & Ciclo y FUM */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Grupo: Ciclo de Desarrollo */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Sparkles className="text-[#8B2FA1]" size={16} strokeWidth={2.5} />
-              <h4 className="text-[11px] font-bold text-[#8B2FA1] uppercase tracking-wider">Ciclo de Desarrollo</h4>
-            </div>
-            <div className="flex flex-col gap-4">
+    <HistorySection title="Antecedentes gineco-obstétricos" icon="spark" headerAction={headerRight}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-10 gap-y-6">
+        {/* ── LEFT ───────────────────────────────────────────────────────── */}
+        <div className="space-y-6">
+          {/* Ciclo de desarrollo */}
+          <div>
+            <SectionLabel>Ciclo de desarrollo</SectionLabel>
+            <div className="space-y-3">
+              <NumberField label="Menarca (edad)" name="menarche" placeholder="Edad primera menstruación" disabled={!canEdit} />
               <NumberField
-                label="Menarca (Edad)"
-                name="menarche"
-                placeholder="Edad en la primera menstruación"
-                disabled={!canEdit}
-              />
-              <NumberField
-                label="1ra Relación Sexual"
+                label="Inicio vida sexual (edad)"
                 name="sexualActivityStart"
-                placeholder="Edad de inicio de vida sexual"
+                placeholder="Edad de inicio"
                 disabled={!canEdit}
               />
             </div>
           </div>
 
-          {/* Grupo: Ciclo y FUM */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <CalendarDays className="text-[#8B2FA1]" size={16} strokeWidth={2.5} />
-              <h4 className="text-[11px] font-bold text-[#8B2FA1] uppercase tracking-wider">Ciclo menstrual</h4>
-            </div>
-            <div className="flex flex-col gap-4">
+          {/* Ciclo menstrual */}
+          <div>
+            <SectionLabel>Ciclo menstrual</SectionLabel>
+            <div className="space-y-3">
               <TextareaField
-                label="Ciclo menstrual"
+                label="Descripción del ciclo"
                 name="menstrualCycle"
                 disabled={!canEdit}
-                rows={1}
-                placeholder="Regular / 28 días"
+                rows={2}
+                placeholder="Ej. Regular, 28 días…"
               />
               <DateField label="Fecha última menstruación" name="lastMenstrualPeriod" disabled={!canEdit} />
             </div>
           </div>
-        </div>
 
-        {/* ROW 2: Fórmula Obstétrica & Prevención */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Grupo: Fórmula Obstétrica */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Network className="text-[#8B2FA1]" size={16} strokeWidth={2.5} />
-              <h4 className="text-[11px] font-bold text-[#8B2FA1] uppercase tracking-wider">Antecedentes obstétricos</h4>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
+          {/* Fórmula obstétrica */}
+          <div>
+            <SectionLabel>Fórmula obstétrica (G P C A)</SectionLabel>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <ObstetricMetricField label="Gestas" name="gestations" disabled={!canEdit} />
               <ObstetricMetricField label="Partos" name="deliveries" disabled={!canEdit} />
               <ObstetricMetricField label="Cesáreas" name="caesareans" disabled={!canEdit} />
               <ObstetricMetricField label="Abortos" name="abortions" disabled={!canEdit} />
             </div>
           </div>
+        </div>
 
-          {/* Grupo: Prevención */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="text-[#8B2FA1]" size={16} strokeWidth={2.5} />
-                <h4 className="text-[11px] font-bold text-[#8B2FA1] uppercase tracking-wider">Prevención</h4>
-              </div>
-              <div className="w-[50%]">
-                <CheckField label="Menopausia" name="menopause" disabled={!canEdit} />
-              </div>
-            </div>
-            <div className="flex flex-col gap-4 mt-2">
+        {/* ── RIGHT ──────────────────────────────────────────────────────── */}
+        <div className="space-y-6">
+          {/* Prevención */}
+          <div>
+            <SectionLabel>Prevención y planificación</SectionLabel>
+            <div className="space-y-3">
+              <CheckField label="Menopausia" name="menopause" disabled={!canEdit} />
               <TextareaField
                 label="Método anticonceptivo"
                 name="contraceptiveMethod"
-                placeholder="Preservativos..."
                 disabled={!canEdit}
-                rows={1}
+                rows={2}
+                placeholder="Ej. DIU, hormonal, preservativo…"
               />
-              <div className="grid grid-cols-2 gap-4">
-                <TextareaField label="Mastografía" name="mammography" placeholder="Fecha/Res." disabled={!canEdit} rows={2} />
-                <TextareaField label="Citología" name="cervicalCytology" placeholder="Fecha/Res." disabled={!canEdit} rows={2} />
-              </div>
+            </div>
+          </div>
+
+          {/* Estudios preventivos */}
+          <div>
+            <SectionLabel>Estudios preventivos</SectionLabel>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <TextareaField
+                label="Mastografía"
+                name="mammography"
+                disabled={!canEdit}
+                rows={3}
+                placeholder="Fecha / resultado…"
+              />
+              <TextareaField
+                label="Citología cervical (Pap)"
+                name="cervicalCytology"
+                disabled={!canEdit}
+                rows={3}
+                placeholder="Fecha / resultado…"
+              />
             </div>
           </div>
         </div>
