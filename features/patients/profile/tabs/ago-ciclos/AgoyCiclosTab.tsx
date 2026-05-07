@@ -36,7 +36,6 @@ export function AgoyCiclosTab({ patientId, hasEditPermission, existHistoryPatien
     lastSavedAt,
     hasHistory,
     enableEditing,
-    startCreatingDraft,
     cancelEditing,
     submitForm,
   } = useMedicalHistoryForm({
@@ -47,7 +46,6 @@ export function AgoyCiclosTab({ patientId, hasEditPermission, existHistoryPatien
   });
 
   if (isLoading) return <ECGLoader />;
-
 
   return (
     <FormProvider {...formMethods}>
@@ -76,5 +74,3 @@ export function AgoyCiclosTab({ patientId, hasEditPermission, existHistoryPatien
 }
 
 // ── Skeleton ──────────────────────────────────────────────────────────────────
-
-

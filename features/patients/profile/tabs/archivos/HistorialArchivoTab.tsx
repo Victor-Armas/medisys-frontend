@@ -64,15 +64,17 @@ export function HistorialArchivoTab({ patientId, hasEditPermission }: Props) {
             <FolderOpen size={16} className="text-principal" />
             <h4 className="text-sm font-bold text-encabezado">Repositorio de documentos</h4>
             {files.length > 0 && (
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-principal text-principal">{files.length}</span>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-inner-principal text-principal border border-principal/10">
+                {files.length}
+              </span>
             )}
           </div>
           {hasEditPermission && (
             <button
               onClick={() => setShowUpload(true)}
-              className="flex items-center gap-1.5 px-3 py-2 bg-principal text-white text-xs font-semibold rounded-xl hover:bg-principal-hover transition-colors"
+              className="flex items-center gap-1.5 px-4 py-2 bg-principal text-white text-[11px] font-bold uppercase tracking-wider rounded-xl hover:bg-principal-hover shadow-md shadow-principal/20 transition-all active:scale-95"
             >
-              <Upload size={13} />
+              <Upload size={13} strokeWidth={2.5} />
               Subir archivo
             </button>
           )}
@@ -146,20 +148,21 @@ export function HistorialArchivoTab({ patientId, hasEditPermission }: Props) {
 
 function EmptyFilesState({ hasEditPermission, onUpload }: { hasEditPermission: boolean; onUpload: () => void }) {
   return (
-    <div className="rounded-3xl border border-dashed border-border-default p-10 text-center space-y-4 /80">
-      <div className="mx-auto h-12 w-12 rounded-2xl bg-principal/10 text-principal flex items-center justify-center">
-        <Upload size={20} />
+    <div className="rounded-[2rem] border border-dashed border-disable p-12 text-center space-y-6 bg-interior/40">
+      <div className="mx-auto h-16 w-16 rounded-2xl bg-inner-principal text-principal flex items-center justify-center shadow-inner">
+        <Upload size={24} strokeWidth={2} />
       </div>
-      <div>
-        <h3 className="text-base font-bold text-encabezado">No hay archivos aún</h3>
-        <p className="text-sm text-subtitulo">Sube documentación médica para que esté disponible en el expediente.</p>
+      <div className="space-y-1">
+        <h3 className="text-lg font-bold text-encabezado">Repositorio vacío</h3>
+        <p className="text-sm text-subtitulo max-w-xs mx-auto">Sube documentación médica (estudios, recetas, laboratorios) para que esté disponible en el expediente.</p>
       </div>
       {hasEditPermission && (
         <button
           onClick={onUpload}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-principal text-white text-sm font-semibold hover:bg-principal-hover transition-colors"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-principal text-white text-[11px] font-bold uppercase tracking-widest hover:bg-principal-hover shadow-lg shadow-principal/10 transition-all active:scale-95"
         >
-          Subir archivo
+          <Upload size={14} strokeWidth={2.5} />
+          Empezar a subir
         </button>
       )}
     </div>

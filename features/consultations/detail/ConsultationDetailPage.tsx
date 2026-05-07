@@ -1,6 +1,5 @@
 "use client";
 import { useConsultationDetail } from "../hooks/useConsultation";
-import { ECGLoader } from "@/shared/ui/ECGLoader";
 import { ConsultationResponse } from "../types/consultation.types";
 import { StaffRole } from "@/features/users/types";
 import { usePermissions } from "@/shared/hooks/usePermissions";
@@ -10,6 +9,7 @@ import VitalConsultationDetail from "./components/VitalConsultationDetail";
 import NotesConsultationDetail from "./components/NotesConsultationDetail";
 import DiagnosesConsultationDetail from "./components/DiagnosesConsultationDetail";
 import PrescriptionConsultationDetail from "./components/PrescriptionConsultationDetail";
+import { RouteSystemLoader } from "@/shared/animations/RouteSystemLoader";
 
 interface Props {
   consultation: ConsultationResponse;
@@ -20,12 +20,7 @@ export function ConsultationDetailPage({ consultation, role }: Props) {
   const { canPrintConsultation } = usePermissions(role);
   const { data: c, isLoading } = useConsultationDetail(consultation.id, consultation);
 
-  if (isLoading)
-    return (
-      <div className="flex-1 flex items-center justify-center">
-        <ECGLoader />
-      </div>
-    );
+  if (isLoading) return <RouteSystemLoader />;
 
   if (!c) return <div className="flex-1 flex items-center justify-center text-subtitulo text-sm">Consulta no encontrada</div>;
 

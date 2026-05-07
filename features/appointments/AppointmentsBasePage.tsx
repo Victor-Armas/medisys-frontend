@@ -3,6 +3,7 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import dayjs from "dayjs";
+
 import { Menu } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { AppointmentCalendar } from "./calendario/AppointmentCalendar";
@@ -17,6 +18,7 @@ import type { VisibleRange } from "@/shared/calendar/types";
 import { StaffRole } from "@/features/users/types";
 import { usePermissions } from "@/shared/hooks/usePermissions";
 import { useClinicColorsStore } from "./store/clinicColors.store";
+import { notify } from "@/shared/ui/toaster";
 
 interface SlotInfo {
   start: dayjs.Dayjs;
@@ -59,6 +61,22 @@ export function AppointmentsBasePage({ initialData, initialResources, role, user
   });
 
   const handleCellClick = useCallback((info: { start: dayjs.Dayjs; resourceId?: string }) => {
+    const selectedDate = info.start;
+    const now = dayjs();
+
+    // 1. Si el día es estrictamente anterior a hoy, bloqueamos (Vista de Mes)
+    if (selectedDate.isBefore(now, "day")) {
+      notify.error("No puedes agendar citas en días pasados");
+      return;
+    }
+
+    // 2. Si es hoy, pero la hora ya pasó, bloqueamos (Vista de Día/Semana)
+    // Agregamos un pequeño margen (ej. 15 min) o simplemente comparamos
+    if (selectedDate.isSame(now, "day") && selectedDate.isBefore(now)) {
+      notify.error("No puedes agendar citas en horarios que ya pasaron");
+      return;
+    }
+
     setSelectedSlot(info);
     setCreateModalOpen(true);
   }, []);

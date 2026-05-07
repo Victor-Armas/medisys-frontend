@@ -65,9 +65,7 @@ export function useCalendar({
     const visibleStart = dayjs(visibleRange.start);
     const visibleEnd = dayjs(visibleRange.end);
 
-    const unavailableDates = new Set(
-      scheduleOverrides.filter((o) => o.type === "UNAVAILABLE").map((o) => o.date.slice(0, 10))
-    );
+    const unavailableDates = new Set(scheduleOverrides.filter((o) => o.type === "UNAVAILABLE").map((o) => o.date.slice(0, 10)));
 
     // 1. Expand BASE events, ONLY resolving within visibleRange limits
     scheduleRanges.forEach((range) => {
@@ -141,7 +139,7 @@ export function useCalendar({
     (info: { start: dayjs.Dayjs }) => {
       if (!canManage || isPaused) return;
       const dateStr = info.start.format("YYYY-MM-DD");
-      if (dayjs(dateStr).isBefore(today, "day")) return;
+      if (dayjs(dateStr).isSameOrBefore(today, "day")) return;
       onAddSchedule(doctorClinicId, dateStr);
     },
     [canManage, isPaused, today, onAddSchedule, doctorClinicId],

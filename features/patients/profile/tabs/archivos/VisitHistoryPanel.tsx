@@ -4,6 +4,7 @@ import Link from "next/link";
 import { CalendarDays, FileText, Stethoscope } from "lucide-react";
 import { usePatientConsultationTimeline } from "@/features/consultations/hooks/useConsultation";
 import { cn } from "@/shared/lib/utils";
+import { ECGLoader } from "@/shared/ui/ECGLoader";
 
 interface Props {
   patientId: string;
@@ -19,19 +20,7 @@ export function VisitHistoryPanel({ patientId }: Props) {
   const { data = [], isLoading } = usePatientConsultationTimeline(patientId);
 
   if (isLoading) {
-    return <div className="h-56 rounded-2xl bg-interior animate-pulse" />;
-  }
-
-  if (data.length === 0) {
-    return (
-      <div className="rounded-2xl border border-dashed border-border-default p-8 text-center space-y-2 bg-interior">
-        <div className="mx-auto h-11 w-11 rounded-2xl bg-principal/10 text-principal flex items-center justify-center">
-          <Stethoscope size={18} />
-        </div>
-        <h3 className="text-sm font-bold text-encabezado">No hay registro</h3>
-        <p className="text-xs text-subtitulo">Aún no existen consultas registradas para este paciente.</p>
-      </div>
-    );
+    return <ECGLoader />;
   }
 
   return (
@@ -39,8 +28,21 @@ export function VisitHistoryPanel({ patientId }: Props) {
       <div className="flex items-center gap-2">
         <CalendarDays size={16} className="text-principal" />
         <h4 className="text-sm font-bold text-encabezado">Historial de consultas</h4>
-        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-principal/10 text-principal">{data.length}</span>
+        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-inner-principal text-principal border border-principal/10">
+          {data.length}
+        </span>
       </div>
+      {data.length === 0 && (
+        <div className="rounded-2xl border border-dashed border-disable p-8 text-center space-y-3 bg-interior/50">
+          <div className="mx-auto h-12 w-12 rounded-2xl bg-inner-principal/50 text-principal flex items-center justify-center">
+            <Stethoscope size={20} />
+          </div>
+          <div className="space-y-1">
+            <h3 className="text-[13px] font-bold text-encabezado">Sin consultas registradas</h3>
+            <p className="text-[11px] text-subtitulo">Aún no existen visitas previas para este paciente.</p>
+          </div>
+        </div>
+      )}
 
       <div className="space-y-3">
         {data.map((c) => {
@@ -98,4 +100,3 @@ export function VisitHistoryPanel({ patientId }: Props) {
     </div>
   );
 }
-

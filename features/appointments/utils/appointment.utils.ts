@@ -91,6 +91,7 @@ export function transformToCalendarEvents(
       resourceId: doctorClinicId,
       status: appt.status,
       isPast: isPastAppointment(appt.startTime),
+      bookedVia: appt.bookedVia,
     };
   });
 }

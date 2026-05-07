@@ -82,7 +82,7 @@ export function SectionAddress() {
   };
 
   const selectClass = cn(
-    "w-full px-4 py-[11px] bg-fondo-inputs rounded-xl text-sm text-encabezado border border-transparent",
+    "w-full px-4 py-[11px] bg-fondo-inputs rounded-sm text-sm text-encabezado border border-transparent",
     "outline-none focus:ring-2 focus:ring-principal/40 focus:border-principal transition-all",
   );
 
@@ -90,7 +90,6 @@ export function SectionAddress() {
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="flex flex-col gap-1">
-          <label className="block text-[10.5px] font-bold text-subtitulo uppercase tracking-wider">País</label>
           <select {...register(`${prefix}.country`, { onChange: handleCountryChange })} className={selectClass}>
             <option value="MX">México</option>
             <option value="US">Estados Unidos</option>
@@ -165,9 +164,7 @@ export function SectionAddress() {
                 </option>
               </select>
               {addressErrors?.neighborhoodInput && (
-                <span className="text-xs text-red-500 mt-1">
-                  {addressErrors.neighborhoodInput.message as string}
-                </span>
+                <span className="text-xs text-red-500 mt-1">{addressErrors.neighborhoodInput.message as string}</span>
               )}
             </>
           ) : (
@@ -215,4 +212,3 @@ export function SectionAddress() {
     </div>
   );
 }
-

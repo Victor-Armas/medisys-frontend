@@ -4,18 +4,22 @@ import { getRoleConfig } from "@/shared/constants/roles";
 import { User } from "../../types";
 import { getFullName, getInitials } from "../../types/users.types";
 import { Dispatch, SetStateAction } from "react";
-import { Mail } from "lucide-react";
+import { ArrowLeft, Mail } from "lucide-react";
 import { Button } from "@/shared/ui/button";
+import Link from "next/link";
 
 interface HeroUserCardProps {
   user: User;
+  isOwnProfile: boolean;
   setEditOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function HeroUserCard({ user, setEditOpen }: HeroUserCardProps) {
+export default function HeroUserCard({ user, isOwnProfile, setEditOpen }: HeroUserCardProps) {
   const initial = getInitials(user);
   const config = getRoleConfig(user.role);
   const fullName = getFullName(user);
+
+  const backHref = isOwnProfile ? "/dashboard" : "/users";
 
   return (
     <div className="relative overflow-hidden bg-linear-to-br from-inner-principal/20 to-inner-principal rounded-md shadow-sm ring-1 ring-black/5 p-8 flex flex-col md:flex-row items-center justify-between gap-6 transition-all hover:shadow-md">
@@ -46,10 +50,20 @@ export default function HeroUserCard({ user, setEditOpen }: HeroUserCardProps) {
         </div>
       </div>
 
-      {/* Acción de Editar */}
-      <Button variant="primary2" icon="editar" onClick={() => setEditOpen(true)} className="p-2">
-        Editar Perfil
-      </Button>
+      <div className="flex justify-end gap-3">
+        <Link
+          href={backHref}
+          className="bg-principal p-2 rounded-sm flex items-center gap-3 hover:bg-principal-hover transition duration-300 shadow-sm"
+        >
+          <ArrowLeft size={17} strokeWidth={3} className="text-principal-text" />
+          <span className="text-principal-text">Regresar</span>
+        </Link>
+
+        {/* Acción de Editar */}
+        <Button variant="primary2" icon="editar" onClick={() => setEditOpen(true)} className="p-2">
+          Editar Perfil
+        </Button>
+      </div>
     </div>
   );
 }

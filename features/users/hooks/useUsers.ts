@@ -30,7 +30,7 @@ export const userKeys = {
 
 export function useUsers(options?: { initialData?: User[] }) {
   return useQuery({
-    queryKey: userKeys.all,
+    queryKey: userKeys.lists(),
     queryFn: getAllUsers,
     initialData: options?.initialData,
     staleTime: options?.initialData ? ADMIN_STALE_TIME : 0,
@@ -51,7 +51,7 @@ export function useCreateUser() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (p: CreateUserPayload) => createUser(p),
-    onSuccess: () => qc.invalidateQueries({ queryKey: userKeys.lists() }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: userKeys.all }),
   });
 }
 
@@ -59,7 +59,7 @@ export function useCreateDoctor() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (p: CreateDoctorPayload) => createDoctor(p),
-    onSuccess: () => qc.invalidateQueries({ queryKey: userKeys.lists() }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: userKeys.all }),
   });
 }
 
@@ -77,9 +77,8 @@ export function useUpdateUser() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: UpdateUserPayload }) => updateUser(id, payload),
-    onSuccess: (_data, { id }) => {
-      qc.invalidateQueries({ queryKey: userKeys.lists() });
-      qc.invalidateQueries({ queryKey: userKeys.detail(id) });
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: userKeys.all });
       notify.success("Usuario actualizado correctamente");
     },
     onError: () => notify.error("Error al actualizar el usuario"),
@@ -105,9 +104,8 @@ export function useUploadUserPhoto() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ userId, file }: { userId: string; file: File }) => uploadUserPhoto(userId, file),
-    onSuccess: (_data, { userId }) => {
-      qc.invalidateQueries({ queryKey: userKeys.detail(userId) });
-      qc.invalidateQueries({ queryKey: userKeys.lists() });
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: userKeys.all });
       notify.success("Foto actualizada correctamente");
     },
     onError: () => notify.error("Error al subir la foto"),
@@ -168,11 +166,8 @@ export function useUploadDoctorSignature() {
         qc.setQueryData(userKeys.detail(context.matchedUserId), context.previousDetail);
       }
     },
-    onSettled: (_data, _error, _variables, context) => {
-      qc.invalidateQueries({ queryKey: userKeys.lists() });
-      if (context?.matchedUserId) {
-        qc.invalidateQueries({ queryKey: userKeys.detail(context.matchedUserId) });
-      }
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: userKeys.all });
     },
   });
 }
@@ -238,10 +233,9 @@ export function useToggleDoctorAvailability() {
       }
     },
 
-    onSettled: (_data, _error, doctorId) => {
-      qc.invalidateQueries({ queryKey: userKeys.lists() });
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: userKeys.all });
       qc.invalidateQueries({ queryKey: clinicKeys.lists() });
-      qc.invalidateQueries({ queryKey: userKeys.detail(doctorId) });
     },
   });
 }
@@ -307,7 +301,7 @@ export function useToggleSchedulePermission() {
     },
 
     onSettled: () => {
-      qc.invalidateQueries({ queryKey: userKeys.lists() });
+      qc.invalidateQueries({ queryKey: userKeys.all });
       qc.invalidateQueries({ queryKey: clinicKeys.lists() });
     },
   });

@@ -10,9 +10,11 @@ import {
   Hospital,
   Map,
   Megaphone,
+  Microscope,
   Signature,
   Sparkle,
   Stethoscope,
+  TriangleAlert,
   Users2,
 } from "lucide-react";
 import type { AutoSaveStatus } from "@/shared/hooks/useAutoSave";
@@ -30,6 +32,8 @@ export type HistorySectionIcon =
   | "professional"
   | "address"
   | "signature"
+  | "warning"
+  | "microscope"
   | "hospital";
 
 interface Props {
@@ -66,12 +70,14 @@ const ICONS: Record<HistorySectionIcon, React.ReactNode> = {
   spark: <Sparkle size={20} strokeWidth={2} />,
   home: <Home size={20} strokeWidth={2} />,
   emergency: <Megaphone size={20} strokeWidth={2} />,
+  warning: <TriangleAlert size={20} strokeWidth={2} />,
   contact: <Contact size={20} strokeWidth={2} />,
   social: <Users2 size={20} strokeWidth={2} />,
   professional: <Stethoscope size={20} strokeWidth={2} />,
   address: <Map size={20} strokeWidth={2} />,
   signature: <Signature size={20} strokeWidth={2} />,
   hospital: <Hospital size={20} strokeWidth={2} />,
+  microscope: <Microscope size={20} strokeWidth={2} />,
 };
 
 // Diccionario de estilos por icono
@@ -112,6 +118,12 @@ const ACCENT: Record<HistorySectionIcon, { bg: string; text: string; fondoIcon: 
     colorIcon: "text-wairning-text",
     fondoIcon: "bg-wairning",
   },
+  warning: {
+    text: "text-encabezado",
+    bg: "bg-interior",
+    colorIcon: "text-wairning-text",
+    fondoIcon: "bg-wairning",
+  },
   contact: {
     text: "text-encabezado",
     bg: "bg-interior",
@@ -147,6 +159,12 @@ const ACCENT: Record<HistorySectionIcon, { bg: string; text: string; fondoIcon: 
     bg: "bg-interior",
     colorIcon: "text-wairning-text",
     fondoIcon: "bg-wairning",
+  },
+  microscope: {
+    text: "text-encabezado",
+    bg: "bg-interior",
+    colorIcon: "text-positive-text",
+    fondoIcon: "bg-positive",
   },
 };
 

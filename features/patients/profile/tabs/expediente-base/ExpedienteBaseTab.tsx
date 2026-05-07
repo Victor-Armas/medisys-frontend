@@ -1,7 +1,7 @@
 // features/patients/profile/tabs/expediente-base/ExpedienteBaseTab.tsx
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { FormProvider } from "react-hook-form";
 import { Check, FileEdit, Loader2, X } from "lucide-react";
 import { useConditions } from "@/features/patients/hooks/useConditions";
@@ -18,6 +18,7 @@ import { NonPathologicalSection } from "./sections/NonPathologicalSection";
 import { AllergiesSection } from "../../antecedents/AllergiesSection";
 import { PathologicalCenterColumn } from "./sections/PathologicalCenterColumn";
 import { ECGLoader } from "@/shared/ui/ECGLoader";
+import { HistorySection } from "@/features/patients/shared/HistorySection";
 
 interface Props {
   patientId: string;
@@ -31,7 +32,6 @@ export function ExpedienteBaseTab({ patientId, hasEditPermission, existHistoryPa
   const {
     formMethods,
     isLoading: historyLoading,
-    isError,
     hasHistory,
     isEditActive,
     isPending,
@@ -39,7 +39,6 @@ export function ExpedienteBaseTab({ patientId, hasEditPermission, existHistoryPa
     saveStatus,
     lastSavedAt,
     enableEditing,
-    startCreatingDraft,
     cancelEditing,
     submitForm,
   } = useMedicalHistoryForm({
@@ -47,6 +46,7 @@ export function ExpedienteBaseTab({ patientId, hasEditPermission, existHistoryPa
     storageKey: `patient-history-base-${patientId}`,
     hasEditPermission,
     initialData: existHistoryPatient,
+    disableAutoSave: true,
   });
 
   const { data: conditions = [], isLoading: condLoading } = useConditions(patientId);
@@ -54,12 +54,6 @@ export function ExpedienteBaseTab({ patientId, hasEditPermission, existHistoryPa
   const { data: allergies = [], isLoading: allergyLoading } = useAllergies(patientId);
 
   const [activeSection, setActiveSection] = useState<SectionKey | null>(null);
-
-  useEffect(() => {
-    if (isEditActive && !activeSection) {
-      setActiveSection("pathological");
-    }
-  }, [isEditActive, activeSection]);
 
   function requestEdit(section: SectionKey) {
     setActiveSection(section);
@@ -83,8 +77,6 @@ export function ExpedienteBaseTab({ patientId, hasEditPermission, existHistoryPa
     [hasHistory, hasEditPermission, isPending, isDirty, saveStatus, lastSavedAt],
   );
 
-
-
   if (historyLoading || condLoading || medLoading || allergyLoading) {
     return <ECGLoader />;
   }
@@ -96,10 +88,10 @@ export function ExpedienteBaseTab({ patientId, hasEditPermission, existHistoryPa
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
           {/* COL 1 — Alergias + Heredofamiliares (narrow) */}
           <div className="lg:col-span-3 space-y-4">
-            <SectionCard
-              title="Alergias conocidas"
-              icon="⚠"
-              actions={
+            <HistorySection
+              title="Alergias"
+              icon="warning"
+              headerAction={
                 <SectionHeaderActions
                   section="allergies"
                   activeSection={activeSection}
@@ -115,13 +107,12 @@ export function ExpedienteBaseTab({ patientId, hasEditPermission, existHistoryPa
                 allergies={allergies}
                 canEdit={isEditActive && activeSection === "allergies"}
               />
-            </SectionCard>
+            </HistorySection>
 
-            <FamilySection
-              patientId={patientId}
-              conditions={conditions}
-              canEdit={isEditActive && activeSection === "family"}
-              headerRight={
+            <HistorySection
+              title="Familiares"
+              icon="dna"
+              headerAction={
                 <SectionHeaderActions
                   section="family"
                   activeSection={activeSection}
@@ -131,17 +122,17 @@ export function ExpedienteBaseTab({ patientId, hasEditPermission, existHistoryPa
                   {...sectionMeta}
                 />
               }
-            />
+            >
+              <FamilySection patientId={patientId} conditions={conditions} canEdit={isEditActive && activeSection === "family"} />
+            </HistorySection>
           </div>
 
           {/* COL 2 — Antecedentes Patológicos (center, wider) */}
           <div className="lg:col-span-5">
-            <PathologicalCenterColumn
-              patientId={patientId}
-              conditions={conditions}
-              medications={medications}
-              canEdit={isEditActive && activeSection === "pathological"}
-              headerRight={
+            <HistorySection
+              title="Patológicos"
+              icon="clipuser"
+              headerAction={
                 <SectionHeaderActions
                   section="pathological"
                   activeSection={activeSection}
@@ -151,14 +142,22 @@ export function ExpedienteBaseTab({ patientId, hasEditPermission, existHistoryPa
                   {...sectionMeta}
                 />
               }
-            />
+            >
+              <PathologicalCenterColumn
+                patientId={patientId}
+                conditions={conditions}
+                medications={medications}
+                canEdit={isEditActive && activeSection === "pathological"}
+              />
+            </HistorySection>
           </div>
 
           {/* COL 3 — Antecedentes No Patológicos */}
           <div className="lg:col-span-4">
-            <NonPathologicalSection
-              canEdit={isEditActive && activeSection === "nonPathological"}
-              headerRight={
+            <HistorySection
+              title="No Patológicos"
+              icon="microscope"
+              headerAction={
                 <SectionHeaderActions
                   section="nonPathological"
                   activeSection={activeSection}
@@ -168,7 +167,9 @@ export function ExpedienteBaseTab({ patientId, hasEditPermission, existHistoryPa
                   {...sectionMeta}
                 />
               }
-            />
+            >
+              <NonPathologicalSection canEdit={isEditActive && activeSection === "nonPathological"} />
+            </HistorySection>
           </div>
         </div>
       </form>
@@ -184,8 +185,6 @@ function SectionHeaderActions({
   hasEditPermission,
   isPending,
   isDirty,
-  saveStatus,
-  lastSavedAt,
   onRequestEdit,
   onCancel,
 }: {
@@ -207,13 +206,11 @@ function SectionHeaderActions({
 
   return (
     <div className="flex items-center gap-2">
-      <AutoSaveIndicator status={saveStatus} lastSavedAt={lastSavedAt} />
-
       {isActive && (
         <button
           type="button"
           onClick={onCancel}
-          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-sm text-[10px] bg-disable hover:bg-gray-300 dark:hover:bg-gray-500 font-semibold transition-colors"
+          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-sm text-[10px] bg-negative hover:bg-negative-hover text-negative-text font-semibold transition-colors"
         >
           <X size={12} />
           Cancelar
@@ -238,7 +235,7 @@ function SectionHeaderActions({
         <button
           type="button"
           onClick={() => onRequestEdit(section)}
-          disabled={!hasHistory && isEditActive}
+          disabled={!hasHistory && isActive}
           className={cn(
             "inline-flex items-center gap-1 px-3 py-1.5 rounded-sm text-[10px] font-semibold transition-colors",
             "bg-wairning hover:bg-wairning-hover text-wairning-text",
@@ -252,30 +249,3 @@ function SectionHeaderActions({
     </div>
   );
 }
-
-// ── SectionCard wrapper ───────────────────────────────────────────────────────
-function SectionCard({
-  title,
-  icon,
-  actions,
-  children,
-}: {
-  title: string;
-  icon: string;
-  actions?: React.ReactNode;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="bg-interior rounded-2xl border-2 border-interior shadow-sm">
-      <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-disable/20">
-        <div className="flex items-center gap-2 min-w-0">
-          <span className="text-sm">{icon}</span>
-          <h4 className="text-[11px] font-extrabold uppercase tracking-widest text-encabezado truncate">{title}</h4>
-        </div>
-        {actions}
-      </div>
-      <div className="px-4 py-4">{children}</div>
-    </div>
-  );
-}
-

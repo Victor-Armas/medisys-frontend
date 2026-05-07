@@ -77,7 +77,7 @@ export function Sidebar({ initialCollapsed = false, role }: { initialCollapsed?:
         {canAccessUsers && <NavItem href="/dashboard" icon={LayoutDashboard} label="Dashboard" collapsed={isCollapsed} />}
         {/* badge={8} se puede usar para colocar cantidad en el sidebar */}
         <NavItem href="/appointments" icon={Calendar} label="Citas" collapsed={isCollapsed} />
-        <NavItem href="/admin/consultations" icon={ClipboardList} label="Consultas" collapsed={isCollapsed} />
+        {canDoctorMain && <NavItem href="/admin/consultations" icon={ClipboardList} label="Consultas" collapsed={isCollapsed} />}
         {canDoctorMain && (
           <NavItem href="/admin/consultations/new" icon={Stethoscope} label="Nueva Consulta" collapsed={isCollapsed} />
         )}

@@ -56,23 +56,20 @@ export function PatientProfilePage({ patient, serverRole }: Props) {
           </button>
         ))}
       </div>
-      <PatientHeader patient={p} fullName={fullName} hasEditPermission={hasEditPermission} showAddressSection={activeTab === "expediente"} />
+      <PatientHeader
+        patient={p}
+        fullName={fullName}
+        hasEditPermission={hasEditPermission}
+        showAddressSection={activeTab === "expediente"}
+      />
 
       {/* ── Tab content ── */}
       <div className="bg-exterior pt-4">
         {activeTab === "expediente" && (
-          <ExpedienteBaseTab
-            existHistoryPatient={p.medicalHistory}
-            patientId={p.id}
-            hasEditPermission={hasEditPermission}
-          />
+          <ExpedienteBaseTab existHistoryPatient={p.medicalHistory} patientId={p.id} hasEditPermission={hasEditPermission} />
         )}
         {activeTab === "ago" && showAgo && (
-          <AgoyCiclosTab
-            existHistoryPatient={p.medicalHistory}
-            patientId={p.id}
-            hasEditPermission={hasEditPermission}
-          />
+          <AgoyCiclosTab existHistoryPatient={p.medicalHistory} patientId={p.id} hasEditPermission={hasEditPermission} />
         )}
         {activeTab === "historial" && <HistorialArchivoTab patientId={p.id} hasEditPermission={hasEditPermission} />}
       </div>

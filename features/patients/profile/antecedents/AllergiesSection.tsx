@@ -2,7 +2,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { X, TriangleAlert, CloudUpload, Plus, AlertCircle } from "lucide-react";
+import { X, CloudUpload, Plus, AlertCircle } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { notify } from "@/shared/ui/toaster";
 import { ALLERGY_SEVERITY_COLORS, ALLERGY_SEVERITY_LABELS, searchAllergies } from "@/shared/utils/allergies.utils";
@@ -109,12 +109,6 @@ export function AllergiesSection({ patientId, allergies, canEdit }: Props) {
 
   return (
     <div className="space-y-3">
-      {/* Header */}
-      <div className="flex items-center gap-2">
-        <TriangleAlert className="text-negative-text" size={14} strokeWidth={2.5} />
-        <p className="text-[11px] font-bold uppercase tracking-wide text-encabezado">Alergias</p>
-      </div>
-
       {/* Search */}
       {canEdit && (
         <div className="relative">

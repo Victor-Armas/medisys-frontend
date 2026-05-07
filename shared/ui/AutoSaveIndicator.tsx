@@ -12,31 +12,31 @@ export function AutoSaveIndicator({ status, lastSavedAt }: Props) {
   if (status === "idle" && !lastSavedAt) return null;
 
   return (
-    <div className="flex items-center gap-1.5 text-[11px] font-medium transition-all duration-300">
+    <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider transition-all duration-300">
       {status === "saving" && (
-        <>
-          <Loader2 size={12} className="animate-spin text-subtitulo" />
-          <span className="text-subtitulo">Guardando borrador…</span>
-        </>
+        <div className="flex items-center gap-1.5 text-principal animate-pulse">
+          <Loader2 size={11} className="animate-spin" />
+          <span>Sincronizando…</span>
+        </div>
       )}
       {status === "saved" && (
-        <>
-          <CheckCircle2 size={12} className="text-emerald-500" />
-          <span className="text-emerald-600 dark:text-emerald-400">
+        <div className="flex items-center gap-1.5 text-emerald-500">
+          <CheckCircle2 size={11} />
+          <span>
             Borrador guardado
             {lastSavedAt && (
-              <span className="ml-1 text-subtitulo">
-                {lastSavedAt.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" })}
+              <span className="ml-1 opacity-60 font-mono">
+                ({lastSavedAt.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" })})
               </span>
             )}
           </span>
-        </>
+        </div>
       )}
       {status === "error" && (
-        <>
-          <CloudOff size={12} className="text-amber-500" />
-          <span className="text-amber-600 dark:text-amber-400">Error al guardar borrador</span>
-        </>
+        <div className="flex items-center gap-1.5 text-negative-text">
+          <CloudOff size={11} />
+          <span>Error de conexión</span>
+        </div>
       )}
     </div>
   );

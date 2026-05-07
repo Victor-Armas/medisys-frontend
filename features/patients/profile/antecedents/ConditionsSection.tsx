@@ -229,25 +229,26 @@ export function ConditionsSection({
             placeholder="Descripción libre…"
             className="flex-1 px-3 py-2 text-xs border border-wairning/40 rounded-sm bg-wairning/5 outline-none focus:ring-1 focus:ring-wairning"
           />
-          <button
-            type="button"
-            onClick={handleAddFreeText}
-            disabled={!freeText.trim()}
-            className="flex items-center gap-1 px-3 py-2 rounded-sm bg-positive text-positive-text hover:bg-positive-hover text-xs font-semibold transition-colors disabled:opacity-50"
-          >
-            <Plus size={12} />
-            Agregar
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setFreeTextMode(false);
-              setFreeText("");
-            }}
-            className="px-2.5 py-2 rounded-sm bg-fondo-inputs hover:bg-negative/10 text-subtitulo hover:text-negative-text transition-colors"
-          >
-            <X size={13} />
-          </button>
+          <div className="flex flex-col gap-1">
+            <button
+              type="button"
+              onClick={handleAddFreeText}
+              disabled={!freeText.trim()}
+              className="flex items-center gap-1 p-1 rounded-sm bg-positive text-positive-text hover:bg-positive-hover text-xs transition-colors disabled:opacity-50"
+            >
+              <Plus size={12} strokeWidth={5} />
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setFreeTextMode(false);
+                setFreeText("");
+              }}
+              className="p-1 rounded-sm bg-fondo-inputs hover:bg-negative/10 text-subtitulo hover:text-negative-text transition-colors"
+            >
+              <X size={13} />
+            </button>
+          </div>
         </div>
       )}
 

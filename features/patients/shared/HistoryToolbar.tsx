@@ -33,7 +33,6 @@ interface Props {
  * Handles: view-only state, edit mode, save/cancel actions, auto-save indicator.
  */
 export function HistoryToolbar({
-  hasHistory,
   isEditActive,
   hasEditPermission,
   isPending,
@@ -52,7 +51,7 @@ export function HistoryToolbar({
         "flex items-center gap-3",
         isInline
           ? "flex-row justify-end"
-          : "flex-col sm:flex-row sm:items-center justify-between p-4 shadow-sm sticky top-0 z-10",
+          : "flex-col sm:flex-row sm:items-center justify-between p-4 bg-interior border border-disable/20 rounded-sm shadow-sm sticky top-0 z-20",
       )}
     >
       {/* Título + AutoSave — ocultos en inline (el header del card ya tiene título) */}
@@ -85,7 +84,7 @@ export function HistoryToolbar({
             <button
               type="button"
               onClick={onCancel}
-              className="px-3 py-2 rounded-sm text-xs bg-disable hover:bg-gray-300 dark:hover:bg-gray-500 font-semibold transition-colors"
+              className="px-3 py-2 rounded-sm text-xs bg-negative hover:bg-negative-hover text-negative-text font-semibold transition-colors"
             >
               Cancelar
             </button>

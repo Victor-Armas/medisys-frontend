@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AlertCircle, FileText, Image, Upload, X, Loader2 } from "lucide-react";
+import { AlertCircle, FileText, Upload, X, Loader2, ImageOffIcon } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { CATEGORIES, type UploadState } from "@/features/patients/constants/archivos.constants";
 
@@ -27,21 +27,23 @@ export function UploadPanel({ form, setForm, fileInputRef, onFileChange, onDrop,
   const isPdf = form.file?.type === "application/pdf";
 
   return (
-    <div className="bg-bg-base border border-brand/20 rounded-2xl overflow-hidden shadow-sm">
-      <div className="flex items-center justify-between px-4 py-3 border-b ">
-        <div className="flex items-center gap-2">
-          <Upload size={13} className="text-principal" />
-          <span className="text-sm font-semibold text-encabezado">Subir archivo médico</span>
+    <div className="bg-interior border border-principal/10 rounded-2xl overflow-hidden shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-disable/30 bg-card-header">
+        <div className="flex items-center gap-2.5">
+          <div className="p-1.5 rounded-lg bg-inner-principal">
+            <Upload size={14} className="text-principal" />
+          </div>
+          <span className="text-[13px] font-bold text-encabezado uppercase tracking-wide">Subir archivo médico</span>
         </div>
         <button
           onClick={onCancel}
-          className="p-1 rounded-lg text-subtitulo hover:text-encabezado hover:bg-subtitulo transition-colors"
+          className="p-1.5 rounded-full text-subtitulo hover:text-negative-text hover:bg-negative/20 transition-all"
         >
-          <X size={13} />
+          <X size={16} />
         </button>
       </div>
 
-      <div className="p-4 space-y-4">
+      <div className="p-6 space-y-5">
         <div
           onDrop={(e) => {
             e.preventDefault();
@@ -54,79 +56,87 @@ export function UploadPanel({ form, setForm, fileInputRef, onFileChange, onDrop,
           onDragLeave={() => setDragOver(false)}
           onClick={() => fileInputRef.current?.click()}
           className={cn(
-            "border-2 border-dashed rounded-xl p-5 text-center transition-all cursor-pointer",
+            "group border-2 border-dashed rounded-2xl p-8 text-center transition-all cursor-pointer",
             dragOver
-              ? "border-brand bg-principal"
+              ? "border-principal bg-inner-principal/40 ring-4 ring-principal/5"
               : form.file
-                ? "border-emerald-400 bg-emerald-50/50"
-                : "border-border-strong hover:border-brand/50 hover:bg-principal",
+                ? "border-positive-text bg-positive/30"
+                : "border-disable hover:border-principal/40 hover:bg-inner-principal/10",
           )}
         >
           <input ref={fileInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" className="hidden" onChange={onFileChange} />
           {form.file ? (
-            <div className="flex items-center justify-center gap-3">
-              <div className="p-2 rounded-lg bg-emerald-100">
-                {isPdf ? <FileText size={18} className="text-emerald-600" /> : <Image size={18} className="text-emerald-600" />}
+            <div className="flex flex-col items-center gap-3">
+              <div className="p-4 rounded-2xl bg-positive/20 text-positive-text">
+                {isPdf ? (
+                  <FileText size={32} strokeWidth={1.5} />
+                ) : (
+                  <ImageOffIcon size={32} strokeWidth={1.5} />
+                )}
               </div>
-              <div className="text-left">
-                <p className="text-sm font-semibold text-encabezado truncate max-w-50">{form.file.name}</p>
-                <p className="text-xs text-subtitulo">{formatBytes(form.file.size)}</p>
+              <div className="text-center space-y-1">
+                <p className="text-sm font-bold text-encabezado truncate max-w-xs">{form.file.name}</p>
+                <p className="text-[11px] font-medium text-subtitulo uppercase tracking-wider">{formatBytes(form.file.size)}</p>
               </div>
             </div>
           ) : (
-            <div className="space-y-1.5">
-              <div className="w-9 h-9 rounded-xl bg-subtitulo flex items-center justify-center mx-auto">
-                <Upload size={16} className="text-subtitulo" />
+            <div className="space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-disable flex items-center justify-center mx-auto text-subtitulo group-hover:scale-110 group-hover:bg-inner-principal group-hover:text-principal transition-all duration-300">
+                <Upload size={20} strokeWidth={2.5} />
               </div>
-              <p className="text-sm font-medium text-encabezado">
-                Arrastra o <span className="text-principal">selecciona</span>
-              </p>
-              <p className="text-xs text-subtitulo">Selecciona un PDF o imagen compatible.</p>
+              <div className="space-y-1">
+                <p className="text-sm font-bold text-encabezado">
+                  Haz clic para <span className="text-principal">seleccionar</span>
+                </p>
+                <p className="text-xs text-subtitulo">o arrastra tus archivos aquí (PDF o Imágenes)</p>
+              </div>
             </div>
           )}
         </div>
 
         {form.error && (
-          <p className="flex items-center gap-1.5 text-xs text-red-500 font-medium">
-            <AlertCircle size={12} />
-            {form.error}
-          </p>
+          <div className="flex items-center gap-2 p-3 rounded-xl bg-negative/10 text-negative-text animate-in head-shake">
+            <AlertCircle size={14} />
+            <p className="text-xs font-bold uppercase tracking-tight">{form.error}</p>
+          </div>
         )}
 
-        <div className="space-y-1">
-          <label className="block text-[10.5px] font-bold text-subtitulo uppercase tracking-wider">Categoría *</label>
-          <select
-            value={form.category}
-            onChange={(e) => setForm((prev) => ({ ...prev, category: e.target.value as UploadState["category"] }))}
-            className="w-full px-3 py-2.5  border rounded-xl text-sm text-encabezado outline-none focus:border-brand focus:ring-2 focus:ring-principal/40 transition-all"
-          >
-            {CATEGORIES.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <label className="block text-[10px] font-bold text-subtitulo uppercase tracking-widest ml-1">Categoría *</label>
+            <select
+              value={form.category}
+              onChange={(e) => setForm((prev) => ({ ...prev, category: e.target.value as UploadState["category"] }))}
+              className="w-full px-4 py-2.5 bg-fondo-inputs border-none rounded-xl text-sm text-encabezado font-medium outline-none focus:ring-2 focus:ring-principal/30 transition-all appearance-none"
+            >
+              {CATEGORIES.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="block text-[10px] font-bold text-subtitulo uppercase tracking-widest ml-1">
+              Descripción <span className="font-normal normal-case opacity-60">(opcional)</span>
+            </label>
+            <input
+              type="text"
+              value={form.description}
+              onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
+              placeholder="Ej: Biometría hemática..."
+              maxLength={200}
+              className="w-full px-4 py-2.5 bg-fondo-inputs border-none rounded-xl text-sm text-encabezado font-medium outline-none focus:ring-2 focus:ring-principal/30 transition-all placeholder:text-subtitulo/50"
+            />
+          </div>
         </div>
 
-        <div className="space-y-1">
-          <label className="block text-[10.5px] font-bold text-subtitulo uppercase tracking-wider">
-            Descripción <span className="font-normal normal-case text-subtitulo">(opcional)</span>
-          </label>
-          <input
-            type="text"
-            value={form.description}
-            onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
-            placeholder="Ej: Biometría hemática – antecedente previo"
-            maxLength={200}
-            className="w-full px-3 py-2.5  border rounded-xl text-sm text-encabezado outline-none focus:border-brand focus:ring-principal/40 transition-all placeholder:text-subtitulo"
-          />
-        </div>
-
-        <div className="flex gap-2 pt-1">
+        <div className="flex gap-3 pt-2">
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 py-2.5 rounded-xl border text-sm text-subtitulo hover:bg-subtitulo transition-colors"
+            className="flex-1 py-3 rounded-xl bg-disable hover:bg-disable/80 text-xs font-bold text-subtitulo uppercase tracking-widest transition-all"
           >
             Cancelar
           </button>
@@ -134,10 +144,10 @@ export function UploadPanel({ form, setForm, fileInputRef, onFileChange, onDrop,
             type="button"
             onClick={onSubmit}
             disabled={isSubmitting || !form.file}
-            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-principal text-white text-sm font-semibold hover:bg-principal-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-principal text-white text-xs font-bold uppercase tracking-widest hover:bg-principal-hover shadow-lg shadow-principal/20 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
           >
-            {isSubmitting ? <Loader2 size={13} className="animate-spin" /> : <Upload size={13} />}
-            Subir
+            {isSubmitting ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} strokeWidth={2.5} />}
+            Subir Archivo
           </button>
         </div>
       </div>

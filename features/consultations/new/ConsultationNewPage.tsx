@@ -24,6 +24,7 @@ import { ConsultationHistorialTab } from "./tabs/ConsultationHistorialTab";
 import { ConsultationArchivosTab } from "./tabs/ConsultationArchivosTab";
 import { ConsultationRecetasTab } from "./tabs/ConsultationRecetasTab";
 import EmptyPatientMsg from "../ui/EmptyPatientMsg";
+import { RouteSystemLoader } from "@/shared/animations/RouteSystemLoader";
 
 interface Props {
   serverRole: StaffRole;
@@ -164,7 +165,15 @@ export default function ConsultationNewPage({ serverRole, initialPatient, doctor
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onSubmit, onError)} className="h-full flex flex-col mx-6 py-4 overflow-hidden">
+      <form
+        onSubmit={methods.handleSubmit(onSubmit, onError)}
+        className="h-full flex flex-col mx-6 py-4 overflow-hidden relative"
+      >
+        {isPending && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center backdrop-blur-xs">
+            <RouteSystemLoader label="Creando consulta" />
+          </div>
+        )}
         {/* Top nav tabs */}
         <div className="bg-interior shadow-sm px-6 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-1">

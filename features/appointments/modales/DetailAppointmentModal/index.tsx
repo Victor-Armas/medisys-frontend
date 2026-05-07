@@ -7,7 +7,15 @@ import { AppointmentStatusActions } from "./AppointmentStatusActions";
 import { STATUS_CONFIG } from "../../utils/appointment.colors";
 import { getAppointmentTypeLabel, isImmutableStatus, toClinicTime } from "../../utils/appointment.utils";
 import { useRouter } from "next/navigation";
-import { Stethoscope } from "lucide-react";
+import { Stethoscope, Globe, Phone, LayoutPanelLeft, LucideIcon, MessageCircleCheck } from "lucide-react";
+import type { BookingSource } from "../../types/appointment.types";
+
+const BOOKED_VIA_CONFIG: Record<BookingSource, { label: string; icon: LucideIcon; color?: string }> = {
+  STAFF: { label: "Panel", icon: LayoutPanelLeft },
+  WHATSAPP: { label: "WhatsApp", icon: MessageCircleCheck, color: "text-positive-text fill-positive" },
+  PORTAL: { label: "Portal", icon: Globe },
+  PHONE: { label: "Teléfono", icon: Phone },
+};
 
 interface Props {
   userId: string | undefined;
@@ -25,7 +33,7 @@ export function DetailAppointmentModal({ appointmentId, onOpenChange, canManager
   const isOwnerDoctor = appointment?.doctorClinic?.doctorProfile?.user?.id === userId;
 
   const isPast = appointment ? dayjs(appointment.startTime).isBefore(dayjs()) : false;
-
+  const isFinalStatus = ["COMPLETED", "CANCELLED", "NO_SHOW"].includes(appointment?.status ?? "");
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
@@ -49,6 +57,19 @@ export function DetailAppointmentModal({ appointmentId, onOpenChange, canManager
                   {statusConfig.label}
                 </span>
                 <span className="text-xs text-subtitulo">{getAppointmentTypeLabel(appointment.type)}</span>
+                <span className="text-subtitulo text-[10px]">|</span>
+                <div className="flex items-center gap-1 text-xs text-subtitulo">
+                  {(() => {
+                    const config = BOOKED_VIA_CONFIG[appointment.bookedVia];
+                    const Icon = config.icon;
+                    return (
+                      <>
+                        <Icon size={12} className={config.color} />
+                        <span className={config.color}>{config.label}</span>
+                      </>
+                    );
+                  })()}
+                </div>
               </div>
 
               {/* Info de la cita */}
@@ -103,7 +124,8 @@ export function DetailAppointmentModal({ appointmentId, onOpenChange, canManager
                   <p className="text-xs text-encabezado">{appointment.internalNotes}</p>
                 </div>
               )}
-              {(canManagerDoctor || isOwnerDoctor) && appointment && !isPast && (
+
+              {(canManagerDoctor || isOwnerDoctor) && appointment && !isPast && !isFinalStatus && (
                 <div className="border-t border-disable/40 pt-3 mt-1">
                   <button
                     onClick={() => {

@@ -2,29 +2,88 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+// 1. Tipamos los roles exactos que tienes en tu BD
+type Role = "ADMIN_SYSTEM" | "MAIN_DOCTOR" | "DOCTOR" | "RECEPTIONIST" | "PATIENT";
+
+// 2. Mapa de permisos por ruta (SRP y Escalabilidad)
+const routePermissions: Record<string, Role[]> = {
+  "/dashboard": ["ADMIN_SYSTEM", "MAIN_DOCTOR"],
+  "/clinics": ["ADMIN_SYSTEM", "MAIN_DOCTOR"],
+  "/users": ["ADMIN_SYSTEM", "MAIN_DOCTOR"],
+  "/settings": ["ADMIN_SYSTEM", "MAIN_DOCTOR"],
+  "/admin/consultations": ["ADMIN_SYSTEM", "MAIN_DOCTOR", "DOCTOR"],
+  "/admin/patients": ["ADMIN_SYSTEM", "MAIN_DOCTOR", "DOCTOR", "RECEPTIONIST"],
+  "/appointments": ["ADMIN_SYSTEM", "MAIN_DOCTOR", "DOCTOR", "RECEPTIONIST"],
+};
+
 const publicRoutes = ["/login"];
+
+// 3. Función NATIVA para decodificar JWT sin usar librerías externas (KISS)
+function decodeJwtRole(token: string): Role | null {
+  try {
+    const base64Url = token.split(".")[1];
+    // Reemplazamos caracteres especiales de Base64Url a Base64 estándar
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    // Decodificamos el Base64 y evitamos problemas con caracteres Unicode
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join(""),
+    );
+    const payload = JSON.parse(jsonPayload);
+    return payload.role || null;
+  } catch {
+    return null; // Si el token está malformado, fallamos silenciosamente
+  }
+}
 
 export function proxy(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
   const { pathname } = request.nextUrl;
 
-  // EXCEPCIÓN CRÍTICA: Ignorar cualquier archivo con extensión o rutas internas de Next.js
-  if (
-    pathname.startsWith("/_next") ||
-    pathname.includes("/api/") ||
-    pathname.includes(".") // Esto ignora .js, .css, .png, etc.
-  ) {
+  // EXCEPCIÓN CRÍTICA: Ignorar estáticos e internos
+  if (pathname.startsWith("/_next") || pathname.includes("/api/") || pathname.includes(".")) {
     return NextResponse.next();
   }
 
   const isPublicRoute = publicRoutes.includes(pathname);
 
+  // Regla A: Sin token intentando acceder a zona protegida -> Al login
   if (!token && !isPublicRoute) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
+  // Regla B: Con token intentando acceder a zona pública -> A su zona principal
   if (token && isPublicRoute) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
+  // Regla C: RBAC Nativo (Verificación de Roles)
+  if (token && !isPublicRoute) {
+    const userRole = decodeJwtRole(token);
+
+    const requiredRolesEntry = Object.entries(routePermissions).find(([route]) => pathname.startsWith(route));
+
+    // Si la ruta requiere un rol que el usuario no tiene
+    if (requiredRolesEntry && userRole && !requiredRolesEntry[1].includes(userRole)) {
+      // Aterrizaje Suave según el rol real del usuario
+      if (userRole === "DOCTOR" || userRole === "RECEPTIONIST") {
+        return NextResponse.redirect(new URL("/appointments", request.url));
+      }
+
+      if (userRole === "PATIENT") {
+        return NextResponse.redirect(new URL("/portal-paciente", request.url));
+      }
+
+      // Fallback
+      return NextResponse.redirect(new URL("/profile", request.url));
+    }
+
+    // Si la decodificación falló por un token inválido, forzamos login
+    if (!userRole) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
   }
 
   return NextResponse.next();

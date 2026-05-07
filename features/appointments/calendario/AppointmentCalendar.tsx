@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import { CalendarProvider } from "@/shared/calendar/CalendarContext";
 import { DefaultCalendarHeader } from "@/shared/calendar/components/DefaultCalendarHeader";

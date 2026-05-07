@@ -2,14 +2,8 @@
 
 import { useState } from "react";
 import { cn } from "@/shared/lib/utils";
-import { MapPin, Globe, MoreVertical, Pencil, Star, X, ChevronUp, ChevronDown } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/shared/ui/dropdown-menu";
+import { MoreVertical, Pencil, Star, X, ChevronUp, ChevronDown, ExternalLink } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
 import { PatientAddress } from "../../types/patient.types";
 
 interface Props {
@@ -22,32 +16,37 @@ interface Props {
 export function AddressCard({ address, hasEditPermission, onEdit, onMarkPrimary }: Props) {
   const [expanded, setExpanded] = useState(false);
   const isMx = !address.country || address.country === "MX";
-
   const line1 = address.street ? `${address.street}${address.extNumber ? ` #${address.extNumber}` : ""}` : null;
   const cityLine = address.postalCode
     ? `${address.postalCode.municipality.name}, ${address.postalCode.municipality.state.name}`
-    : address.foreignCity
-      ? `${address.foreignCity}${address.foreignState ? `, ${address.foreignState}` : ""}`
-      : null;
+    : (address.foreignCity ?? null);
+
+  const fullAddress = [
+    line1,
+    address.neighborhood?.name && `Col. ${address.neighborhood.name}`,
+    cityLine,
+    address.postalCode?.code,
+  ]
+    .filter(Boolean)
+    .join(", ");
+
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
 
   return (
     <div
       className={cn(
-        "rounded-xl border p-3 relative transition-colors",
-        address.isPrimary ? "bg-inner-principal border-principal/25" : "bg-interior border-disable/25 hover:border-disable/40",
+        "rounded-sm shadow-sm p-3 relative transition-colors",
+        address.isPrimary ? "bg-inner-principal/30 " : "bg-interior ",
       )}
     >
-      <div className="flex items-start gap-3">
-        <div className={cn("mt-0.5 shrink-0", address.isPrimary ? "text-principal" : "text-subtitulo")}>
-          {isMx ? <MapPin size={14} /> : <Globe size={14} />}
-        </div>
+      <div className="flex items-center gap-3">
+        {address.isPrimary && <Star size={20} className="text-principal fill-inner-principal shrink-0" />}
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <span className="text-[10px] font-extrabold text-encabezado uppercase tracking-widest truncate">
               {address.isPrimary ? "Domicilio principal" : isMx ? "Domicilio (México)" : `Domicilio (${address.country})`}
             </span>
-            {address.isPrimary && <Star size={10} className="fill-brand text-principal shrink-0" />}
           </div>
 
           {line1 ? (
@@ -57,20 +56,12 @@ export function AddressCard({ address, hasEditPermission, onEdit, onMarkPrimary 
           )}
 
           <div className={cn("mt-1.5 space-y-0.5", !expanded && "hidden")}>
-            {address.neighborhood?.name && <p className="text-[11px] text-subtitulo truncate">Col. {address.neighborhood.name}</p>}
+            {address.neighborhood?.name && (
+              <p className="text-[11px] text-subtitulo truncate">Col. {address.neighborhood.name}</p>
+            )}
             {cityLine && <p className="text-[11px] text-subtitulo truncate">{cityLine}</p>}
             {address.postalCode?.code && <p className="text-[10px] text-subtitulo">C.P. {address.postalCode.code}</p>}
           </div>
-
-          {(address.neighborhood?.name || cityLine || address.postalCode?.code) && (
-            <button
-              type="button"
-              onClick={() => setExpanded(!expanded)}
-              className="inline-flex items-center gap-1 mt-2 text-[10px] font-semibold text-principal hover:text-principal-hover transition-colors"
-            >
-              {expanded ? "Ocultar" : "Ver detalles"} {expanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
-            </button>
-          )}
         </div>
 
         {hasEditPermission && (
@@ -89,14 +80,24 @@ export function AddressCard({ address, hasEditPermission, onEdit, onMarkPrimary 
                 Editar
               </DropdownMenuItem>
 
+              <DropdownMenuItem onClick={() => window.open(mapsUrl, "_blank")}>
+                <ExternalLink size={11} className="mr-1.5" />
+                Ver en Google Maps
+              </DropdownMenuItem>
+
+              {(address.neighborhood?.name || cityLine || address.postalCode?.code) && (
+                <DropdownMenuItem onClick={() => setExpanded(!expanded)}>
+                  {expanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                  {expanded ? "Ocultar" : "Ver detalles"}
+                </DropdownMenuItem>
+              )}
+
               {!address.isPrimary && (
                 <DropdownMenuItem onClick={onMarkPrimary}>
                   <Star size={11} className="mr-1.5" />
                   Marcar como principal
                 </DropdownMenuItem>
               )}
-
-              <DropdownMenuSeparator />
 
               <DropdownMenuItem variant="destructive">
                 <X size={11} className="mr-1.5" />

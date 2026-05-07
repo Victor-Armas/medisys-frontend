@@ -85,5 +85,5 @@ export const MEDICAL_FILE_CATEGORY_COLORS: Record<MedicalFileCategory, { bg: str
   REFERRAL: { bg: "bg-amber-500/10", text: "text-amber-600", border: "border-amber-500/20" },
   SURGERY_REPORT: { bg: "bg-red-500/10", text: "text-red-600", border: "border-red-500/20" },
   PATHOLOGY: { bg: "bg-pink-500/10", text: "text-pink-600", border: "border-pink-500/20" },
-  OTHER: { bg: "bg-subtitulo", text: "text-text-secondary", border: "border-border-default" },
+  OTHER: { bg: "bg-disable", text: "text-subtitulo", border: "border-disable/50" },
 };

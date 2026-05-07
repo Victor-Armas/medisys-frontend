@@ -20,6 +20,7 @@ interface Params {
   storageKey: string;
   hasEditPermission: boolean;
   initialData?: MedicalHistory | null;
+  disableAutoSave?: boolean;
 }
 
 export interface UseMedicalHistoryFormReturn {
@@ -56,6 +57,7 @@ export function useMedicalHistoryForm({
   storageKey,
   hasEditPermission,
   initialData,
+  disableAutoSave,
 }: Params): UseMedicalHistoryFormReturn {
   const [isEditing, setIsEditing] = useState(false);
   const [isCreatingDraft, setIsCreatingDraft] = useState(false);
@@ -96,8 +98,8 @@ export function useMedicalHistoryForm({
   } = useAutoSave({
     storageKey,
     data: formValues,
-    enabled: isDirty && isEditActive,
-    debounceMs: 1200,
+    enabled: isDirty && isEditActive && !disableAutoSave,
+    debounceMs: 800,
   });
 
   // Sync form with DB data or draft on mount / when history loads

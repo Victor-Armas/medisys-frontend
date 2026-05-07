@@ -3,6 +3,10 @@
 import { motion, type Variants } from "motion/react";
 import { Heart } from "lucide-react";
 
+interface Props {
+  label?: string;
+}
+
 /**
  * Puntos suspensivos animados
  */
@@ -27,7 +31,7 @@ function AnimatedDots() {
   );
 }
 
-export function RouteSystemLoader() {
+export function RouteSystemLoader({ label }: Props) {
   // Ciclo total ágil (2.4s)
   const cycle = 2.4;
 
@@ -147,11 +151,11 @@ export function RouteSystemLoader() {
           transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
           className="text-center text-sm font-semibold uppercase tracking-[0.35em] text-principal/90"
         >
-          Cargando sistema médico
+          {label ? label : "Cargando sistema médico"}
         </motion.span>
 
         <div className="flex items-center text-xs font-medium uppercase tracking-widest text-muted-foreground/70">
-          <span>Iniciando</span>
+          <span>Cargando</span>
           <AnimatedDots />
         </div>
       </div>

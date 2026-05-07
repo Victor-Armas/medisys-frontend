@@ -12,9 +12,9 @@ import { AddOverrideModal } from "../schedule/modals/add-override/AddOverrideMod
 import { useClinicManagement } from "../hooks/useClinicManagement";
 import { usePermissions } from "@/shared/hooks/usePermissions";
 import { AssignDoctorToClinicModal } from "../schedule/modals/assign-doctor/AssignDoctorToClinicModal";
-import { ECGLoader } from "@/shared/ui/ECGLoader";
 import { StaffRole } from "@/features/users/types";
 import ClinicEmpty from "@/shared/animations/ClinicEmpty";
+import { RouteSystemLoader } from "@/shared/animations/RouteSystemLoader";
 
 interface Props {
   initialClinics: Clinic[];
@@ -45,7 +45,7 @@ export function ClinicsPanelClient({ initialClinics, initialRole }: Props) {
 
   // 3. Early return protegido para el loader
   if (isLoading) {
-    return <ECGLoader />;
+    return <RouteSystemLoader />;
   }
   const isEmpty = clinics.length === 0;
 

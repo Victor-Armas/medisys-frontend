@@ -98,6 +98,7 @@ export interface AppointmentCalendarEvent extends CalendarEvent {
   appointmentId: string;
   status: AppointmentStatus;
   isPast: boolean;
+  bookedVia: BookingSource;
 }
 
 // ─── API payloads ─────────────────────────────────────────────────────────────
