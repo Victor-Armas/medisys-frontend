@@ -23,6 +23,8 @@ export interface BaseUser {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  mustChangePassword: boolean;
+  passwordChangedAt: string | null;
 }
 
 // ─── Agregados (Consultas con Relaciones) ─────────────────────

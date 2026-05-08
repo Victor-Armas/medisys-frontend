@@ -148,13 +148,15 @@ export function HistorialArchivoTab({ patientId, hasEditPermission }: Props) {
 
 function EmptyFilesState({ hasEditPermission, onUpload }: { hasEditPermission: boolean; onUpload: () => void }) {
   return (
-    <div className="rounded-[2rem] border border-dashed border-disable p-12 text-center space-y-6 bg-interior/40">
+    <div className="rounded-4xl border border-dashed border-disable p-12 text-center space-y-6 bg-interior/40">
       <div className="mx-auto h-16 w-16 rounded-2xl bg-inner-principal text-principal flex items-center justify-center shadow-inner">
         <Upload size={24} strokeWidth={2} />
       </div>
       <div className="space-y-1">
         <h3 className="text-lg font-bold text-encabezado">Repositorio vacío</h3>
-        <p className="text-sm text-subtitulo max-w-xs mx-auto">Sube documentación médica (estudios, recetas, laboratorios) para que esté disponible en el expediente.</p>
+        <p className="text-sm text-subtitulo max-w-xs mx-auto">
+          Sube documentación médica (estudios, recetas, laboratorios) para que esté disponible en el expediente.
+        </p>
       </div>
       {hasEditPermission && (
         <button

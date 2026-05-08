@@ -88,3 +88,8 @@ export async function doctorSchedulePermissionToggle(
   );
   return res.data;
 }
+
+export async function resetUserPassword(userId: string): Promise<{ temporaryPassword: string }> {
+  const res = await api.post<{ temporaryPassword: string }>(`/users/${userId}/reset-password`);
+  return res.data;
+}

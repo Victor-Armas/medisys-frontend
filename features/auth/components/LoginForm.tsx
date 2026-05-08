@@ -33,7 +33,7 @@ export function LoginForm() {
       const res = await authService.login(data);
       setAuth(res.user, res.access_token);
       notify.success(`¡Bienvenido, ${res.user.firstName}!`, "Acceso concedido", { id: loadId });
-      router.push("/dashboard");
+      router.push(res.user.mustChangePassword ? "/change-password" : "/dashboard");
     } catch {
       const errorMsg = "Credenciales inválidas. Verifica tu email y contraseña.";
       setServerError(errorMsg);

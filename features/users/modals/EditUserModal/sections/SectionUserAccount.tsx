@@ -1,20 +1,22 @@
 "use client";
 
-import { User, Phone } from "lucide-react";
+import { User, Phone, KeyRound } from "lucide-react";
 import { type UseFormRegister, type FieldErrors, type Control, Controller } from "react-hook-form";
 import { Input } from "@/shared/ui/input";
 import { getRoleConfig, STAFF_ROLES } from "@/shared/constants/roles";
 import { cn } from "@/shared/lib/utils";
 import { EditUserFormData } from "@/validations/user.schema";
 import { usePermissions } from "@/shared/hooks/usePermissions";
+import { Button } from "@/shared/ui/button";
 
 interface Props {
   register: UseFormRegister<EditUserFormData>;
   errors: FieldErrors<EditUserFormData>;
   control: Control<EditUserFormData>;
+  onResetPasswordClick: () => void;
 }
 
-export function SectionUserAccount({ register, errors, control }: Props) {
+export function SectionUserAccount({ register, errors, control, onResetPasswordClick }: Props) {
   const { canEditOtherProfiles } = usePermissions();
   return (
     <div className="space-y-5">
@@ -90,6 +92,25 @@ export function SectionUserAccount({ register, errors, control }: Props) {
               </div>
             )}
           />
+          {canEditOtherProfiles && (
+            <div className="flex items-center justify-between p-3 rounded-sm bg-fondo-inputs shadow-sm">
+              <div>
+                <p className="text-sm font-medium text-encabezado">Contraseña</p>
+                <p className="text-xs text-subtitulo mt-0.5">
+                  Genera una contraseña temporal que el usuario deberá cambiar al iniciar sesión
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="wairning"
+                className="p-2 shrink-0"
+                onClick={onResetPasswordClick} // prop que pasamos desde EditUserModal
+              >
+                <KeyRound size={15} />
+                Resetear
+              </Button>
+            </div>
+          )}
         </>
       )}
     </div>

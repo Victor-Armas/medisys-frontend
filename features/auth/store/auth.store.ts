@@ -6,6 +6,7 @@ interface AuthState {
   user: AuthUser | null;
   token: string | null;
   setAuth: (user: AuthUser, token: string) => void;
+  clearMustChangePassword: () => void;
   logout: () => void;
 }
 
@@ -34,5 +35,17 @@ export const useAuthStore = create<AuthState>((set) => ({
     Cookies.remove("token", { path: "/" });
     Cookies.remove("user", { path: "/" });
     set({ user: null, token: null });
+  },
+  clearMustChangePassword: () => {
+    set((state) => {
+      if (!state.user) return state;
+      const updatedUser = { ...state.user, mustChangePassword: false };
+      Cookies.set("user", JSON.stringify(updatedUser), {
+        expires: 7,
+        sameSite: "strict",
+        path: "/",
+      });
+      return { user: updatedUser };
+    });
   },
 }));

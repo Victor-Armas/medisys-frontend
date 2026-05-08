@@ -6,7 +6,6 @@ import {
   Users,
   Calendar,
   UserCog,
-  Settings,
   ChevronLeft,
   ChevronRight,
   Hospital,
@@ -85,7 +84,7 @@ export function Sidebar({ initialCollapsed = false, role }: { initialCollapsed?:
         {canDoctorMain && <NavItem href="/clinics" icon={Hospital} label="Consultorios" collapsed={isCollapsed} />}
         {canAccessUsers && <NavItem href="/users" icon={UserCog} label="Usuarios" collapsed={isCollapsed} />}
         <NavItem href="/profile" icon={UserCircle} label="Mi perfil" collapsed={isCollapsed} />
-        <NavItem href="/settings" icon={Settings} label="Configuración" collapsed={isCollapsed} />
+        {/* <NavItem href="/settings" icon={Settings} label="Configuración" collapsed={isCollapsed} /> */}
       </div>
     </aside>
   );

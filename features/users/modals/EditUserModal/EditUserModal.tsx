@@ -18,6 +18,7 @@ import { SectionDoctorProfile } from "./sections/SectionDoctorProfile";
 import type { User } from "@/features/users/types/users.types";
 import { EditDoctorProfileFormData, editDoctorProfileSchema, EditUserFormData, editUserSchema } from "@/validations/user.schema";
 import { Button } from "@/shared/ui/button";
+import { ResetPasswordModal } from "../ResetPasswordModal";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -32,6 +33,7 @@ interface Props {
 
 export function EditUserModal({ user, onClose }: Props) {
   const [activeTab, setActiveTab] = useState<ActiveTab>("account");
+  const [resetPasswordOpen, setResetPasswordOpen] = useState(false);
   const doctor = isDoctor(user);
   const profile = user.doctorProfile;
 
@@ -148,7 +150,12 @@ export function EditUserModal({ user, onClose }: Props) {
           {/* Account tab */}
           {activeTab === "account" && (
             <form onSubmit={userForm.handleSubmit(onSubmitUser)} className="px-8 py-6 space-y-6">
-              <SectionUserAccount register={userForm.register} errors={userForm.formState.errors} control={userForm.control} />
+              <SectionUserAccount
+                register={userForm.register}
+                errors={userForm.formState.errors}
+                control={userForm.control}
+                onResetPasswordClick={() => setResetPasswordOpen(true)}
+              />
               <ModalFooter isPending={isPending} onClose={onClose} label="Guardar cuenta" />
             </form>
           )}
@@ -162,6 +169,7 @@ export function EditUserModal({ user, onClose }: Props) {
           )}
         </div>
       </DialogContent>
+      {resetPasswordOpen && <ResetPasswordModal user={user} onClose={() => setResetPasswordOpen(false)} />}
     </Dialog>
   );
 }

@@ -14,6 +14,7 @@ const routePermissions: Record<string, Role[]> = {
   "/admin/consultations": ["ADMIN_SYSTEM", "MAIN_DOCTOR", "DOCTOR"],
   "/admin/patients": ["ADMIN_SYSTEM", "MAIN_DOCTOR", "DOCTOR", "RECEPTIONIST"],
   "/appointments": ["ADMIN_SYSTEM", "MAIN_DOCTOR", "DOCTOR", "RECEPTIONIST"],
+  "/change-password": ["ADMIN_SYSTEM", "MAIN_DOCTOR", "DOCTOR", "RECEPTIONIST"],
 };
 
 const publicRoutes = ["/login"];
@@ -49,14 +50,32 @@ export function proxy(request: NextRequest) {
 
   const isPublicRoute = publicRoutes.includes(pathname);
 
+  // Parseamos el usuario de la cookie para revisar mustChangePassword
+  let mustChangePassword = false;
+  const userCookie = request.cookies.get("user")?.value;
+  if (userCookie) {
+    try {
+      const userStr = userCookie.startsWith("%") ? decodeURIComponent(userCookie) : userCookie;
+      const userObj = JSON.parse(userStr);
+      mustChangePassword = userObj?.mustChangePassword === true;
+    } catch (error) {
+      console.error("[Proxy] Error al parsear la cookie del usuario:", error);
+    }
+  }
+
   // Regla A: Sin token intentando acceder a zona protegida -> Al login
   if (!token && !isPublicRoute) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
+  // Regla EXTRA (Seguridad Crítica): Si debe cambiar contraseña, ATRAPARLO
+  if (token && mustChangePassword && pathname !== "/change-password") {
+    return NextResponse.redirect(new URL("/change-password", request.url));
+  }
+
   // Regla B: Con token intentando acceder a zona pública -> A su zona principal
   if (token && isPublicRoute) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL(mustChangePassword ? "/change-password" : "/dashboard", request.url));
   }
 
   // Regla C: RBAC Nativo (Verificación de Roles)

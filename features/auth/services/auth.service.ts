@@ -8,4 +8,8 @@ export const authService = {
     const response = await api.post<LoginResponse>("/auth/login", data);
     return response.data;
   },
+
+  changePassword: async (newPassword: string): Promise<void> => {
+    await api.post("/auth/change-password", { newPassword });
+  },
 };
