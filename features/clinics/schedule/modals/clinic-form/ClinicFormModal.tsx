@@ -110,7 +110,7 @@ export function ClinicFormModal({ clinic, onClose }: Props) {
             <Input label="RFC" error={errors.rfc?.message} {...register("rfc")} />
             <div className="col-span-2">
               <Input
-                label="Cédula profesional del consultorio"
+                label="Aviso de Funcionamiento (COFEPRIS)"
                 error={errors.professionalLicense?.message}
                 {...register("professionalLicense")}
               />
